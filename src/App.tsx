@@ -206,13 +206,6 @@ export default function App() {
               <div>
                 © 2026 NextCHINA · 艺术与科技思辨文集
               </div>
-              <div className="flex items-center gap-4">
-                <span>灰阶美学</span>
-                <span>•</span>
-                <span>微观弱叙事</span>
-                <span>•</span>
-                <span>以人为本</span>
-              </div>
             </footer>
           </div>
 

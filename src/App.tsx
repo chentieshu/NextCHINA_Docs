@@ -204,7 +204,7 @@ export default function App() {
               isLight ? 'text-[#8a8a92]' : 'text-[#707078]'
             }`}>
               <div>
-                © 2026 NextCHINA · 艺术与科技思辨文集
+                © 2026 NextCHINA
               </div>
             </footer>
           </div>

@@ -1,0 +1,6 @@
+{
+  "name": "艺术与科技文集 (Art & Tech Docs)",
+  "description": "探讨从游戏技术美术到未来体验、多维技术路径、艺术创作基础，以及AI创业者社区与岭南大学的交流合作意向。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

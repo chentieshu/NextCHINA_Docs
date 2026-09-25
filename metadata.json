@@ -1,6 +1,6 @@
 {
-  "name": "艺术与科技文集 (Art & Tech Docs)",
-  "description": "探讨从游戏技术美术到未来体验、多维技术路径、艺术创作基础，以及AI创业者社区与岭南大学的交流合作意向。",
+  "name": "AI 到哪了？｜NextCHINA AI 调研库",
+  "description": "AI SaaS、大模型榜单与 Agent 选型调研：功能、模型、价格、来源和明确的快照日期。",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -1,219 +1,214 @@
-import { DocChapter } from '../types';
-
-export const DOC_CHAPTERS: DocChapter[] = [
-  {
-    id: 'about-us',
-    slug: 'about-us-game-tech-art-to-ai-future-experience',
-    title: '一、关于我们：从游戏技术美术，走向人工智能与未来体验',
-    subtitle: '将游戏技术美术、人工智能、交互设计与艺术创作深度融合的跨学科团队',
-    category: '01-about',
-    categoryName: '关于我们',
-    readTime: '3 分钟',
-    date: '2026.09',
-    tags: ['跨学科团队', '游戏技术美术', '人工智能', '体验设计', '元宇宙', '动态壁纸', '高校合作'],
-    excerpt: '我们是一支将游戏技术美术、人工智能、交互设计与艺术创作结合的跨学科团队。让图像能够回应人，让屏幕能够承载感受。',
-    content: `# 一、关于我们：从游戏技术美术，走向人工智能与未来体验
-
-我们是一支将游戏技术美术、人工智能、交互设计与艺术创作结合的跨学科团队。
-
-技术团队早期从事游戏技术美术，目前将实践与研究拓展至人工智能、交互动效、视觉传达，以及面向未来日常生活的体验设计。我们关注的不只是技术能够生成什么，更是技术如何成为一种表达语言：让图像能够回应人，让屏幕能够承载感受，让一次触碰、一笔书写或一个选择，成为人与作品共同完成的过程。
-
-团队同时拥有水彩、书画与插画背景的艺术创作者。我们希望把手工创作中的笔触、留白、构图和情感表达，与实时图形、生成式AI和互动系统结合，形成既有艺术判断、又能实际运行的作品。
-
-> **团队核心特质**：能够将**艺术构想**、**技术实现**与**公众体验**置于同一创作过程中，构建人与技术双向对话的新关系。
+import research from './ai-research.json';
+import type { DocChapter } from '../types';
+
+// JSON is the single source of truth for reading, navigation, search and slides.
+type Brief = { label: string; desc: string };
+type Section = DocChapter & { brief: Brief[] };
+const sourceMap = new Map(research.sources.map(source => [source.id, source]));
+const kindNames: Record<string, string> = {
+  saas: '应用 / SaaS', agent: 'Agent 产品', framework: '构建平台 / 框架',
+  api: 'API / 基础设施', 'model-service': '模型能力入口'
+};
+const cell = (value: unknown): string => String(value ?? '待核验').replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
+function table(headers: string[], rows: unknown[][]): string {
+  return [headers, headers.map(() => '---'), ...rows].map(row => `| ${row.map(cell).join(' | ')} |`).join('\n');
+}
+function sourceLinks(ids: string[]): string {
+  return [...new Set(ids)].map(id => {
+    const source = sourceMap.get(id);
+    if (!source) throw new Error(`Unknown research source: ${id}`);
+    return `[${source.title}](${source.url})`;
+  }).join(' · ');
+}
+function section(id: string, title: string, subtitle: string, category: string,
+  categoryName: string, content: string, brief: Brief[], tags: string[] = []): Section {
+  return {
+    id, slug: id, title, subtitle, category, categoryName,
+    readTime: `${Math.max(1, Math.ceil(content.length / 800))} 分钟`,
+    date: research.checkedAt, tags: [...new Set([categoryName, ...tags])],
+    excerpt: subtitle, content: content.trim(), brief
+  };
+}
+type Product = typeof research.products[number];
+function priceText(product: Product): string {
+  if (!product.plans.length) return '未录入数值价格';
+  return product.plans.map(plan => `${plan.name}：${plan.currency} ${plan.amount}/${plan.billing === 'annual' ? '年付' : '月付'}`).join('；');
+}
+function productDetail(product: Product): string {
+  const plans = product.plans.length ? table(['套餐', '金额与周期', '所含额度 / 限制'], product.plans.map(plan => [
+    plan.name, `${plan.currency} ${plan.amount} / ${plan.billing === 'annual' ? '年付' : '月付'}`, plan.quota || '以官方计划为准'
+  ])) : '**价格：未录入可确认的数值。**';
+  return `### ${product.name}\n\n${product.aliases.length ? `别名：${product.aliases.join(' / ')}。\n\n` : ''}` +
+    `**性质：**${kindNames[product.kind]}。**核验：**${product.verification === 'partial' ? '信息不完整，待补核' : '已核对公开页面，未进行功能实测'}。\n\n` +
+    `**功能：**${product.features.join('；')}。\n\n**涉及模型：**${product.models.join('、') || '当前具体版本未核验'}。\n\n` +
+    `**选型建议（编辑判断）：**${product.selection}。\n\n**注意：**${product.caution}\n\n` +
+    `${plans}\n\n${product.priceNote}\n\n来源：${sourceLinks(product.sourceIds)}\n`;
+}
+function catalogueContent(products: Product[]): string {
+  return `> 这里是分场景清单，不是性能或热度总排名。分类可以重叠，同一产品在主数据中只保存一次。\n\n` +
+    table(['产品', '性质', '所选套餐价格', '核验范围'], products.map(product => [product.name, kindNames[product.kind], priceText(product), product.verification === 'partial' ? '待补核' : '公开页面'])) +
+    '\n\n## 产品详情与差异\n\n' + products.map(productDetail).join('\n');
+}
+const partialCount = research.products.filter(product => product.verification === 'partial').length;
+const agentProducts = research.products.filter(product => product.categories.includes('agent'));
+const scoreCount = research.benchmarks.reduce((total, benchmark) => total + benchmark.rows.length, 0);
+const sections: Section[] = [section('overview', research.title, research.subtitle, 'guide', '阅读指南', `
+## 模型、SaaS 与 Agent 是三件不同的事
+
+模型提供生成和推理能力；SaaS 把能力组织为可以使用的产品；Agent 将目标、模型、工具和执行反馈组合成任务流程。购买应用会员不等于获得该厂商的 API 额度。
+
+## 本次数据范围
+
+${table(['内容', '收录量', '口径'], [
+  ['产品与基础设施', research.products.length, `其中 ${partialCount} 项信息不完整，已标注待补核`],
+  ['Agent 产品及构建平台', agentProducts.length, '与产品目录有重叠，不重复计算为新增产品'],
+  ['基准成绩', scoreCount, '三个独立来源/版本，不能拼接为总排名'],
+  ['模型 API 价格', research.modelApiPrices.length, '官方可读取价格条目，非全厂商完整价格表']
+])}
+
+> 本次核验日期：${research.checkedAt}（${research.timezone}）。核验日期不等于榜单数据日期，也不证明网站动态内容已经刷新至当天。
+
+${research.coverage}
+
+## 如何读榜单
+
+${research.rankingPolicy}
+
+Arena 展示人类偏好；Artificial Analysis 文章展示综合评测的部分成绩；Terminal-Bench 2.0 展示指定 Agent 与模型配置的历史终端任务成绩。产品清单没有虚构的“综合评分”。详见各榜单所附官方来源。
+
+## 价格与国家字段
+
+${research.pricingPolicy}
+
+${research.countryPolicy}
+
+## 建议的选择顺序
+
+先明确交付物，再检查现有软件和权限能否接入，之后用同一组真实任务比较质量、人工返工、总成本和失败恢复。对于对外发布、删除、付款等动作，保留人工审核。
+`, [
+  { label: '产品目录', desc: `${research.products.length} 个唯一条目；${partialCount} 项待补核` },
+  { label: '榜单口径', desc: '人类偏好、综合评测、终端任务分开阅读' },
+  { label: '数据日期', desc: '核验日期不等于快照日期，不将历史榜单称为今日实时榜' }
+], ['AI SaaS', '大模型', 'Agent', '价格', '选型'])];
+
+for (const category of research.categories.filter(category => category.id !== 'agent')) {
+  const products = research.products.filter(product => product.categories.includes(category.id));
+  sections.push(section(`catalog-${category.id}`, category.title, '功能、涉及模型、所选套餐、差异与来源', 'saas', 'AI SaaS 与工具',
+    catalogueContent(products), [
+      { label: '收录范围', desc: `${products.length} 个相关条目，分类可以重叠` },
+      { label: '代表条目', desc: products.slice(0, 4).map(product => product.name).join('、') },
+      { label: '比较方法', desc: '先比较任务、工作流和交付格式，再核对所需套餐与额度' },
+      { label: '证据范围', desc: '价格或功能未完整核实的条目均明确标注' }
+    ], products.flatMap(product => [product.name, ...product.aliases, ...product.models])));
+}
 
----
+for (const benchmark of research.benchmarks) {
+  // JSON rows intentionally differ by benchmark; keep metrics and source order intact.
+  const rows = benchmark.rows;
+  const isAgent = benchmark.scope === 'agent';
+  const contents = isAgent
+    ? table(['来源序位', 'Agent', '模型 / 配置', '准确率', '来源 ± 值', '提交日期'], rows.map(row => [row.rank, row.name, 'model' in row ? row.model : '', row.score, 'uncertainty' in row ? row.uncertainty : '', 'submittedAt' in row ? row.submittedAt : '']))
+    : benchmark.rankType === 'unranked-excerpt'
+      ? table(['模型与配置', '已披露成绩'], rows.map(row => [row.name, row.score]))
+      : table(['来源序位', '模型', '供应方', '分数', '来源 ± 值', '票数', '初步结果'], rows.map(row => [row.rank, row.name, 'provider' in row ? row.provider : '', row.score, 'uncertainty' in row ? row.uncertainty : '', 'votes' in row ? row.votes : '', 'preliminary' in row && row.preliminary ? '是' : '否']));
+  sections.push(section(benchmark.id, benchmark.title, benchmark.warning, isAgent ? 'agents' : 'models', isAgent ? 'Agent 榜单与选型' : '大模型榜单与价格', `
+## 范围与日期
 
-## 1. 技术与项目经历
+> ${benchmark.warning}
 
-### 香港元宇宙项目｜2022年
-团队于2022年打造香港元宇宙项目 **Ms Meta HK** 与 **NFT CHINA HK**，探索虚拟空间、数字艺术与在线沉浸体验的结合。根据团队提供资料，曾获得阿里巴巴国际“年度最佳科技公司”。
+指标：${benchmark.metric}；单位：${benchmark.unit}。快照日期：${benchmark.snapshotDate ?? '源站未提供统一日期，请查看逐条提交日期'}。读取核验：${research.checkedAt}。
 
-这些项目为本次合作提供的是成熟的数字空间架构与交互创作经验；新的合作不以NFT发行、交易或金融活动为核心。
+## 来源成绩
 
-### 消费电子动态交互壁纸
-团队曾为 **TCL、创维、海信、海尔** 等头部消费电子品牌提供动态交互壁纸设计，项目深度运用了 Three.js、WebGL、TouchDesigner 等核心图形技术。
-
-这段经历与本次合作直接相关：我们希望进一步探索，日常屏幕如何从单纯的信息载体转化为艺术体验，以及视觉、节奏和交互反馈如何进入人们反复经历的日常生活场景。
-
-### 中国科技技术大学的NFT
-团队曾承担中国科技技术大学数字艺术与NFT作品的设计与制作，积累了严谨的数字艺术内容策划与前沿技术交付经验。
-`
-  },
-  {
-    id: 'tech-path',
-    slug: 'our-technical-path',
-    title: '二、我们的技术路径',
-    subtitle: '把创作延展到网页、动态界面、实时视觉和三维空间',
-    category: '02-tech-path',
-    categoryName: '技术路径',
-    readTime: '2 分钟',
-    date: '2026.09',
-    tags: ['技术路径', 'WebGL', 'Three.js', 'TouchDesigner', 'Lottie', 'Rive', 'Unity', 'Unreal Engine', 'Blender'],
-    excerpt: '我们能够把创作延展到网页、动态界面、实时视觉和三维空间，而不是局限于生成一张图片或一段视频。',
-    content: `# 二、我们的技术路径
-
-我们能够把创作延展到网页、动态界面、实时视觉和三维空间，而不是局限于生成一张图片或一段视频。
+${contents}
 
----
+## 解释边界
 
-## 创作方向与技术矩阵
+“±”保持来源展示数值，不自行更改为标准差或另一个置信水平。不同榜单的分数没有共同量纲，不能平均。排行榜中的模型变体与推理配置也不能当作同一型号合并。
 
-| 创作方向 | 拟用于合作的技术与形式 | 体验特征与应用场景 |
-| :--- | :--- | :--- |
-| **网页与在线三维** | 使用 Three.js、WebGL 制作可直接进入的在线作品、三维场景和互动邀请页 | 免下载、跨终端、低门槛高保真的沉浸式交互 |
-| **动态图形与交互反馈** | 使用 Lottie 承载动态图形，使用 Rive 组织能够实时响应操作的动画与界面 | 高性能矢量动效，将状态机融入视觉触控逻辑 |
-| **现场实时视觉** | 使用 TouchDesigner 制作实时视觉、交互媒体、视听体验和快速原型 | 现场传感器捕捉、音画联动与空间投影交互 |
-| **三维与空间创作** | 将团队使用的 Unity、Unreal Engine、Blender 等工具纳入作品制作 | 高拟真空间光影渲染，复杂物理逻辑与交互漫游 |
+${isAgent ? '历史提交中的模型、脚手架和运行预算会影响结果；不由此推断产品订阅价值、当前版本表现、市场份额或人气。' : '榜单中未出现某个模型不表示该模型不存在、已经下线或性能较差。此处仅展示所声明的可核验快照范围。'}
 
----
+来源：${sourceLinks([benchmark.sourceId])}
+`, [
+  { label: '指标', desc: `${benchmark.metric}（${benchmark.unit}）` },
+  { label: '范围', desc: `${rows.length} 条记录；${benchmark.rankType === 'unranked-excerpt' ? '部分成绩，不编造名次' : '保持来源顺序'}` },
+  { label: '快照日期', desc: benchmark.snapshotDate ?? '逐条提交日期见正文' },
+  { label: '限制', desc: benchmark.warning }
+], ['榜单', benchmark.metric, ...rows.map(row => row.name)]));
+}
 
-## 详细技术选型维度
+sections.push(section('model-api-prices', '大模型 API 价格', '统一计价单位，区分上下文、缓存与应用订阅', 'models', '大模型榜单与价格', `
+## 计价口径
 
-### 1. 网页与在线三维 (Web & 3D)
-使用 Three.js 与原生 WebGL 管线，实现即开即赏的在线互动场景、生成式三维模型呈现及交互式邀请页面，打破硬件壁垒与安装门槛。
+单位：USD / 100 万 token。输入、输出与缓存读取分别定价。这里不是 ChatGPT、Claude 等应用的月费表，也不是所有供应商的完整价格表。
 
-### 2. 动态图形与交互反馈 (Motion & UI)
-针对不同场景需求进行精准技术分工：
-- **Lottie**：负责轻量化、高精度的动态图形与微动效承载；
-- **Rive**：基于状态机（State Machine）组织能实时响应鼠标、触控和环境参数的交互动画与界面组件。
+${table(['模型', '供应方', '输入', '输出', '缓存读取', '适用条件'], research.modelApiPrices.map(price => [price.name, price.provider, price.input, price.output, price.cacheRead, price.conditions]))}
 
-### 3. 现场实时视觉 (Real-time Generative)
-使用 TouchDesigner 搭建实时视觉生成管线，支持多模态传感器接入、现场声音频响联动及快速交互原型验证，赋能展览与现场视听体验。
+## 如何估算成本
 
-### 4. 三维与空间创作 (Spatial & Engines)
-深度整合 Unity、Unreal Engine 与 Blender 等专业三维工作流，根据具体的展示媒介、算力平台与运行条件量身制定技术交付方案。
+未缓存输入成本 = 未缓存输入 token 数 ÷ 1,000,000 × 输入价。输出和缓存读取按各自数量、单价分别计算；不要把缓存 token 同时算入未缓存输入。缓存写入、额外工具、长上下文、快速或批处理模式不包含在这个简化计算中。
 
----
+## 每条价格的来源
 
-> 我们的目标不是展示尽可能多的工具，而是选择恰当的技术，把艺术表达完整地交到观众面前。
-`
-  },
-  {
-    id: 'art-foundation',
-    slug: 'artistic-creation-foundation',
-    title: '三、艺术创作基础',
-    subtitle: '青年水彩、书画与插画创作背景，以及让艺术家深度参与全流程交互规则的判断',
-    category: '03-art-foundation',
-    categoryName: '艺术创作基础',
-    readTime: '2 分钟',
-    date: '2026.09',
-    tags: ['艺术创作基础', '青年艺术家', '水彩', '书画', '插画', '参展经历', '人机共鸣', '交互规则'],
-    excerpt: '团队艺术成员具有青年水彩、书画与插画创作背景。这些经历将成为合作的内容基础，让艺术家全流程参与主题、构图、素材、节奏和交互规则的判断。',
-    content: `# 三、艺术创作基础
+${research.modelApiPrices.map(price => `### ${price.name}\n\n${price.conditions}\n\n核验：${price.checkedAt}。来源：${sourceLinks([price.sourceId])}`).join('\n\n')}
 
-团队艺术成员具有青年水彩、书画与插画创作背景。根据团队资料，代表性经历包括：
+## 未覆盖范围
 
----
+Qwen、Kimi、DeepSeek、GLM、MiniMax 等当前具体型号及地区定价未完成本轮逐项核验，因此不填 0、不沿用旧型号报价。采购时核对最终结算页。
+`, [
+  { label: '单位', desc: 'USD / 100 万 token，不是应用会员月费' },
+  { label: '本次收录', desc: `${research.modelApiPrices.length} 条公开 API 报价` },
+  { label: '成本结构', desc: '输入、输出、缓存、上下文与工具用量分别计算' }
+], ['价格', 'API', 'OpenAI', 'Anthropic', ...research.modelApiPrices.map(price => price.name)]));
 
-## 1. 代表性作品与参展经历
+sections.push(section('agent-products', 'Agent 产品与构建平台选型', '编程、研究、创作与业务自动化分开比较', 'agents', 'Agent 榜单与选型', `
+## 先分清产品和构建平台
 
-| 作品名称 | 入选、获奖或参展经历 | 创作媒介与审美特色 |
-| :--- | :--- | :--- |
-| **《扎西德勒》** | 入选《中国书法美术人物年鉴》 | 传统书画意韵与民族风貌 |
-| **《丹佛教堂》** | 获美国《新华报》“美丽丹佛”三等奖 | 西方水彩光影与空间透视 |
-| **《锦鲤》** | 入选美国派克峰水彩画协会（PIKES PEAK WATERCOLOR SOCIETY）国际双年展 *(具体届次与年份待核)* | 流动水色韵律与生命张力 |
-| **《日暖风和》** | 入选意大利乌尔比诺国际水彩节 | 欧陆水彩写生与暖意光感 |
-| **《锦鲤》｜2022年** | 参加“开元之火”大湾区艺术家师生展 | 师承传统与当代大湾区艺术对话 |
-| **《心海》｜2023年** | 参加“幸运湾区”画展 | 心象写意与意象水彩探索 |
+成品 Agent 侧重完成任务；Dify、n8n 等构建平台侧重让团队配置模型、工具和工作流。两类不能用一个产品热度序号替代功能和部署比较。
 
-这些经历将成为合作坚实的内容基础。我们希望让艺术家参与主题、构图、素材、节奏和交互规则的判断，而不是仅在技术完成后提供装饰。
+## 选型清单（不是热度排名）
 
----
+${catalogueContent(agentProducts)}
 
-## 2. 创作理念与人机关系
+## 实际使用检查
 
-### 核心思辨：超越“动起来”
-> **关键追问**：我们想呈现的不只是“画动起来了”，而是——**当作品能够回应观众，作者、观众与技术之间会形成怎样的新关系？**
+用真实任务验证权限范围、引用可追溯性、代码测试、失败后的恢复方式和费用上限。需要操作外部系统时，先区分只读、草稿、写入和公开发布，不能因为有工具接入就默认授权所有操作。
+`, [
+  { label: '选型条目', desc: `${agentProducts.length} 个产品或构建平台，与总目录共用数据` },
+  { label: '编程', desc: 'IDE 协作、云端委派和应用生成是不同工作方式' },
+  { label: '自动化', desc: '构建平台要另外评估模型费、维护与权限管理' },
+  { label: '不要混淆', desc: '基准成绩不是市场热度；框架也不是即用产品' }
+], ['Agent', 'Claude Code', 'Codex', 'Cursor', 'Manus', 'Dify', 'n8n']));
 
-### 艺术家全流程参与的三个维度
-- **主题与构图判断**：从笔触起落、空间留白与意境传达切入，确立作品的核心审美尺度；
-- **素材与节奏把控**：关注色彩晕染与动态呼吸感，确保数字化呈现与手工灵韵有机互融；
-- **交互规则共同制定**：把观众操作转化为双向共鸣，让技术逻辑服务于人与作品的深度联结。
-`
-  },
-  {
-    id: 'lingnan-collaboration',
-    slug: 'ai-founders-community-lingnan-collaboration',
-    title: '四、AI创业者社区与岭南大学交流合作意向',
-    subtitle: '连接创业实践、艺术思考与人才培养',
-    category: '04-lingnan',
-    categoryName: '合作意向',
-    readTime: '4 分钟',
-    date: '2026.09',
-    tags: ['AI创业者社区', '岭南大学', '艺术科技与商业', '跨界合作', '全人教育', '人才培养', '国际视野'],
-    excerpt: '我们是一支具有游戏技术美术、人工智能、交互设计与艺术创作背景的团队，正在构建面向AI创业者的开放社区，期盼与岭南大学艺术科技与商业理学硕士项目探讨合作可能。',
-    content: `# 四、AI创业者社区与岭南大学交流合作意向
+sections.push(section('sources-and-gaps', '来源、待核验项与更新方法', '每条记录可回查，缺失不隐藏', 'guide', '阅读指南', `
+## 核验说明
 
+本次共保存 ${research.sources.length} 个来源入口；入口数量不是成功核验数量。read 表示读到相关公开文字，partial 表示内容不完整，snapshot 表示有版本或日期的快照，unavailable 表示本次未读到有效正文。所有条目均未作账号内功能实测。
 
+${research.coverage}
 
-## 1. 我们正在构建怎样的社区
+${research.countryPolicy}
 
-在此前的项目实践中，我们一直尝试将技术实现、艺术表达与实际体验结合起来。如今，我们希望将这种跨界实践从团队内部延伸到更广泛的人群，逐步连接AI创业者、独立开发者、设计师、艺术家，以及关注科技与社会变化的研究者。
+## 来源目录
 
-我们希望形成的，不只是一个分享工具和行业资讯的社群，而是一个能够让不同背景的人相互认识、交流真实问题、分享实践经验，并在持续交往中产生新想法的社区。
+${research.sources.map(source => `### ${source.id} · ${source.title}\n\n[打开官方来源](${source.url})\n\n状态：${source.access}；本次检查：${source.checkedAt}；源页日期：${source.sourceDate ?? '未明确公布'}。${source.note}`).join('\n\n')}
 
-创业是我们的连接点，但我们关注的不只是如何把产品做出来，也包括为什么创造、为谁创造，以及技术将带来怎样的生活。
+## 产品待补核
 
-团队在技术美术、交互视觉与艺术创作方面的积累，也让我们希望为这个社区带来不同的表达方式：通过具有想象力的艺术与互动体验，让技术讨论更容易被理解和参与，让创业者、创作者与公众之间形成更多交流。
+${table(['产品', '待核实内容'], research.products.filter(product => product.verification === 'partial').map(product => [product.name, `${product.caution} ${product.priceNote}`]))}
 
-目前，社区仍处于建设阶段。我们的长期愿景是从国内的连接逐步走向国际，让来自不同地区、不同专业的人，因为共同的问题和有价值的内容相遇。
+## 其他缺口
 
----
+${table(['项目', '说明'], research.pendingItems.map(item => [item.name, item.reason]))}
 
-## 2. 为什么希望与岭南建立联系
+## 如何更新
 
-我们关注岭南大学艺术科技与商业理学硕士，是因为这个项目将艺术、科技与商业放在同一个培养框架中，旨在培养理解文化创意产业、艺术科技与商业实践的艺术管理者和商业领导人才。
+只编辑 src/data/ai-research.json。正文、导航、搜索和演示摘要从该文件派生，不分别维护多份数值。每次修改保留来源、日期、币种、计价周期与基准版本；来源无法核实就保留缺失标记。运行 npm run test:data 检查数据，再运行 npm run lint 与 npm run build 检查应用。
+`, [
+  { label: '来源', desc: `${research.sources.length} 个官方/基准机构入口，状态逐一记录` },
+  { label: '缺口', desc: '未读到动态页面时不补猜测价格；国家字段未逐项核验' },
+  { label: '维护', desc: '一个 JSON 数据源，正文与演示同步派生' }
+], ['来源', '核验', '缺失', '更新', '价格']));
 
-这一出发点与我们正在建设的社区具有值得探索的交集：
-
-> **核心交集**：贵项目关注如何培养能够跨越不同领域的人；我们希望连接正在不同领域中探索和实践的人。
-
-我们认为，两者之间可以形成相互启发的关系：
-- **创业者**能够带来真实的产品探索、创作过程和行业问题；
-- **大学师生**则能够从艺术、文化、研究与商业的角度，提出实践者未必已经考虑到的问题。
-
-这种交流不应只有“企业向学生传授经验”一个方向。我们同样希望社区中的创业者和开发者能够从大学的人文与艺术视角中获得启发，重新思考技术应用的价值，以及创新对人的意义。
-
-岭南商学院公开的使命与价值也强调全人发展、创造力与批判性思维、创业精神、国际视野、知识转移，以及与企业和社会建立联系。我们希望未来的交流能够服务这些教育目标，而不只是增加活动数量或现场人流。
-
----
-
-## 3. 我们期待的合作愿景
-
-我们希望，随着社区逐步发展，未来能够与贵项目共同吸引来自全国、乃至世界不同地区的AI创业者、开发者、艺术家与设计师来到岭南，参与围绕人工智能、艺术、创意与未来生活的交流。
-
-我们期待的不只是“让更多人来到岭南”，而是让值得交流的人带着真实经验来到这里，与师生产生相互启发的联系。
-
-### 三重视角下的合作价值
-
-| 维度 | 合作带来的具体价值 |
-| :--- | :--- |
-| **对学生而言** | 接触正在发生的创业与创作实践，理解不同职业背景的人如何提出问题、作出选择，以及面对不确定性 |
-| **对教师和项目而言** | 成为深入了解行业变化、发现前瞻研究议题，以及拓展外部优质行业联系的高效渠道 |
-| **对社区成员而言** | 来到岭南不仅是展示技术或产品，更是进入一个能认真探讨艺术、文化、商业与社会价值的学术殿堂，获得不同于日常创业圈的深度反馈 |
-
-我们也希望通过社区的持续连接，让贵项目的师生、作品和观点被更多校外实践者看见。交流不只停留在一次到访，而能够逐步发展为人与人之间的长期联系。
-
-我们的愿景，是让岭南成为社区成员愿意专程前来交流、获得启发并再次相聚的地方之一。
-
-这一愿景需要逐步建设，也应当以贵项目的教学方向和实际需要为基础。我们不希望先把合作限定为某一种活动或技术，而是希望先找到双方真正关心的问题，再让合适的合作自然生长。
-
----
-
-## 4. 我们希望从相互了解开始
-
-现阶段，我们最希望的是与贵项目建立初步联系，介绍团队的实践背景和AI创业者社区的建设方向，同时听取贵方对于人才培养、跨界交流及外部合作的关注与期待。
-
-我们愿意把自身的技术与艺术实践，以及正在建设的社区连接，作为未来交流的基础；也希望了解，这些积累怎样才能真正对贵项目的师生和发展方向产生价值。
-
-具体的合作形式，可以在双方充分了解后共同讨论。我们期待的不是以一份预设方案要求学校配合，而是从共同的兴趣与教育价值出发，逐步建立值得持续的关系。
-
-期待有机会与项目老师作一次初步交流，探讨如何让AI创业者社区与艺术科技教育相互连接，让来自不同领域的人在岭南相遇、思考，并共同探索未来。
-
-此致  
-敬礼
-`
-  }
-];
-
+export const DOC_CHAPTERS: DocChapter[] = sections.map(({ brief: _brief, ...chapter }) => chapter);
+export const CHAPTER_BRIEFS: Record<string, Brief[]> = Object.fromEntries(sections.map(chapter => [chapter.id, chapter.brief]));

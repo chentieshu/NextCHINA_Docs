@@ -1,0 +1,36 @@
+# NextCHINA · AI 到哪了？
+
+AI SaaS、大模型榜单、Agent 产品和构建平台的中文调研文档。现有 React 阅读、搜索、目录与演示界面保留，活动内容统一由 JSON 数据生成。
+
+## 数据入口
+
+- `src/data/ai-research.json`：产品、套餐、来源、基准快照、API 价格与待核验项的唯一数据源。
+- `src/data/docs.ts`：由数据生成章节、表格、搜索内容和演示摘要。
+- `src/components/presentation/presentationData.ts`：从章节与摘要派生演示，不另维护一套榜单数值。
+- `scripts/validate-research.mjs`：不依赖第三方包的数据结构与引用校验。
+
+## 核验与排名规则
+
+`checkedAt` 是核验日期，不是每个数据源的更新日期。`snapshotDate`、`sourceDate` 与逐行 `submittedAt` 分别保留。产品分类可重叠，按产品 ID 去重。应用、模型能力、API 和构建框架通过 `kind` 区分。
+
+Arena 人类偏好、Artificial Analysis 指数和 Terminal-Bench 终端任务分开呈现。部分文章披露的成绩不生成虚假 Top N 名次；Agent 成绩必须保留模型与提交日期。OpenRouter 使用量和 SWE-bench 未取得可核实完整记录时不补猜测数值。
+
+本轮按此前调研范围重建并核实公开资料，未能恢复此前完整大模型/Agent 对话结果，不声称逐字迁移或覆盖全球所有平台。`partial` 和 `unavailable` 来源不表示产品不存在，也不表示没有收费。国家字段本轮未逐一核实，保留 `null`，不推断数据驻留地。
+
+## 价格规则
+
+`plans.amount` 保留原币种及 `billing`：`monthly` 是月付，`annual` 是整年支付金额。不要将年付折算月价或促销价当作常规月费。空 `plans` 是本轮未录入可确认的数值价格，不代表免费。模型 API 使用 USD / 百万 token，输入、输出、缓存分开；应用订阅与 API 费用不可混用。
+
+## 维护与验证
+
+修改 JSON 后先执行：
+
+```sh
+npm run test:data
+npm run lint
+npm run build
+```
+
+数据校验可不安装依赖直接运行 `node scripts/validate-research.mjs`；类型检查和 Vite 构建需要安装项目依赖。数据测试不能代替完整应用构建或浏览器验收。
+
+旧艺术科技交互组件与演示图形属于保留的 UI 组件库，本次活动章节不再引用这些组件的数据或旧主题。恢复之前内容应通过 Git 历史回滚，不在活动数据里并列保留另一套过期文档。

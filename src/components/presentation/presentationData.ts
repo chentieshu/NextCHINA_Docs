@@ -1,3 +1,6 @@
+import { DOC_CHAPTERS, CHAPTER_BRIEFS } from '../../data/docs';
+
+// Keep the existing presentation component contract; no second copy of research values.
 export interface SlideItem {
   id: string;
   chapterRefId?: string;
@@ -7,315 +10,28 @@ export interface SlideItem {
   type: 'manifesto' | 'diagram' | 'xml-spec' | 'comparison' | 'matrix' | 'conclusion';
   keyQuote?: string;
   bulletPoints?: { label: string; desc: string }[];
-  xmlSnippet?: {
-    filename: string;
-    description: string;
-    code: string;
-  };
+  xmlSnippet?: { filename: string; description: string; code: string };
   diagramType?: 'tri-circle-loop' | 'tech-matrix' | 'collaboration-synergy' | 'digital-craft';
-  speechNotes: {
-    hook: string;
-    talkingPoints: string[];
-    presenterTip: string;
-  };
+  speechNotes: { hook: string; talkingPoints: string[]; presenterTip: string };
   estimatedDuration: string;
 }
 
-export const PRESENTATION_SLIDES: SlideItem[] = [
-  {
-    id: 'slide-01',
-    chapterRefId: 'about-us',
-    category: '关于我们 · 跨界基因',
-    title: '从游戏技术美术，走向人工智能与未来体验',
-    subtitle: '将游戏技术美术、人工智能、交互设计与艺术创作深度融合的跨学科团队',
-    type: 'manifesto',
-    keyQuote: '“我们关注的不只是技术能够生成什么，更是技术如何成为一种表达语言：让图像能够回应人，让屏幕能够承载感受。”',
-    bulletPoints: [
-      { label: '早期根基', desc: '深耕游戏技术美术，掌握实时渲染、着色器与视觉传达底层' },
-      { label: '前沿拓展', desc: '实践与研究拓展至生成式AI、交互动效与未来生活体验设计' },
-      { label: '双向交互', desc: '让一次触碰、一笔书写或一个选择，成为人与作品共同完成的过程' }
-    ],
+export const PRESENTATION_SLIDES: SlideItem[] = DOC_CHAPTERS.map((chapter, index) => {
+  const bullets = CHAPTER_BRIEFS[chapter.id];
+  return {
+    id: `research-${chapter.id}`,
+    chapterRefId: chapter.id,
+    category: chapter.categoryName,
+    title: chapter.title,
+    subtitle: chapter.subtitle,
+    type: index === 0 ? 'manifesto' : 'matrix',
+    keyQuote: index === 0 ? '模型提供能力，产品组织工作，Agent 执行任务。' : undefined,
+    bulletPoints: bullets,
     speechNotes: {
-      hook: '各位老师、朋友们好！今天我们想和大家分享的，不是纯粹的技术演示，也不是单纯的艺术展览，而是一段关于“跨界与共创”的探索历程。',
-      talkingPoints: [
-        '我们团队的早期基因深植于游戏技术美术（Technical Art），深谙实时三维渲染、图形管线与交互体验的底层逻辑。',
-        '随着生成式人工智能的爆发，我们没有停留在用 AI 批量生产内容，而是将实践延伸至体验设计：技术不应只是冰冷的生成工具，而应成为一种能承载情感、回应人类的表达语言。',
-        '我们的终极目标，是让观众从被动的“观看者”，转变为通过一次触碰、一笔书写与作品共同完成意义的“共创者”。'
-      ],
-      presenterTip: '开场语气从容从容、真诚从容，重点强调“技术的温度”与“人的感受”，避免生硬的技术堆砌。'
-    },
-    estimatedDuration: '1.5 分钟'
-  },
-  {
-    id: 'slide-02',
-    chapterRefId: 'about-us',
-    category: '核心哲学 · 表达语言',
-    title: '让图像回应人，让屏幕承载感受',
-    subtitle: '超越单向输出，探索触碰、书写与选择之间的人机共鸣',
-    type: 'comparison',
-    keyQuote: '“让一次触碰、一笔书写或一个选择，成为人与作品共同完成的过程。”',
-    bulletPoints: [
-      { label: '单向生成之困', desc: '当下海量 AI 图像充斥屏幕，却往往缺乏情感停留与双向反馈' },
-      { label: '人机共鸣机制', desc: '通过实时图形算法与传感器，让数字化视觉对观众心绪产生敏锐呼应' },
-      { label: '日常诗意栖居', desc: '将艺术体验注入手机、车机、电视与空间屏幕，重构数字生活的质感' }
-    ],
-    speechNotes: {
-      hook: '现在打开各种 AI 工具，几秒钟就能生成一张极其逼真的图像。但大家是否曾感到一种审美上的空虚？',
-      talkingPoints: [
-        '当技术生成变得无比廉价时，真正珍贵的是什么？是“回应”。当屏幕只是一面单向灌输信息的发光玻璃时，它是冰冷的；只有当它能够捕捉人的情绪、动作和选择，并给出细腻的反馈时，它才成为有灵性的艺术载体。',
-        '我们将水彩的留白与渲染逻辑写进交互状态机中，让每一次触碰都像毛笔在宣纸上的浸润，使数字交互拥有呼吸感和生命力。'
-      ],
-      presenterTip: '引导听众思考“AI时代海量图像贬值”的普遍困境，顺势抛出团队“人机双向共鸣”的核心解法。'
-    },
-    estimatedDuration: '1.5 分钟'
-  },
-  {
-    id: 'slide-03',
-    chapterRefId: 'about-us',
-    category: '团队特质 · 闭环融合',
-    title: '艺术构想 × 技术实现 × 公众体验',
-    subtitle: '打破学科壁垒，将审美判断、代码落地与受众反馈置于同一创作流中',
-    type: 'diagram',
-    diagramType: 'tri-circle-loop',
-    keyQuote: '“我们的特点，是能够将艺术构想、技术实现与公众体验放在同一创作过程中。”',
-    bulletPoints: [
-      { label: '艺术构想', desc: '水彩与书画创作者确立观念起源、留白气韵与核心审美尺度' },
-      { label: '技术实现', desc: '技术美术攻坚高保真图形渲染、状态机组织与算力优化' },
-      { label: '公众体验', desc: '以受众心理认知与直觉交互为导向，反复调优体验节奏' }
-    ],
-    speechNotes: {
-      hook: '很多数字化艺术项目常陷入两个极端：要么是搞艺术的不懂代码，方案天马行空却无法运行；要么是写代码的不懂美学，作品功能齐备却冰冷乏味。',
-      talkingPoints: [
-        '我们团队最大的特点，就是把这三件事压在同一个创作闭环里。',
-        '第一环：艺术创作者从第一天起就深度介入主题构思和留白尺度；',
-        '第二环：技术美术在底层打磨着色器和低延迟算法，确保构想能够流畅运转；',
-        '第三环：直接面向真实受众做交互反馈测试，让艺术构想在公众体验中得到验证。'
-      ],
-      presenterTip: '配合屏幕上的三环循环图示，用手势示意交叉融合的中心，突出跨学科整合的稀缺价值。'
+      hook: chapter.subtitle,
+      talkingPoints: bullets.map(point => `${point.label}：${point.desc}`),
+      presenterTip: `核验日期 ${chapter.date}。用“阅读原文”查看具体来源、榜单快照日期与价格条件，不把核验日期称为数据实时日期。`
     },
     estimatedDuration: '2 分钟'
-  },
-  {
-    id: 'slide-04',
-    chapterRefId: 'tech-path',
-    category: '技术路径 · 媒介矩阵',
-    title: '多维技术矩阵：超越一张图片或一段视频',
-    subtitle: '把创作延展到网页、动态界面、实时视觉和三维空间',
-    type: 'diagram',
-    diagramType: 'tech-matrix',
-    keyQuote: '“我们的目标不是展示尽可能多的工具，而是选择恰当的技术，把艺术表达完整地交到观众面前。”',
-    bulletPoints: [
-      { label: '网页与在线三维', desc: 'Three.js / WebGL：免下载、跨终端、即开即赏的在线互动' },
-      { label: '动态图形与反馈', desc: 'Lottie / Rive：基于状态机的轻量矢量动效与自适应交互' },
-      { label: '现场实时视觉', desc: 'TouchDesigner：多模态传感器接入、音画联动与现场视听' }
-    ],
-    speechNotes: {
-      hook: '很多人问我们：“你们团队平时主要用什么工具？”我们的回答始终是：技术服务于表达，工具服务于媒介。',
-      talkingPoints: [
-        '我们拒绝把数字艺术矮化为“导出一段 MP4”或“存一张高清 JPG”。根据不同的传播场景，我们搭建了四大技术管线：',
-        '1. 网页端用 Three.js 和 WebGL，实现任何人通过浏览器链接就能秒级进入的三维交互空间，彻底消除下载门槛；',
-        '2. 界面交互用 Rive 和 Lottie，把矢量动效做成可以根据手势和状态智能分支的动态UI；',
-        '3. 现场展演用 TouchDesigner 挂载声音频响与深度摄像头，实现全场观众参与的生成式光影；',
-        '4. 复杂空间则动用 Unity 与 Unreal 引擎，保障极致的光影与物理沉浸。'
-      ],
-      presenterTip: '逐一对应四大应用场景，表明团队具备从轻量 Web 到重型引擎的全栈图形交付能力。'
-    },
-    estimatedDuration: '2 分钟'
-  },
-  {
-    id: 'slide-05',
-    chapterRefId: 'about-us',
-    category: '工程实战 · 消费电子大屏',
-    title: '服务头部消费电子：让日常屏幕成为艺术载体',
-    subtitle: '为 TCL、创维、海信、海尔提供动态交互壁纸设计',
-    type: 'matrix',
-    keyQuote: '“探索日常屏幕如何从信息载体转化为艺术体验，以及视觉、节奏和交互反馈如何进入人们反复经历的生活场景。”',
-    bulletPoints: [
-      { label: '四大头部品牌', desc: '累计交付 TCL、创维、海信、海尔等标杆性智能电视动态大屏' },
-      { label: '图形技术落地', desc: '在高并发、受限算力硬件上稳定运行 WebGL 与 TouchDesigner 管线' },
-      { label: '生活美学渗透', desc: '让艺术不仅存在于美术馆，更成为客厅与家庭空间的生活日常' }
-    ],
-    speechNotes: {
-      hook: '数字艺术绝不应该只是挂在少数画廊里的奢侈品，它完全可以走进千家万户的客厅。',
-      talkingPoints: [
-        '团队曾深度服务于 TCL、创维、海信、海尔四大头部消费电子品牌，为其研发智能大屏的动态交互壁纸。',
-        '在电视芯片算力极度受限的严苛工程环境下，我们通过精细的着色器优化与 WebGL 轻量化管线，不仅保证了 60fps 的丝滑运行，更将中国山水的留白、四时光影的流转融入了家庭电视待机界面中。',
-        '这段经历为我们与高校合作提供了扎实的工程底座——我们不仅有艺术情怀，更具备严谨的大规模软硬件兼容性与工程交付实力。'
-      ],
-      presenterTip: '列举知名品牌增强商业信誉度，突出“在受限硬件上实现极致艺术效果”的硬核工程能力。'
-    },
-    estimatedDuration: '1.5 分钟'
-  },
-  {
-    id: 'slide-06',
-    chapterRefId: 'about-us',
-    category: '空间实践 · 香港沉淀',
-    title: '香港元宇宙项目与中国科技技术大学NFT交付',
-    subtitle: '2022 Ms Meta HK 与 NFT CHINA HK：虚拟空间与在线策展经验沉淀',
-    type: 'manifesto',
-    keyQuote: '“曾获得阿里巴巴国际‘年度最佳科技公司’称号；新的合作不以NFT发行、交易或金融活动为核心。”',
-    bulletPoints: [
-      { label: '虚拟空间架构', desc: '探索三维虚拟展厅、多用户协同漫游与在线互动艺术策展' },
-      { label: '行业高度认可', desc: '获评阿里巴巴国际“年度最佳科技公司”' },
-      { label: '高校项目交付', desc: '承接中国科技技术大学NFT作品设计，积累严谨学术管线' }
-    ],
-    speechNotes: {
-      hook: '在探索空间数字化和国际化合作的路上，我们更早一步在香港进行了大规模实战。',
-      talkingPoints: [
-        '2022年，团队在香港打造了 Ms Meta HK 和 NFT CHINA HK 项目，系统构建了虚拟空间架构与高并发数字艺术展览体系，并荣获阿里巴巴国际颁发的“年度最佳科技公司”称号。',
-        '这里我们必须郑重声明：我们过去的沉淀为今天提供了宝贵的多人虚拟空间与沉浸交互技术经验，但我们未来的所有探索均坚决剥离任何 NFT 发行、投机或金融属性。',
-        '我们曾服务中国科技技术大学的NFT项目，深谙高校教学体系对学术严谨性、教育纯粹性与伦理价值的严格要求。'
-      ],
-      presenterTip: '主动廓清边界，强调“坚决摒弃金融炒作，专注于三维空间交互与高校教育价值”，打消高校合作顾虑。'
-    },
-    estimatedDuration: '1.5 分钟'
-  },
-  {
-    id: 'slide-07',
-    chapterRefId: 'art-foundation',
-    category: '艺术基石 · 创作底蕴',
-    title: '扎实的艺术创作根基：青年水彩与书画经历',
-    subtitle: '传统水色、西方光影与当代大湾区艺术对话',
-    type: 'comparison',
-    keyQuote: '“这些经历将成为合作的内容基础。我们希望让艺术家参与主题、构图、素材、节奏和交互规则的判断。”',
-    bulletPoints: [
-      { label: '年鉴收录 & 国际展', desc: '《扎西德勒》入选中国书法美术人物年鉴；《锦鲤》入选美国派克峰国际水彩双年展' },
-      { label: '海外获奖与节展', desc: '《丹佛教堂》获美国新华报三等奖；《日暖风和》入选意大利乌尔比诺国际水彩节' },
-      { label: '湾区时代对话', desc: '《锦鲤》参加“开元之火”师生展；《心海》参加“幸运湾区”画展' }
-    ],
-    speechNotes: {
-      hook: '很多科技团队做艺术，常常让人觉得“塑料感”十足。为什么？因为他们缺乏对真实笔触和水墨浸润的敬畏心。',
-      talkingPoints: [
-        '我们团队的艺术成员，具有极其扎实的青年水彩、传统书画与插画学术背景。',
-        '大家可以看到屏幕上列出的真实参展与获奖记录：从入选《中国书法美术人物年鉴》的传统意境作品《扎西德勒》，到荣获海外水彩大奖的《丹佛教堂》，再到入选美国派克峰国际双年展、意大利乌尔比诺水彩节的经典水彩，以及在大湾区各大画展中的当代实践。',
-        '正是这双手拿起过毛笔与水彩笔的创作者，才能敏锐地指出：屏幕上的一处高光该如何衰减，水色的边缘该如何泛开。'
-      ],
-      presenterTip: '语调饱含敬意与文化沉淀，用真实的艺术奖项建立听众对团队“纯正美学素养”的信任。'
-    },
-    estimatedDuration: '2 分钟'
-  },
-  {
-    id: 'slide-08',
-    chapterRefId: 'art-foundation',
-    category: '艺术理念 · 人机新关系',
-    title: '超越“动起来”：让艺术家全流程定义交互规则',
-    subtitle: '当作品能够回应观众，作者、观众与技术之间会形成怎样的新关系？',
-    type: 'manifesto',
-    keyQuote: '“我们想呈现的不只是‘画动起来了’，而是：当作品能够回应观众，作者、观众与技术之间会形成怎样的新关系？”',
-    bulletPoints: [
-      { label: '构图与留白定尺度', desc: '以东方的空间哲学指导数字界面的呼吸感与视觉焦点' },
-      { label: '素材与运笔控节奏', desc: '保持水彩与笔触的手作灵韵，避免工业化渲染的僵硬感' },
-      { label: '交互规则共同制定', desc: '交互逻辑源自艺术构想本身，绝不做技术完成后的事后装饰' }
-    ],
-    speechNotes: {
-      hook: '在技术圈里，经常有人自豪地说：“看！我用算法让这幅画动起来了！”但我们想反问一句：动起来之后呢？',
-      talkingPoints: [
-        '如果仅仅是让画面里的云飘一下、水流一下，那只是一种机械的动画，称不上艺术的进化。',
-        '我们所追求的，是“作者、观众与技术之间的新关系”：',
-        '1. 艺术家不是最后来给界面涂脂抹粉的美工，而是从第一行代码编写前，就共同定义交互逻辑；',
-        '2. 什么样的操作会引发画面的色彩晕染？观众的驻留时间如何改变声音的频响？',
-        '3. 这些交互规则必须具有诗学逻辑，让科技成为艺术表达的天然延伸。'
-      ],
-      presenterTip: '强调核心思辨“超越动起来”，把讨论从纯功能层面升华到当代艺术与哲学层面。'
-    },
-    estimatedDuration: '2 分钟'
-  },
-  {
-    id: 'slide-09',
-    chapterRefId: 'lingnan-collaboration',
-    category: '新篇章 · 社区愿景',
-    title: '面向 AI 创业者的开放社区',
-    subtitle: '连接创业者、独立开发者、设计师、艺术家与社会研究者',
-    type: 'comparison',
-    keyQuote: '“我们希望形成的，不只是一个分享工具的社群，而是一个交流真实问题、并在持续交往中产生新想法的社区。”',
-    bulletPoints: [
-      { label: '跨界人群聚合', desc: '连接 AI 创业者、独立开发者、艺术家、高校师生与前沿研究者' },
-      { label: '真实问题研讨', desc: '创业是连接点，深度探讨产品探索、技术痛点与社会文化影响' },
-      { label: '从本土走向国际', desc: '以大湾区为支点，逐步拓展至全国乃至全球创新者的精神聚落' }
-    ],
-    speechNotes: {
-      hook: '经历过游戏技术美术与消费电子的实战，今天，我们正在开启一个全新的宏大命题：构建一个面向全球 AI 创业者的开放社区。',
-      talkingPoints: [
-        '当下很多社群，往往沦为发布广告、刷工具测评的快餐信息群。我们希望打造的，是一个有思想深度、有真实交互的创新策源地。',
-        '在这里，AI 创业者带来一手的产品痛点，独立开发者带来极客的算法实现，设计师与艺术家赋予其人文温度，而社会学者则审视其伦理边界。',
-        '我们不只探讨“怎么把产品做出来”，更深入探讨“为什么创造、为谁创造，以及技术将带给人类怎样的生活”。'
-      ],
-      presenterTip: '展开社区的宏大蓝图，表明团队不仅有技术、有艺术，更有凝聚跨领域生态的组织视野。'
-    },
-    estimatedDuration: '1.5 分钟'
-  },
-  {
-    id: 'slide-10',
-    chapterRefId: 'lingnan-collaboration',
-    category: '战略共鸣 · 为什么是岭南',
-    title: '战略交集：致敬岭南大学艺术科技与商业项目',
-    subtitle: '当“跨领域培养人才”遇见“跨领域探索的实践者”',
-    type: 'manifesto',
-    keyQuote: '“贵项目关注如何培养能够跨越不同领域的人；我们希望连接正在不同领域中探索和实践的人。”',
-    bulletPoints: [
-      { label: '学科框架契合', desc: '岭南 MSc in Arts Technology and Business 融汇艺术、科技与商业' },
-      { label: '全人博雅使命', desc: '高度契合岭南商学院全人发展、创业精神、批判性思维与国际视野' },
-      { label: '天然共鸣双向奔赴', desc: '高校的人文反思反哺创业实践，一线的行业探索赋能学术教学' }
-    ],
-    speechNotes: {
-      hook: '当我们把目光投向香港、投向大湾区时，岭南大学的“艺术科技与商业理学硕士”项目令我们无比振奋。',
-      talkingPoints: [
-        '贵项目极具前瞻性地将“艺术（Art）、科技（Technology）与商业（Business）”放在同一个育人框架内，致力于培养未来的艺术管理者与商业领导者。',
-        '这与我们社区的追求产生了惊人的天然契合：贵项目致力于“培养能够跨越不同领域的人”，而我们正在“连接正在不同领域摸爬滚打的实践者”。',
-        '这种合作不是单向的企业灌输，而是一场双向奔赴：创业者可以从岭南深厚的人文底蕴中获得反思力量，而岭南师生也能从真实的创业浪潮中获得一手养分。'
-      ],
-      presenterTip: '表达对岭南大学学术视野的由衷赞赏，语气真诚，精准点出双方天然的战略互补性。'
-    },
-    estimatedDuration: '2 分钟'
-  },
-  {
-    id: 'slide-11',
-    chapterRefId: 'lingnan-collaboration',
-    category: '合作愿景 · 三重视角',
-    title: '三重视角下的共赢图景',
-    subtitle: '为学生赋能、为教师与项目拓宽网络、为社区注入深度学术滋养',
-    type: 'diagram',
-    diagramType: 'collaboration-synergy',
-    keyQuote: '“我们期待的不只是‘让更多人来到岭南’，而是让值得交流的人带着真实经验来到这里，与师生产生相互启发的联系。”',
-    bulletPoints: [
-      { label: '对在校学生', desc: '接触真实创业与创作实战，理解职业选择与面对不确定性' },
-      { label: '对教师与项目', desc: '洞悉前沿行业变迁，发掘前瞻研究议题，拓宽外部产业网络' },
-      { label: '对社区创新者', desc: '进入认真讨论文化与社会价值的学术殿堂，获得深度反馈' }
-    ],
-    speechNotes: {
-      hook: '如果我们有幸与岭南大学携手，它究竟能为三方带来怎样实实在在的价值？',
-      talkingPoints: [
-        '第一，对学生：大学最宝贵的是给学生提供看清未来的窗口。通过社区，学生能在课堂上直接面对正在经历创业阵痛的创始人、直面技术不确定性的开发者，提前建立从容应对现实世界的商业韧性；',
-        '第二，对教师与项目：社区汇聚来自全国乃至全球的最新案例与技术痛点，能成为教学研究的活水源头，助力打造标杆性科研课题与案例库；',
-        '第三，对社区成员：创业者平时常被困在“流量”与“融资”的焦虑中，来到岭南，能让大家在深厚的人文艺术氛围中慢下来，认真审视创新的长期社会价值。'
-      ],
-      presenterTip: '清晰拆解三重视角，论据扎实，体现方案不仅有利他之心，更有清晰的落地逻辑。'
-    },
-    estimatedDuration: '2 分钟'
-  },
-  {
-    id: 'slide-12',
-    chapterRefId: 'lingnan-collaboration',
-    category: '行动展望 · 携手起步',
-    title: '从相互了解开始：让值得持续的关系自然生长',
-    subtitle: '不预设僵化方案，以共同的教育价值与学术情怀为基石',
-    type: 'conclusion',
-    keyQuote: '“我们期待的不是以一份预设方案要求学校配合，而是从共同的兴趣与教育价值出发，逐步建立值得持续的关系。”',
-    bulletPoints: [
-      { label: '初步交流对接', desc: '深入沟通贵方教学关切、人才培养重点及外部合作期待' },
-      { label: '资源共享探索', desc: '开放团队图形实践、案例沉淀与社区网络，作为共建基础' },
-      { label: '共创未来生态', desc: '围绕 AI 与艺术科技共设讲座、工作坊或联合课题，静候自然生长' }
-    ],
-    speechNotes: {
-      hook: '今天我们来到这里，不是带着一份冰冷、固化的商务方案要求校方签署，而是带着最大的诚意，递交一份开放的对话邀请。',
-      talkingPoints: [
-        '我们深知，最好的校企合作绝不是生硬的挂牌或走过场，而是基于双方对未来教育的共同信念。',
-        '我们现阶段最渴望的，是能与项目各位负责老师进行一次深入的面对面座谈，倾听贵项目本学年最关心的教学重点与学生需求。',
-        '我们愿意把过去积累的全部技术美术经验、大屏交互案例，以及正在日夜构建的 AI 创业者社区完全敞开。让我们从一次讲座、一场工作坊或一个共同关心的议题开始，共同探索 AI 时代艺术、商业与科技的崭新未来！',
-        '再次感谢各位老师的倾听，期待与岭南大学的美好相遇！'
-      ],
-      presenterTip: '收尾铿锵有力、温暖从容，以诚恳的合作姿态结束演讲，留出互动问答（Q&A）环节。'
-    },
-    estimatedDuration: '1.5 分钟'
-  }
-];
+  };
+});

@@ -5,7 +5,7 @@ AI SaaS、大模型榜单、Agent 产品和构建平台的中文调研文档。�
 ## 数据入口
 
 - `content/data/research-meta.json`：研究库日期、口径、政策说明与待核验项。
-- `content/data/products.json`：AI SaaS、Agent、API 与基础设施产品。
+- `content/data/products/*.json`：按主领域拆分的 AI SaaS、Agent、API 与基础设施事实；每个产品只存在于一个文件，多分类通过 `categories` 字段表达。
 - `content/data/benchmarks.json`：模型与 Agent 基准快照。
 - `content/data/model-api-prices.json`：模型 API 价格。
 - `content/data/sources.json`：来源目录与核验状态。

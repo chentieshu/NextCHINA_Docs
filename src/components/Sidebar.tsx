@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { DocChapter, DocSpace } from '../types';
 import { 
   Search, 
@@ -12,6 +12,7 @@ import {
   X,
   ChevronsUpDown as SpaceChevron
 } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 
 interface SidebarProps {
   chapters: DocChapter[];
@@ -25,6 +26,7 @@ interface SidebarProps {
   spaces: DocSpace[];
   activeSpaceId: string;
   onSelectSpace: (id: string) => void;
+  isDesktop: boolean;
 }
 
 
@@ -39,8 +41,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isLight = false,
   spaces,
   activeSpaceId,
-  onSelectSpace
+  onSelectSpace,
+  isDesktop
 }) => {
+  const reduceMotion = useReducedMotion();
 
   // Group chapters by category (Parent Folders)
   const categories = useMemo(() => {
@@ -63,6 +67,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
     return initial;
   });
 
+
+  useEffect(() => {
+    setExpandedFolders(prev => {
+      const next = { ...prev };
+      categories.forEach(([key]) => {
+        if (!(key in next)) next[key] = true;
+      });
+      return next;
+    });
+  }, [categories]);
 
   const toggleFolder = (catKey: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -89,27 +103,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      {/* Mobile Backdrop */}
-      {isOpenMobile && (
-        <div 
-          onClick={onCloseMobile}
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden transition-opacity"
-        />
-      )}
+      <AnimatePresence>
+        {!isDesktop && isOpenMobile && (
+          <motion.button
+            type="button"
+            aria-label="关闭侧边栏"
+            onClick={onCloseMobile}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={reduceMotion ? { duration: 0 } : { duration: 0.18 }}
+            className="fixed inset-0 z-40 bg-black/35 backdrop-blur-[2px] lg:hidden"
+          />
+        )}
+      </AnimatePresence>
 
-      {/* VS Code Style Hierarchical Tree Sidebar */}
-      <aside 
+      {/* Animated document tree sidebar */}
+      <motion.aside 
         id="vscode-style-sidebar"
+        initial={false}
+        animate={{ x: (isDesktop ? isSidebarOpen : isOpenMobile) ? 0 : -320, opacity: (isDesktop ? isSidebarOpen : isOpenMobile) ? 1 : 0.98 }}
+        transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 360, damping: 38, mass: 0.8 }}
+        style={{ pointerEvents: (isDesktop ? isSidebarOpen : isOpenMobile) ? 'auto' : 'none' }}
         className={`
-          fixed bottom-0 left-0 w-72 md:w-80 flex flex-col transition-all duration-300 ease-in-out font-sans select-none
-          ${isOpenMobile 
-            ? 'top-0 z-50 translate-x-0 opacity-100 shadow-2xl h-full' 
-            : `lg:top-11 z-30 lg:h-[calc(100vh-44px)] ${
-                isSidebarOpen 
-                  ? 'lg:translate-x-0 -translate-x-full lg:opacity-100' 
-                  : '-translate-x-full opacity-0 pointer-events-none'
-              }`
-          }
+          fixed bottom-0 left-0 w-72 md:w-80 flex flex-col font-sans select-none
+          ${isOpenMobile ? 'top-0 z-50 shadow-2xl h-full' : 'lg:top-11 z-30 lg:h-[calc(100vh-44px)] top-0 h-full'}
           ${isLight 
             ? 'bg-[#fafafc] text-[#2c2c30]' 
             : 'bg-[#151518] text-[#cfcfd5]'}
@@ -248,8 +266,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </div>
 
                 {/* Level 1: Child Files (Chapters) */}
-                {isFolderOpen && (
-                  <div className="relative pl-3.5 space-y-0.5 mt-0.5">
+                <AnimatePresence initial={false}>
+                  {isFolderOpen && (
+                  <motion.div
+                    key={catKey + '-children'}
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 38 }}
+                    className="relative pl-3.5 space-y-0.5 mt-0.5 overflow-hidden"
+                  >
                     {/* Indentation Tree Line */}
                     <div className={`absolute left-4 top-1 bottom-1 w-[1px] ${
                       isLight ? 'bg-[#e8e8ed]' : 'bg-[#242429]'
@@ -302,13 +328,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         </div>
                       );
                     })}
-                  </div>
+                  </motion.div>
                 )}
+                </AnimatePresence>
               </div>
             );
           })}
         </div>
-      </aside>
+      </motion.aside>
     </>
   );
 };

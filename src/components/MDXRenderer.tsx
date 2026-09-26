@@ -7,16 +7,15 @@ import { HumanTechEmpathyWidget } from './interactive/HumanTechEmpathyWidget';
 import { FutureTechRadarWidget } from './interactive/FutureTechRadarWidget';
 import { MicrocosmVisualizerWidget } from './interactive/MicrocosmVisualizerWidget';
 import { MicroNarrativeCommercialWidget } from './interactive/MicroNarrativeCommercialWidget';
-import { ReadingPreferences } from '../types';
 import { getReactNodeText, slugifyHeading } from '../utils/slugify';
 import { Quote, Copy, Check } from 'lucide-react';
 
 interface MDXRendererProps {
   content: string;
-  preferences: ReadingPreferences;
+  isLight: boolean;
 }
 
-export const MDXRenderer: React.FC<MDXRendererProps> = ({ content, preferences }) => {
+export const MDXRenderer: React.FC<MDXRendererProps> = ({ content, isLight }) => {
   const [copiedCode, setCopiedCode] = React.useState<string | null>(null);
 
   const handleCopy = (text: string) => {
@@ -24,18 +23,6 @@ export const MDXRenderer: React.FC<MDXRendererProps> = ({ content, preferences }
     setCopiedCode(text);
     setTimeout(() => setCopiedCode(null), 2000);
   };
-
-  const isLight = preferences.themeScheme === 'light';
-
-  // Font size classes
-  const fontSizes = {
-    sm: 'text-sm leading-relaxed',
-    base: 'text-base leading-relaxed',
-    lg: 'text-lg leading-relaxed',
-    xl: 'text-xl leading-loose'
-  };
-
-  const fontFamilyClass = preferences.fontFamily === 'serif' ? 'font-serif-sc' : 'font-sans';
 
   // Process custom widget markers
   const renderWidgets = (rawText: string) => {
@@ -99,7 +86,7 @@ export const MDXRenderer: React.FC<MDXRendererProps> = ({ content, preferences }
                     </h4>
                   ),
                   p: ({ children }) => (
-                    <p className={`my-4 font-normal ${fontSizes[preferences.fontSize]} ${
+                    <p className={`my-4 font-normal ${
                       isLight ? 'text-[#38383e]' : 'text-[#b8b8c2]'
                     }`}>
                       {children}
@@ -241,7 +228,7 @@ export const MDXRenderer: React.FC<MDXRendererProps> = ({ content, preferences }
   };
 
   return (
-    <article className={`${fontFamilyClass} prose-neutral transition-colors`}>
+    <article className="font-sans prose-neutral transition-colors">
       {renderWidgets(content)}
     </article>
   );

@@ -1,0 +1,202 @@
+{
+  "products": [
+    {
+      "id": "elevenlabs",
+      "name": "ElevenLabs",
+      "aliases": [],
+      "categories": [
+        "audio",
+        "music"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "ElevenLabs speech / music"
+      ],
+      "features": [
+        "语音生成与转写",
+        "配音、声音设计与音乐"
+      ],
+      "selection": "需要配音与多语言音频工作流",
+      "caution": "声音克隆需授权；不同能力共用额度。",
+      "plans": [
+        {
+          "name": "Starter",
+          "amount": 6,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "30,000 credits/月"
+        },
+        {
+          "name": "Creator",
+          "amount": 22,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "121,000 credits/月"
+        },
+        {
+          "name": "Pro",
+          "amount": 99,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "600,000 credits/月"
+        }
+      ],
+      "priceNote": "常规月付价；不采用 Creator 首月优惠。",
+      "verification": "verified",
+      "sourceIds": [
+        "elevenlabs"
+      ]
+    },
+    {
+      "id": "suno",
+      "name": "Suno",
+      "aliases": [],
+      "categories": [
+        "music"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "v5.5"
+      ],
+      "features": [
+        "歌曲生成与编辑",
+        "人声、Persona 与分轨工作流"
+      ],
+      "selection": "需要从提示词制作完整歌曲草案",
+      "caution": "免费与付费生成内容权利不同；商用不等于保证著作权登记。",
+      "plans": [
+        {
+          "name": "Pro",
+          "amount": 96,
+          "currency": "USD",
+          "billing": "annual",
+          "quota": "2,500 credits/月"
+        },
+        {
+          "name": "Premier",
+          "amount": 288,
+          "currency": "USD",
+          "billing": "annual",
+          "quota": ""
+        }
+      ],
+      "priceNote": "按年支付；折算分别为 $8/月、$24/月，不是独立月付报价。",
+      "verification": "verified",
+      "sourceIds": [
+        "suno"
+      ]
+    },
+    {
+      "id": "lyria",
+      "name": "Google Lyria",
+      "aliases": [],
+      "categories": [
+        "music"
+      ],
+      "kind": "model-service",
+      "originCountry": null,
+      "models": [
+        "Lyria 3"
+      ],
+      "features": [
+        "伴奏、人声与歌词生成"
+      ],
+      "selection": "希望在 Gemini 生态制作音乐",
+      "caution": "这是模型/应用能力，不虚构为独立月费 SaaS。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "verified",
+      "sourceIds": [
+        "google"
+      ]
+    },
+    {
+      "id": "aiva",
+      "name": "AIVA",
+      "aliases": [],
+      "categories": [
+        "music"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "AIVA"
+      ],
+      "features": [
+        "音乐生成",
+        "音频或 MIDI 参考、轨道编辑"
+      ],
+      "selection": "需要作曲、MIDI 与可编辑轨道",
+      "caution": "Standard 与 Pro 变现范围不同；另加 VAT。",
+      "plans": [
+        {
+          "name": "Standard",
+          "amount": 132,
+          "currency": "EUR",
+          "billing": "annual",
+          "quota": "15 downloads/月"
+        },
+        {
+          "name": "Pro",
+          "amount": 396,
+          "currency": "EUR",
+          "billing": "annual",
+          "quota": "300 downloads/月"
+        }
+      ],
+      "priceNote": "年付，分别折算 €11/月、€33/月，未含 VAT。",
+      "verification": "verified",
+      "sourceIds": [
+        "aiva"
+      ]
+    },
+    {
+      "id": "soundraw",
+      "name": "SOUNDRAW",
+      "aliases": [],
+      "categories": [
+        "music"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "SOUNDRAW"
+      ],
+      "features": [
+        "AI 音乐创作"
+      ],
+      "selection": "需要可调整的内容配乐流程",
+      "caution": "曲目分发与商业授权必须按购买计划核实。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "verified",
+      "sourceIds": [
+        "soundraw"
+      ]
+    },
+    {
+      "id": "minimax-music",
+      "name": "MiniMax Music",
+      "aliases": [],
+      "categories": [
+        "music"
+      ],
+      "kind": "api",
+      "originCountry": null,
+      "models": [],
+      "features": [
+        "音乐方向条目，详情待补核"
+      ],
+      "selection": "保留既有音乐 API 比较范围",
+      "caution": "未确认当前模型和 API 计费，不使用旧价。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "partial",
+      "sourceIds": [
+        "minimax"
+      ]
+    }
+  ]
+}

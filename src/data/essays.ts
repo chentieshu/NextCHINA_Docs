@@ -1,12 +1,10 @@
 import type { DocChapter } from '../types';
 
-type Brief = { label: string; desc: string };
-
 function stripFrontmatter(raw: string): string {
   return raw.replace(/^---\n[\s\S]*?\n---\n/, '').trim();
 }
 
-const premiumVideoMdx = `---
+const premiumVideoMarkdown = `---
 title: 苹果风格高端产品视频制作框架
 slug: apple-style-premium-product-video
 ---
@@ -108,7 +106,7 @@ slug: apple-style-premium-product-video
 - 说明：本文为中文结构化汇总，供 NextCHINA 文档库阅读，不替代原文。
 `;
 
-const premiumVideoContent = stripFrontmatter(premiumVideoMdx);
+const premiumVideoContent = stripFrontmatter(premiumVideoMarkdown);
 
 const premiumVideoChapter: DocChapter = {
   id: 'apple-style-premium-product-video',
@@ -126,10 +124,3 @@ const premiumVideoChapter: DocChapter = {
 
 export const ESSAY_CHAPTERS: DocChapter[] = [premiumVideoChapter];
 
-export const ESSAY_BRIEFS: Record<string, Brief[]> = {
-  'apple-style-premium-product-video': [
-    { label: '核心原则', desc: '用规则约束选择，让每一次视觉与声音决定都有意图' },
-    { label: '制作顺序', desc: '先定品牌与设计，再做动画、配乐和音效' },
-    { label: '来源', desc: '整理自 leo / @leomeethewoo 的产品视频方法论' }
-  ]
-};

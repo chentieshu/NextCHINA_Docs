@@ -12,7 +12,18 @@ export interface DocChapter {
   content: string;
 }
 
+export interface DocSpace {
+  id: string;
+  name: string;
+  shortName: string;
+  description: string;
+  chapterIds: string[];
+}
 
+export type DocView =
+  | { kind: 'home' }
+  | { kind: 'space'; spaceId: string }
+  | { kind: 'article'; spaceId: string; chapterId: string };
 
 export interface SearchResult {
   chapterId: string;

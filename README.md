@@ -1,6 +1,6 @@
 # NextCHINA · AI 到哪了？
 
-AI SaaS、大模型榜单、Agent 产品和构建平台的中文调研文档。现有 React 阅读、搜索与目录界面由统一 JSON 数据驱动。
+AI SaaS、大模型榜单、Agent 产品和构建平台的中文调研文档。现有 React 阅读、搜索与目录界面由统一 JSON 数据驱动；正文统一使用标准 Markdown + GitHub Flavored Markdown (GFM) 渲染，不使用 MDX。
 
 ## 数据入口
 
@@ -32,4 +32,4 @@ npm run build
 
 数据校验可不安装依赖直接运行 `node scripts/validate-research.mjs`；类型检查和 Vite 构建需要安装项目依赖。数据测试不能代替完整应用构建或浏览器验收。
 
-旧艺术科技交互组件属于保留的 UI 组件库，本次活动章节不再引用这些组件的数据或旧主题。恢复之前内容应通过 Git 历史回滚，不在活动数据里并列保留另一套过期文档。
+内容层禁止 React/JSX、MDX 和私有 Widget 标记。需要交互能力时应在应用 UI 层实现，不嵌入 Markdown 正文。恢复历史内容应通过 Git 历史回滚。

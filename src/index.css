@@ -275,3 +275,8 @@ html {
   vertical-align: -0.2rem;
   object-fit: contain;
 }
+
+.markdown-dark td img,
+.markdown-dark th img {
+  filter: invert(1);
+}

@@ -1,7 +1,7 @@
 import research from './ai-research.json';
 import type { DocChapter } from '../types';
 
-// JSON is the single source of truth for reading, navigation, search and slides.
+// JSON is the single source of truth for reading, navigation and search.
 type Brief = { label: string; desc: string };
 type Section = DocChapter & { brief: Brief[] };
 const sourceMap = new Map(research.sources.map(source => [source.id, source]));
@@ -203,11 +203,11 @@ ${table(['项目', '说明'], research.pendingItems.map(item => [item.name, item
 
 ## 如何更新
 
-只编辑 src/data/ai-research.json。正文、导航、搜索和演示摘要从该文件派生，不分别维护多份数值。每次修改保留来源、日期、币种、计价周期与基准版本；来源无法核实就保留缺失标记。运行 npm run test:data 检查数据，再运行 npm run lint 与 npm run build 检查应用。
+只编辑 src/data/ai-research.json。正文、导航和搜索从该文件派生，不分别维护多份数值。每次修改保留来源、日期、币种、计价周期与基准版本；来源无法核实就保留缺失标记。运行 npm run test:data 检查数据，再运行 npm run lint 与 npm run build 检查应用。
 `, [
   { label: '来源', desc: `${research.sources.length} 个官方/基准机构入口，状态逐一记录` },
   { label: '缺口', desc: '未读到动态页面时不补猜测价格；国家字段未逐项核验' },
-  { label: '维护', desc: '一个 JSON 数据源，正文与演示同步派生' }
+  { label: '维护', desc: '一个 JSON 数据源，正文、导航与搜索同步派生' }
 ], ['来源', '核验', '缺失', '更新', '价格']));
 
 export const DOC_CHAPTERS: DocChapter[] = sections.map(({ brief: _brief, ...chapter }) => chapter);

@@ -2,17 +2,17 @@
 
 ## 1. 世界模型学什么？
 
-状态 \(s_t\)、行动 \(a_t\) 下：
+状态 $s_t$、行动 $a_t$ 下：
 
-\[
+$$
 p(s_{t+1}|s_t,a_t)
-\]
+$$
 
 如果还预测 observation 与 reward：
 
-\[
+$$
 p(o_{t+1},r_{t+1},s_{t+1}|s_t,a_t)
-\]
+$$
 
 它允许 Agent 在真正行动之前预测未来。
 
@@ -22,15 +22,15 @@ p(o_{t+1},r_{t+1},s_{t+1}|s_t,a_t)
 
 先编码：
 
-\[
+$$
 z_t=E(o_t)
-\]
+$$
 
 再学习 dynamics：
 
-\[
+$$
 z_{t+1}=F(z_t,a_t)
-\]
+$$
 
 这样规划可以在更紧凑的 latent space 中进行。
 
@@ -52,15 +52,15 @@ Environment → Observation → Encoder → Latent State
 
 视频模型可能学习：
 
-\[
+$$
 p(video|prompt)
-\]
+$$
 
 World Model 更强调：
 
-\[
+$$
 p(future|state,action)
-\]
+$$
 
 也就是 action-conditioned dynamics。
 

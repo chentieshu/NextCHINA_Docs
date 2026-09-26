@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { getReactNodeText, slugifyHeading } from '../utils/slugify';
+import { createMarkdownSlugger, getReactNodeText } from '../utils/slugify';
 import { Copy, Check } from 'lucide-react';
 
 interface MarkdownRendererProps {
@@ -11,13 +11,8 @@ interface MarkdownRendererProps {
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, isLight }) => {
   const [copiedCode, setCopiedCode] = React.useState<string | null>(null);
-  const headingOccurrences = new Map<string, number>();
-  const headingId = (text: string) => {
-    const base = slugifyHeading(text) || 'section';
-    const occurrence = headingOccurrences.get(base) ?? 0;
-    headingOccurrences.set(base, occurrence + 1);
-    return occurrence === 0 ? base : `${base}-${occurrence + 1}`;
-  };
+  const headingSlugger = createMarkdownSlugger();
+  const headingId = (text: string) => headingSlugger.slug(text);
 
   const handleCopy = async (text: string) => {
     await navigator.clipboard?.writeText(text);

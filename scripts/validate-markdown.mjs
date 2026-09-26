@@ -6,6 +6,10 @@ const docs = readFileSync(new URL('../src/data/docs.ts', import.meta.url), 'utf8
 const renderer = readFileSync(new URL('../src/components/MarkdownRenderer.tsx', import.meta.url), 'utf8');
 const slug = readFileSync(new URL('../src/utils/slugify.ts', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8');
+const spaces = readFileSync(new URL('../src/data/spaces.ts', import.meta.url), 'utf8');
+
+assert.ok(spaces.includes('DOC_SPACES'), 'Missing documentation space registry');
+for (const spaceId of ['models', 'products', 'agents', 'research', 'craft']) assert.ok(spaces.includes(`id: '${spaceId}'`), `Missing space ${spaceId}`);
 
 for (const forbidden of ['MDXRenderer', '[WIDGET:', 'interactiveWidgetId']) {
   assert.ok(!essays.includes(forbidden), `essays contains legacy ${forbidden}`);

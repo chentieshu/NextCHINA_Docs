@@ -5,7 +5,9 @@ const readJson = path => JSON.parse(readFileSync(new URL(path, import.meta.url),
 const meta = readJson('../content/data/research-meta.json');
 const categories = readJson('../content/data/categories.json');
 const sources = readJson('../content/data/sources.json');
-const products = readJson('../content/data/products.json');
+const productFiles = ['audio', 'video', 'image', '3d', 'music', 'assistants', 'platforms', 'agents'];
+const productGroups = productFiles.map(name => readJson(`../content/data/products/${name}.json`).products);
+const products = { products: productGroups.flat() };
 const benchmarks = readJson('../content/data/benchmarks.json');
 const apiPrices = readJson('../content/data/model-api-prices.json');
 const data = {
@@ -30,6 +32,9 @@ for (const key of ['products', 'sources', 'categories', 'benchmarks', 'modelApiP
   uniqueIds(data[key], key);
 }
 const sourceIds = new Set(data.sources.map(source => source.id));
+assert.equal(data.products.length, 50, 'Unexpected product count after domain split');
+const productIds = data.products.map(product => product.id);
+assert.equal(new Set(productIds).size, productIds.length, 'Product facts must exist in exactly one domain file');
 const categoryIds = new Set(data.categories.map(category => category.id));
 const requireSource = id => assert.ok(sourceIds.has(id), `Unknown source: ${id}`);
 const kinds = new Set(['saas', 'agent', 'api', 'framework', 'model-service']);

@@ -158,6 +158,7 @@ html {
   font: 0.7rem/1.2 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 .md-codebar button { display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; }
+.md-plain-pre,
 .md-codeblock pre {
   margin: 0;
   padding: 1rem;
@@ -167,6 +168,7 @@ html {
   font: 0.78rem/1.65 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   tab-size: 2;
 }
+.md-plain-pre { margin: 1.25rem 0; border-radius: 0.875rem; }
 .md-codeblock pre code { white-space: pre; overflow-wrap: normal; word-break: normal; }
 
 .md-table-scroll {

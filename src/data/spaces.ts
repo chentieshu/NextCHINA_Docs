@@ -1,50 +1,13 @@
 import type { DocChapter, DocSpace } from '../types';
+import registry from '../../content/spaces.json';
 
-export const DOC_SPACES: DocSpace[] = [
-  {
-    id: 'models',
-    name: 'Models',
-    shortName: 'M',
-    description: 'LLM、VLM、模型能力、基准、价格与模型运行原理。',
-    chapterIds: ['llm-how-it-works', 'vlm-how-it-works', 'arena-text', 'aa-intelligence', 'model-api-prices']
-  },
-  {
-    id: 'products',
-    name: 'AI Products',
-    shortName: 'P',
-    description: 'Video、Image、Audio、3D、Music、Code 等 AI SaaS 与基础设施。',
-    chapterIds: ['catalog-audio', 'catalog-video', 'catalog-image', 'catalog-3d', 'catalog-music', 'catalog-code', 'catalog-platform', 'catalog-text']
-  },
-  {
-    id: 'agents',
-    name: 'Agents',
-    shortName: 'A',
-    description: 'Agent 产品、构建平台、终端任务基准与选型方法。',
-    chapterIds: ['terminal-bench', 'agent-products']
-  },
-  {
-    id: 'research',
-    name: 'Research',
-    shortName: 'R',
-    description: '阅读方法、来源、核验规则与持续更新记录。',
-    chapterIds: ['overview', 'sources-and-gaps']
-  },
-  {
-    id: 'craft',
-    name: 'Craft',
-    shortName: 'C',
-    description: 'AI 时代的产品表达、视觉、Motion 与创作方法。',
-    chapterIds: ['apple-style-premium-product-video']
-  }
-];
+export const DOC_SPACES: DocSpace[] = registry.spaces;
 
 export function chaptersForSpace(spaceId: string, chapters: DocChapter[]) {
   const space = DOC_SPACES.find(item => item.id === spaceId);
   if (!space) return [];
   const order = new Map(space.chapterIds.map((id, index) => [id, index]));
-  return chapters
-    .filter(chapter => order.has(chapter.id))
-    .sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+  return chapters.filter(chapter => order.has(chapter.id)).sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
 }
 
 export function spaceForChapter(chapterId: string) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { DocChapter } from '../types';
 import { PanelLeft, Sun, Moon, ChevronRight, Search } from 'lucide-react';
-import { motion, useReducedMotion } from 'motion/react';
+
 
 interface DocHeaderProps {
   currentChapter: DocChapter;
@@ -13,8 +13,6 @@ interface DocHeaderProps {
   onOpenSearch?: () => void;
   totalChapters?: number;
   currentIndex?: number;
-  isMobileMenuOpen?: boolean;
-  isDesktop?: boolean;
 }
 
 export const DocHeader: React.FC<DocHeaderProps> = ({
@@ -24,17 +22,11 @@ export const DocHeader: React.FC<DocHeaderProps> = ({
   isSidebarOpen,
   onToggleSidebar,
   onOpenMobileMenu,
-  onOpenSearch,
-  isMobileMenuOpen = false,
-  isDesktop = true
+  onOpenSearch
 }) => {
-  const reduceMotion = useReducedMotion();
   return (
-  <motion.header
+  <header
     id="apple-style-navbar"
-    initial={false}
-    animate={{ x: !isDesktop && isMobileMenuOpen ? 288 : 0 }}
-    transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 360, damping: 38, mass: 0.8 }}
     className={`fixed top-0 left-0 right-0 z-40 h-11 backdrop-blur-xl pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] sm:px-5 flex items-center justify-between transition-colors ${
       isLight ? 'bg-white/85 text-[#2c2c30]' : 'bg-[#18181b]/85 text-[#d0d0d6]'
     }`}
@@ -96,6 +88,6 @@ export const DocHeader: React.FC<DocHeaderProps> = ({
         {isLight ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
       </button>
     </div>
-  </motion.header>
+  </header>
   );
 };

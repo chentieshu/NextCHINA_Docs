@@ -1,4 +1,4 @@
-import research from './ai-research.json';
+import research from '../../content/data/ai-research.json';
 import type { DocChapter } from '../types';
 
 // JSON is the single source of truth for reading, navigation and search.

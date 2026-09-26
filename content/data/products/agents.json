@@ -1,0 +1,327 @@
+{
+  "products": [
+    {
+      "id": "cursor",
+      "name": "Cursor",
+      "aliases": [],
+      "categories": [
+        "code",
+        "agent"
+      ],
+      "kind": "agent",
+      "originCountry": null,
+      "models": [
+        "Composer",
+        "Grok",
+        "可选前沿模型"
+      ],
+      "features": [
+        "IDE Agent",
+        "云 Agent、MCP、Skills 与 Hooks"
+      ],
+      "selection": "需要边看代码边与 Agent 迭代",
+      "caution": "Agent 额度和 Bugbot 用量计费不同，不等于无限模型使用。",
+      "plans": [
+        {
+          "name": "Pro",
+          "amount": 20,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": ""
+        }
+      ],
+      "priceNote": "月付；更高档额度与团队计划未逐项录入。",
+      "verification": "verified",
+      "sourceIds": [
+        "cursor"
+      ]
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code",
+      "aliases": [],
+      "categories": [
+        "code",
+        "agent"
+      ],
+      "kind": "agent",
+      "originCountry": null,
+      "models": [
+        "Claude"
+      ],
+      "features": [
+        "代码库协作与工具执行"
+      ],
+      "selection": "终端/开发工作流中进行代码理解与修改",
+      "caution": "订阅、API 和第三方托管额度不可混用；执行前检查权限。",
+      "plans": [],
+      "priceNote": "本次未核实地区化 Claude 订阅金额；与 API 价分开。",
+      "verification": "verified",
+      "sourceIds": [
+        "claude-code",
+        "claude"
+      ]
+    },
+    {
+      "id": "codex",
+      "name": "Codex",
+      "aliases": [],
+      "categories": [
+        "code",
+        "agent"
+      ],
+      "kind": "agent",
+      "originCountry": null,
+      "models": [
+        "OpenAI 模型；依具体入口配置"
+      ],
+      "features": [
+        "编码 Agent 入口",
+        "代码任务协作"
+      ],
+      "selection": "需要围绕代码任务组织模型与工具工作",
+      "caution": "历史 Codex CLI 基准不代表当前所有入口；不推断当前默认模型。",
+      "plans": [],
+      "priceNote": "官方套餐页可见 Codex 使用额度分档，具体地区订阅价未读取。",
+      "verification": "verified",
+      "sourceIds": [
+        "codex",
+        "chatgpt"
+      ]
+    },
+    {
+      "id": "copilot",
+      "name": "GitHub Copilot",
+      "aliases": [],
+      "categories": [
+        "code",
+        "agent"
+      ],
+      "kind": "agent",
+      "originCountry": null,
+      "models": [
+        "可选多模型与第三方 Agent"
+      ],
+      "features": [
+        "代码补全、云 Agent 与审查",
+        "IDE 与 GitHub 集成"
+      ],
+      "selection": "已有 GitHub / IDE 团队流程",
+      "caution": "AI Credits 与订阅额是不同字段，模型选择会影响消耗。",
+      "plans": [
+        {
+          "name": "Pro",
+          "amount": 10,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "$15/月总 AI Credits"
+        },
+        {
+          "name": "Pro+",
+          "amount": 39,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "$70/月总 AI Credits"
+        },
+        {
+          "name": "Max",
+          "amount": 100,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "$200/月总 AI Credits"
+        }
+      ],
+      "priceNote": "每用户月付；额度金额不等于退款或现金余额。",
+      "verification": "verified",
+      "sourceIds": [
+        "copilot"
+      ]
+    },
+    {
+      "id": "devin",
+      "name": "Devin",
+      "aliases": [],
+      "categories": [
+        "code",
+        "agent"
+      ],
+      "kind": "agent",
+      "originCountry": null,
+      "models": [
+        "SWE 1.7",
+        "OpenAI / Claude / Gemini"
+      ],
+      "features": [
+        "桌面编码与云 Agent",
+        "团队与代码库集成"
+      ],
+      "selection": "需要把开发任务交给云 Agent 并协作复核",
+      "caution": "额外用量另计；不沿用旧 Core / ACU 套餐。",
+      "plans": [
+        {
+          "name": "Pro",
+          "amount": 20,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": ""
+        },
+        {
+          "name": "Max",
+          "amount": 200,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": ""
+        }
+      ],
+      "priceNote": "个人月付；Teams 为 $80/月基础费 + 每个 full dev seat $40/月。",
+      "verification": "verified",
+      "sourceIds": [
+        "devin"
+      ]
+    },
+    {
+      "id": "lovable",
+      "name": "Lovable",
+      "aliases": [],
+      "categories": [
+        "code",
+        "agent"
+      ],
+      "kind": "agent",
+      "originCountry": null,
+      "models": [],
+      "features": [
+        "对话生成网站与 Web 应用",
+        "构建、托管和 AI 功能积分"
+      ],
+      "selection": "从需求建立可运行 Web 应用原型",
+      "caution": "构建、托管与用户端 AI 功能可共享积分余额，成本要合计。",
+      "plans": [],
+      "priceNote": "积分机制可核实，但动态套餐金额未完整读取。",
+      "verification": "verified",
+      "sourceIds": [
+        "lovable"
+      ]
+    },
+    {
+      "id": "v0",
+      "name": "v0",
+      "aliases": [],
+      "categories": [
+        "code",
+        "agent"
+      ],
+      "kind": "agent",
+      "originCountry": null,
+      "models": [
+        "v0 Mini",
+        "v0 Pro",
+        "v0 Max"
+      ],
+      "features": [
+        "应用生成与可视化编辑",
+        "GitHub 同步与 Vercel 部署"
+      ],
+      "selection": "需要把界面想法变为可继续开发的应用",
+      "caution": "订阅内额度不是无限推理，部署资源费用须独立确认。",
+      "plans": [
+        {
+          "name": "Plus",
+          "amount": 30,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "$30 月度额度/用户 + 登录日额度"
+        },
+        {
+          "name": "Business",
+          "amount": 100,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "$30 月度额度/用户"
+        }
+      ],
+      "priceNote": "每用户月付；Business 不意味着获得 $100 推理额度。",
+      "verification": "verified",
+      "sourceIds": [
+        "v0"
+      ]
+    },
+    {
+      "id": "manus",
+      "name": "Manus",
+      "aliases": [],
+      "categories": [
+        "agent"
+      ],
+      "kind": "agent",
+      "originCountry": null,
+      "models": [
+        "Manus 1.6 系列（帮助文章快照）"
+      ],
+      "features": [
+        "通用任务 Agent",
+        "任务并发与定时任务"
+      ],
+      "selection": "希望委派跨步骤任务并检查交付物",
+      "caution": "帮助页发布日期为 2026-03-16，不声明这些模型就是今日最新。",
+      "plans": [
+        {
+          "name": "Pro 起步",
+          "amount": 20,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": ""
+        }
+      ],
+      "priceNote": "官方帮助页起步月价；积分、试用与更高档计划以账号为准。",
+      "verification": "verified",
+      "sourceIds": [
+        "manus"
+      ]
+    },
+    {
+      "id": "perplexity",
+      "name": "Perplexity",
+      "aliases": [],
+      "categories": [
+        "agent"
+      ],
+      "kind": "agent",
+      "originCountry": null,
+      "models": [],
+      "features": [
+        "搜索研究方向条目，当前功能待补核"
+      ],
+      "selection": "保留既有研究助手比较范围",
+      "caution": "可引用答案不代表已核实事实；本次价格未完整读取。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "partial",
+      "sourceIds": [
+        "perplexity"
+      ]
+    },
+    {
+      "id": "genspark",
+      "name": "Genspark",
+      "aliases": [],
+      "categories": [
+        "agent"
+      ],
+      "kind": "agent",
+      "originCountry": null,
+      "models": [],
+      "features": [
+        "通用生产力 Agent 方向，详情待补核"
+      ],
+      "selection": "保留既有 Agent 平台比较范围",
+      "caution": "页面需要登录，不用第三方转述冒充当前价格。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "partial",
+      "sourceIds": [
+        "genspark"
+      ]
+    }
+  ]
+}

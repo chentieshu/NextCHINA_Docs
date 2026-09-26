@@ -82,7 +82,7 @@ export default function App() {
       isSidebarOpen={isSidebarOpen} onToggleSidebar={() => setIsSidebarOpen(value => !value)} isLight={isLight}
       spaceName={activeSpace.name} onSpaceHome={() => enterSpace(activeSpace.id)} />
 
-    <div className={`min-h-screen pt-11 transition-all duration-300 lg:pl-[22.5rem]`}>
+    <div className={`min-h-screen pt-11 transition-all duration-300 ${isSidebarOpen ? 'lg:pl-[22.5rem]' : 'lg:pl-14'}`}>
       {view.kind === 'space' ? <SpaceHome space={activeSpace} chapters={spaceChapters} isLight={isLight} onOpenArticle={openArticle} /> :
       activeChapter ? <main className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-6 sm:py-8 lg:py-10 flex justify-center">
         <div className="w-full min-w-0 max-w-[820px]">

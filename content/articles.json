@@ -49,19 +49,110 @@
       "space": "models",
       "category": "foundations",
       "categoryName": "AI 基础原理",
-      "title": "VLM 的本质：AI 究竟是如何“看懂”图片和视频的？",
-      "subtitle": "从 Pixels、Patch、Vision Encoder 到 Visual Token、跨模态对齐与多模态推理",
+      "title": "VLM 的本质：从像素、跨模态数学到视觉推理",
+      "subtitle": "从图像张量、Patch、CLIP 对比学习、Cross-Attention 到高分辨率、Grounding 与视频理解",
       "date": "2026-09-27",
       "tags": [
         "VLM",
-        "Multimodal",
-        "Vision Transformer",
+        "ViT",
         "CLIP",
+        "对比学习",
+        "Cross-Attention",
         "Visual Token",
-        "LLaVA",
-        "视频理解"
+        "Grounding",
+        "Multimodal"
       ],
-      "excerpt": "从像素到语言，一篇讲清视觉语言模型如何把视觉世界变成可以推理的表示。"
+      "excerpt": "从像素张量和视觉 token 出发，用数学理解图文对齐、跨模态计算、视觉推理和视频上下文。"
+    },
+    {
+      "id": "diffusion-dit",
+      "file": "content/models/generative/diffusion-dit.md",
+      "space": "models",
+      "category": "generative",
+      "categoryName": "生成模型",
+      "title": "Diffusion / DiT 的本质：AI 如何从噪声生成图像",
+      "subtitle": "从概率扩散、去噪目标、Latent Diffusion 到 DiT 与 Flow Matching",
+      "date": "2026-09-27",
+      "tags": [
+        "Diffusion",
+        "DiT",
+        "Flow Matching",
+        "Image Generation",
+        "Latent"
+      ],
+      "excerpt": "从加噪与去噪的数学开始，理解现代图像和视频生成模型。"
+    },
+    {
+      "id": "embedding-models",
+      "file": "content/models/embedding/embedding-models.md",
+      "space": "models",
+      "category": "representation",
+      "categoryName": "检索与表示模型",
+      "title": "Embedding Model 的本质：语义如何变成向量空间",
+      "subtitle": "从向量、Cosine Similarity、Contrastive Learning 到 RAG 与 Hybrid Search",
+      "date": "2026-09-27",
+      "tags": [
+        "Embedding",
+        "RAG",
+        "Vector Search",
+        "Contrastive Learning"
+      ],
+      "excerpt": "理解语义向量、相似度、召回、Reranker 与 LLM 之间的关系。"
+    },
+    {
+      "id": "audio-models",
+      "file": "content/models/audio/audio-models.md",
+      "space": "models",
+      "category": "audio-models",
+      "categoryName": "音频与语音模型",
+      "title": "Audio Model 的本质：AI 如何听、说与生成音乐",
+      "subtitle": "从 Waveform、STFT、ASR、TTS 到 Neural Codec 与原生语音模型",
+      "date": "2026-09-27",
+      "tags": [
+        "Audio",
+        "Speech",
+        "ASR",
+        "TTS",
+        "Codec",
+        "Music"
+      ],
+      "excerpt": "从数字波形到离散音频 token，理解语音识别、合成、音乐与实时对话。"
+    },
+    {
+      "id": "video-models",
+      "file": "content/models/video/video-models.md",
+      "space": "models",
+      "category": "generative",
+      "categoryName": "生成模型",
+      "title": "Video Model 的本质：AI 如何生成时间与运动",
+      "subtitle": "从时空 Token、Video Diffusion 到一致性、镜头运动与世界模拟",
+      "date": "2026-09-27",
+      "tags": [
+        "Video",
+        "Diffusion",
+        "Temporal",
+        "World Model",
+        "Generation"
+      ],
+      "excerpt": "理解视频为何不只是连续图片，以及时空一致性和物理变化为何困难。"
+    },
+    {
+      "id": "world-models",
+      "file": "content/models/world/world-models.md",
+      "space": "models",
+      "category": "world-models",
+      "categoryName": "世界模型",
+      "title": "World Model 的本质：AI 如何预测世界的下一状态",
+      "subtitle": "从 Latent State、Dynamics、Imagined Rollout 到 Planning 与 Agent",
+      "date": "2026-09-27",
+      "tags": [
+        "World Model",
+        "Dynamics",
+        "Planning",
+        "Agent",
+        "Latent State"
+      ],
+      "excerpt": "理解世界模型如何学习状态、行动和未来，以及它与视频生成和 Agent 的区别。"
     }
   ]
 }

@@ -44,12 +44,10 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({
         const h3Match = line.match(/^###\s+(.+)$/);
         if (h3Match) {
           const rawText = h3Match[1].trim();
-          if (!rawText.includes('WIDGET:')) {
-            const cleanText = rawText.replace(/[*_`>#~]/g, '').trim();
-            const id = slugifyHeading(cleanText);
-            if (cleanText && id) {
-              items.push({ id, text: cleanText, level: 3 });
-            }
+          const cleanText = rawText.replace(/[*_`>#~]/g, '').trim();
+          const id = slugifyHeading(cleanText);
+          if (cleanText && id) {
+            items.push({ id, text: cleanText, level: 3 });
           }
         }
       }

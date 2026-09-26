@@ -4,10 +4,15 @@
       "id": "models",
       "name": "Models",
       "shortName": "M",
-      "description": "LLM、VLM、模型能力、基准、价格与模型运行原理。",
+      "description": "LLM、VLM、生成模型、Embedding、Audio、Video、World Model、模型基准与价格。",
       "chapterIds": [
         "llm-how-it-works",
         "vlm-how-it-works",
+        "embedding-models",
+        "diffusion-dit",
+        "video-models",
+        "audio-models",
+        "world-models",
         "arena-text",
         "aa-intelligence",
         "model-api-prices"

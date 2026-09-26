@@ -4,7 +4,7 @@ import { ESSAY_CHAPTERS } from './data/essays';
 import { DocChapter } from './types';
 import { Sidebar } from './components/Sidebar';
 import { DocHeader } from './components/DocHeader';
-import { MDXRenderer } from './components/MDXRenderer';
+import { MarkdownRenderer } from './components/MarkdownRenderer';
 import { TableOfContents } from './components/TableOfContents';
 import { SearchModal } from './components/SearchModal';
 import { ArrowLeft, ArrowRight, Calendar } from 'lucide-react';
@@ -105,7 +105,7 @@ export default function App() {
               </p>
             </div>
 
-            <MDXRenderer content={activeChapter.content} isLight={isLight} />
+            <MarkdownRenderer content={activeChapter.content} isLight={isLight} />
 
             <div className="mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
               {prevChapter ? (

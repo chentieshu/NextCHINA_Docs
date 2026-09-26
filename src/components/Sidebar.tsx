@@ -122,11 +122,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <motion.aside 
         id="vscode-style-sidebar"
         initial={false}
-        animate={{ x: (isDesktop ? isSidebarOpen : isOpenMobile) ? 0 : -320, opacity: (isDesktop ? isSidebarOpen : isOpenMobile) ? 1 : 0.98 }}
+        animate={{ x: (isDesktop ? isSidebarOpen : isOpenMobile) ? 0 : (isDesktop ? -304 : -288), opacity: (isDesktop ? isSidebarOpen : isOpenMobile) ? 1 : 0.98 }}
         transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 360, damping: 38, mass: 0.8 }}
         style={{ pointerEvents: (isDesktop ? isSidebarOpen : isOpenMobile) ? 'auto' : 'none' }}
         className={`
-          fixed bottom-0 left-0 w-72 md:w-80 flex flex-col font-sans select-none
+          fixed bottom-0 left-0 w-72 md:w-80 lg:w-[clamp(272px,24vw,304px)] flex flex-col font-sans select-none
           ${isOpenMobile ? 'top-0 z-50 shadow-2xl h-full' : 'lg:top-11 z-30 lg:h-[calc(100vh-44px)] top-0 h-full'}
           ${isLight 
             ? 'bg-[#fafafc] text-[#2c2c30]' 

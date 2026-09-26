@@ -1,0 +1,517 @@
+{
+  "sources": [
+    {
+      "id": "arena",
+      "title": "Arena Text Overall",
+      "url": "https://arena.ai/leaderboard/text",
+      "access": "snapshot",
+      "checkedAt": "2026-09-26",
+      "sourceDate": "2026-08-06",
+      "note": "页面标注 2026-08-06；不是 9 月 26 日即时排名。人工偏好评分与商业使用量不同。"
+    },
+    {
+      "id": "aa",
+      "title": "Artificial Analysis Intelligence Index v4.3",
+      "url": "https://artificialanalysis.ai/articles/artificial-analysis-intelligence-index-v4-3",
+      "access": "snapshot",
+      "checkedAt": "2026-09-26",
+      "sourceDate": "2026-09-07",
+      "note": "官方文章披露的部分成绩；不是完整实时排行榜。实时模型榜页面本次未能完整读取。"
+    },
+    {
+      "id": "tbench",
+      "title": "Terminal-Bench 2.0 leaderboard",
+      "url": "https://www.tbench.ai/leaderboard/terminal-bench/2.0",
+      "access": "snapshot",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "仅收录 2.0 版本公开提交，保留逐行提交日期。不是最新版基准，也不是 Agent 热度榜。"
+    },
+    {
+      "id": "openrouter",
+      "title": "OpenRouter Rankings",
+      "url": "https://openrouter.ai/rankings",
+      "access": "partial",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "本次未取得完整可复核排名序列，不填名次或 token 使用量。"
+    },
+    {
+      "id": "swebench",
+      "title": "SWE-bench",
+      "url": "https://www.swebench.com/",
+      "access": "unavailable",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "本次读取失败；不使用第三方转述补分数。"
+    },
+    {
+      "id": "openai-api",
+      "title": "OpenAI API pricing",
+      "url": "https://developers.openai.com/api/docs/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "opus",
+      "title": "Claude Opus",
+      "url": "https://www.anthropic.com/claude/opus",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "anthropic-api",
+      "title": "Claude API pricing",
+      "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "chatgpt",
+      "title": "ChatGPT pricing",
+      "url": "https://chatgpt.com/pricing/",
+      "access": "partial",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "可读取功能和套餐名称；地区化订阅金额未在返回文本中显示。"
+    },
+    {
+      "id": "claude",
+      "title": "Claude pricing",
+      "url": "https://claude.com/pricing",
+      "access": "partial",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "订阅金额本次未完整核实；不可使用 API token 价格代替订阅。"
+    },
+    {
+      "id": "claude-code",
+      "title": "Claude Code overview",
+      "url": "https://code.claude.com/docs/en/overview",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "codex",
+      "title": "OpenAI Codex documentation entry",
+      "url": "https://developers.openai.com/codex/",
+      "access": "partial",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "入口重定向至 ChatGPT Learn；结合 ChatGPT 官方套餐页核实 Codex 入口，不推断全部当前功能。"
+    },
+    {
+      "id": "google",
+      "title": "Google AI plans",
+      "url": "https://one.google.com/about/google-ai-plans/",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "runway",
+      "title": "Runway pricing",
+      "url": "https://runway.com/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "仅录入常规月付价；忽略页面已结束的限时促销。"
+    },
+    {
+      "id": "elevenlabs",
+      "title": "ElevenLabs pricing",
+      "url": "https://elevenlabs.io/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "cartesia",
+      "title": "Cartesia pricing",
+      "url": "https://www.cartesia.ai/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "minimax",
+      "title": "MiniMax",
+      "url": "https://www.minimax.io/",
+      "access": "partial",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "原价格入口重定向首页；本轮不填写语音、音乐 API 单价。"
+    },
+    {
+      "id": "midjourney",
+      "title": "Midjourney plan comparison",
+      "url": "https://docs.midjourney.com/hc/en-us/articles/27870484040333-Comparing-Midjourney-Plans",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "midjourney-model",
+      "title": "Midjourney model entry",
+      "url": "https://www.midjourney.com/plans",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "firefly",
+      "title": "Adobe Firefly plans",
+      "url": "https://www.adobe.com/products/firefly/plans.html",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "只收录常规价格；页面至 8 月 26 日的优惠已经结束，不延用优惠价。"
+    },
+    {
+      "id": "meshy",
+      "title": "Meshy pricing",
+      "url": "https://www.meshy.ai/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "tripo",
+      "title": "Tripo pricing",
+      "url": "https://www.tripo3d.ai/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "页面展示年付优惠；未将折算月价当作独立月付套餐。"
+    },
+    {
+      "id": "suno",
+      "title": "Suno pricing",
+      "url": "https://suno.com/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "aiva",
+      "title": "AIVA product and pricing",
+      "url": "https://www.aiva.ai/",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "soundraw",
+      "title": "SOUNDRAW",
+      "url": "https://soundraw.io/",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "heygen",
+      "title": "HeyGen pricing",
+      "url": "https://www.heygen.com/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "higgsfield",
+      "title": "Higgsfield pricing",
+      "url": "https://higgsfield.ai/pricing",
+      "access": "partial",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "可确认影像创作平台入口；动态套餐金额未读取，不沿用未经核验旧价格。"
+    },
+    {
+      "id": "libtv",
+      "title": "LibTV official plugin",
+      "url": "https://www.liblib.tv/plugin",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "确认产品及图像、视频、资产管理、Agent 接入；横幅促销不是常规会员价。"
+    },
+    {
+      "id": "runninghub",
+      "title": "RunningHub",
+      "url": "https://www.runninghub.ai/",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "krea",
+      "title": "Krea",
+      "url": "https://www.krea.ai/",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "首页功能可读取；价格页本次读取失败。"
+    },
+    {
+      "id": "magnific",
+      "title": "Magnific pricing / Freepik redirect",
+      "url": "https://www.magnific.com/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "原 https://www.freepik.com/pricing 重定向到此页；保留 Freepik 别名，避免重复计算。"
+    },
+    {
+      "id": "openart",
+      "title": "OpenArt pricing",
+      "url": "https://openart.ai/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "功能可读取；折扣与所选计费周期未完整确认，不填写数值订阅价。"
+    },
+    {
+      "id": "leonardo",
+      "title": "Leonardo pricing",
+      "url": "https://leonardo.ai/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "recraft",
+      "title": "Recraft pricing",
+      "url": "https://www.recraft.ai/pricing",
+      "access": "partial",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "动态价格未读取；具体套餐与模型版本待核验。"
+    },
+    {
+      "id": "ideogram",
+      "title": "Ideogram features",
+      "url": "https://ideogram.ai/features",
+      "access": "partial",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "可读取功能入口有限；具体套餐与模型版本待核验。"
+    },
+    {
+      "id": "bfl",
+      "title": "Black Forest Labs pricing",
+      "url": "https://bfl.ai/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "API 按输出用量，另有权重许可；不把计算器默认配置当作所有 FLUX 模型统一单价。"
+    },
+    {
+      "id": "fal",
+      "title": "fal pricing",
+      "url": "https://fal.ai/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "replicate",
+      "title": "Replicate pricing",
+      "url": "https://replicate.com/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "cursor",
+      "title": "Cursor pricing",
+      "url": "https://cursor.com/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "copilot",
+      "title": "GitHub Copilot plans",
+      "url": "https://github.com/features/copilot/plans",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "devin",
+      "title": "Devin pricing",
+      "url": "https://devin.ai/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "本次页面为 Pro / Max / Teams，不延用旧 Core / ACU 套餐。"
+    },
+    {
+      "id": "lovable",
+      "title": "Lovable pricing",
+      "url": "https://lovable.dev/pricing",
+      "access": "partial",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "功能及积分机制可读取，动态套餐金额未读取。"
+    },
+    {
+      "id": "v0",
+      "title": "v0 pricing",
+      "url": "https://v0.app/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "manus",
+      "title": "Manus membership pricing",
+      "url": "https://help.manus.im/en/articles/11711111-what-is-the-current-membership-pricing-for-manus",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": "2026-03-16",
+      "note": "帮助文章有明确发布日期；具体账号当日权益须复核。"
+    },
+    {
+      "id": "dify",
+      "title": "Dify pricing",
+      "url": "https://dify.ai/pricing",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "n8n",
+      "title": "n8n pricing",
+      "url": "https://n8n.io/pricing/",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "dreamina",
+      "title": "Dreamina",
+      "url": "https://dreamina.capcut.com/",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "kling",
+      "title": "Kling official entry",
+      "url": "https://www.klingai.com/",
+      "access": "unavailable",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "robots 限制；保留既有调研条目，但本次功能、价格、版本未完整核验。"
+    },
+    {
+      "id": "wan",
+      "title": "Wan official entry",
+      "url": "https://wan.video/",
+      "access": "partial",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "动态页面返回正文为空。"
+    },
+    {
+      "id": "ltx",
+      "title": "LTX Studio",
+      "url": "https://ltx.io/studio",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "rodin",
+      "title": "Hyper3D Rodin",
+      "url": "https://hyper3d.ai/",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "sloyd",
+      "title": "Sloyd",
+      "url": "https://www.sloyd.ai/",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "hunyuan",
+      "title": "Hunyuan 3D official entry",
+      "url": "https://3d.hunyuan.tencent.com/",
+      "access": "partial",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "动态页面返回正文为空。"
+    },
+    {
+      "id": "marble",
+      "title": "Marble official entry",
+      "url": "https://marble.worldlabs.ai/",
+      "access": "partial",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "动态页面返回正文为空。"
+    },
+    {
+      "id": "comfy",
+      "title": "Comfy",
+      "url": "https://comfy.org/",
+      "access": "read",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "官方公开页面；未进行账号内功能实测。"
+    },
+    {
+      "id": "genspark",
+      "title": "Genspark pricing entry",
+      "url": "https://www.genspark.ai/pricing",
+      "access": "unavailable",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "重定向至登录；不记录 OAuth 会话 URL 或推断账号内价格。"
+    },
+    {
+      "id": "perplexity",
+      "title": "Perplexity Pro",
+      "url": "https://www.perplexity.ai/pro",
+      "access": "partial",
+      "checkedAt": "2026-09-26",
+      "sourceDate": null,
+      "note": "动态正文未完整读取；不填当前价格或性能名次。"
+    }
+  ]
+}

@@ -33,3 +33,16 @@ npm run build
 数据校验可不安装依赖直接运行 `node scripts/validate-research.mjs`；类型检查和 Vite 构建需要安装项目依赖。数据测试不能代替完整应用构建或浏览器验收。
 
 内容层统一使用 CommonMark + GFM，禁止 React/JSX、MDX 和私有 Widget 标记。渲染由 react-markdown / remark-gfm 负责，标题 ID 统一使用 github-slugger；交互能力应在应用 UI 层实现，不嵌入 Markdown 正文。恢复历史内容应通过 Git 历史回滚。
+
+
+## 信息架构
+
+阅读路径固定为：
+
+```text
+Docs Home → Space Home → Category → Article
+```
+
+顶层 Space 由 `src/data/spaces.ts` 注册。切换 Space 类似切换 Obsidian Vault：左侧文档树只显示当前 Space 的文章；小分类继续使用文章的 `category/categoryName`。搜索、上一篇和下一篇也限制在当前 Space 内。
+
+当前仍保持纯静态架构。GitHub 是内容源和版本历史，Cloudflare 只负责构建和静态发布；不引入数据库、CMS 服务端或动态 API。后续文章正文应逐步迁入 `content/<space>/<category>/*.md`，榜单和结构化资料迁入对应 `.json`，React 只负责读取和渲染。

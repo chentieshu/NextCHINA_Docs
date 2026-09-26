@@ -9,6 +9,7 @@ import { MarkdownRenderer } from './components/MarkdownRenderer';
 import { SearchModal } from './components/SearchModal';
 import { DocsHome } from './components/DocsHome';
 import { ArrowLeft, ArrowRight, Calendar } from 'lucide-react';
+import { motion, useReducedMotion } from 'motion/react';
 
 const ALL_CHAPTERS = [...RESEARCH_CHAPTERS, ...ESSAY_CHAPTERS];
 
@@ -18,6 +19,8 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isLight, setIsLight] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
+  const reduceMotion = useReducedMotion();
 
   const activeSpaceId = view.kind === 'home' ? DOC_SPACES[0].id : view.spaceId;
   const activeSpace = DOC_SPACES.find(space => space.id === activeSpaceId);
@@ -39,6 +42,36 @@ export default function App() {
   }, [view.kind]);
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [view]);
+
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 1024px)');
+    const update = () => setIsDesktop(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+
+  useEffect(() => {
+    if (isDesktop || !isMobileMenuOpen) return;
+    const scrollY = window.scrollY;
+    const previous = {
+      bodyPosition: document.body.style.position,
+      bodyTop: document.body.style.top,
+      bodyWidth: document.body.style.width,
+      htmlOverflow: document.documentElement.style.overflow
+    };
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.position = previous.bodyPosition;
+      document.body.style.top = previous.bodyTop;
+      document.body.style.width = previous.bodyWidth;
+      document.documentElement.style.overflow = previous.htmlOverflow;
+      window.scrollTo(0, scrollY);
+    };
+  }, [isDesktop, isMobileMenuOpen]);
 
   const enterDocs = (spaceId = DOC_SPACES[0].id) => {
     const firstChapter = chaptersForSpace(spaceId, ALL_CHAPTERS)[0];
@@ -75,9 +108,14 @@ export default function App() {
     <Sidebar chapters={spaceChapters} activeChapterId={activeChapter?.id ?? ''} onSelectChapter={openArticle}
       onOpenSearch={() => setIsSearchOpen(true)} isOpenMobile={isMobileMenuOpen} onCloseMobile={() => setIsMobileMenuOpen(false)}
       isSidebarOpen={isSidebarOpen} isLight={isLight}
-      spaces={DOC_SPACES} activeSpaceId={activeSpace.id} onSelectSpace={enterDocs} />
+      spaces={DOC_SPACES} activeSpaceId={activeSpace.id} onSelectSpace={enterDocs} isDesktop={isDesktop} />
 
-    <div className={`min-h-screen pt-11 transition-all duration-300 ${isSidebarOpen ? 'lg:pl-80' : 'lg:pl-0'}`}>
+    <motion.div
+      className="min-h-screen pt-11"
+      initial={false}
+      animate={{ x: !isDesktop && isMobileMenuOpen ? 288 : 0, paddingLeft: isDesktop && isSidebarOpen ? 320 : 0 }}
+      transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 360, damping: 38, mass: 0.8 }}
+    >
       {activeChapter ? <main className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-6 sm:py-8 lg:py-10 flex justify-center">
         <div className="w-full min-w-0 max-w-[820px]">
           <div className="pb-5 sm:pb-6 mb-5 sm:mb-7">
@@ -95,7 +133,7 @@ export default function App() {
           </div>
         </div>
       </main> : null}
-    </div>
+    </motion.div>
 
     <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} chapters={spaceChapters} onSelectChapter={openArticle} isLight={isLight} />
   </div>;

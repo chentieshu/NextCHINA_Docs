@@ -165,50 +165,59 @@
     },
     {
       "id": "aa-intelligence",
-      "title": "大模型榜单：Artificial Analysis 已披露成绩",
+      "title": "大模型榜单：Artificial Analysis Intelligence Index v4.3.2",
       "scope": "model",
       "sourceId": "aa",
-      "snapshotDate": "2026-09-07",
-      "metric": "Intelligence Index v4.3",
+      "snapshotDate": "2026-09-27",
+      "metric": "Artificial Analysis Intelligence Index v4.3.2",
       "unit": "分",
-      "rankType": "unranked-excerpt",
-      "warning": "官方版本文章的六项成绩摘录，不是完整 Top 6 或实时总榜，名次为 null。不同评测版本不可跨表混排。",
+      "rankType": "source-order",
+      "warning": "2026-09-27 核验。官方模型页当前可直接复核的带分数 Top 5 如下；但 Artificial Analysis 更晚更新的 Leaderboard 已显示 Claude Opus 5.5 系列进入最前列，因此这里不把这 5 行宣称为此刻完整实时总榜。Index v4.3.2 由 10 项评测组成，跨版本分数不可直接混排。",
       "rows": [
         {
           "id": "aa-1",
-          "rank": null,
-          "name": "Claude Fable 5.1 (max with fallback)",
-          "score": 53
+          "rank": 1,
+          "name": "Claude Fable 5.1 (Adaptive Reasoning, Max Effort, Default Fallback)",
+          "provider": "Anthropic",
+          "providerId": "anthropic",
+          "score": 53,
+          "logo": "https://cdn.simpleicons.org/anthropic"
         },
         {
           "id": "aa-2",
-          "rank": null,
-          "name": "GPT-6 Astra (max)",
-          "score": 53
+          "rank": 2,
+          "name": "Claude Fable 5.1 (Adaptive Reasoning, Xhigh Effort, Default Fallback)",
+          "provider": "Anthropic",
+          "providerId": "anthropic",
+          "score": 53,
+          "logo": "https://cdn.simpleicons.org/anthropic"
         },
         {
           "id": "aa-3",
-          "rank": null,
-          "name": "Claude Opus 5 (max)",
-          "score": 51
+          "rank": 3,
+          "name": "GPT-6 Astra (max)",
+          "provider": "OpenAI",
+          "providerId": "openai",
+          "score": 53,
+          "logo": "https://cdn.simpleicons.org/openai"
         },
         {
           "id": "aa-4",
-          "rank": null,
-          "name": "Claude Fable 5 (with fallback)",
-          "score": 50
+          "rank": 4,
+          "name": "GPT-6 Astra (xhigh)",
+          "provider": "OpenAI",
+          "providerId": "openai",
+          "score": 52,
+          "logo": "https://cdn.simpleicons.org/openai"
         },
         {
           "id": "aa-5",
-          "rank": null,
-          "name": "Muse Spark 1.3 (max)",
-          "score": 48
-        },
-        {
-          "id": "aa-6",
-          "rank": null,
-          "name": "GPT-5.6 Sol (max)",
-          "score": 47
+          "rank": 5,
+          "name": "Claude Fable 5.1 (Adaptive Reasoning, High Effort, Default Fallback)",
+          "provider": "Anthropic",
+          "providerId": "anthropic",
+          "score": 51,
+          "logo": "https://cdn.simpleicons.org/anthropic"
         }
       ]
     },

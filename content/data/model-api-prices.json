@@ -1,0 +1,95 @@
+{
+  "modelApiPrices": [
+    {
+      "id": "gpt-6-astra",
+      "name": "GPT-6 Astra",
+      "provider": "OpenAI",
+      "currency": "USD",
+      "unit": "per-million-tokens",
+      "input": 10,
+      "output": 50,
+      "cacheRead": 1,
+      "conditions": "标准处理；输入上下文少于 272K。长上下文、Fast、Batch 等另有价格。",
+      "sourceId": "openai-api",
+      "checkedAt": "2026-09-26"
+    },
+    {
+      "id": "gpt-6-sol",
+      "name": "GPT-6 Sol",
+      "provider": "OpenAI",
+      "currency": "USD",
+      "unit": "per-million-tokens",
+      "input": 2,
+      "output": 10,
+      "cacheRead": 0.2,
+      "conditions": "标准处理；输入上下文少于 272K。长上下文、Fast、Batch 等另有价格。",
+      "sourceId": "openai-api",
+      "checkedAt": "2026-09-26"
+    },
+    {
+      "id": "gpt-6-luna",
+      "name": "GPT-6 Luna",
+      "provider": "OpenAI",
+      "currency": "USD",
+      "unit": "per-million-tokens",
+      "input": 0.1,
+      "output": 0.5,
+      "cacheRead": 0.01,
+      "conditions": "标准处理；输入上下文少于 272K。长上下文、Fast、Batch 等另有价格。",
+      "sourceId": "openai-api",
+      "checkedAt": "2026-09-26"
+    },
+    {
+      "id": "claude-opus-5-5",
+      "name": "Claude Opus 5.5",
+      "provider": "Anthropic",
+      "currency": "USD",
+      "unit": "per-million-tokens",
+      "input": 4,
+      "output": 20,
+      "cacheRead": 0.2,
+      "conditions": "常规 API 价格；Fast 和缓存写入另计。",
+      "sourceId": "opus",
+      "checkedAt": "2026-09-26"
+    },
+    {
+      "id": "claude-fable-5-1",
+      "name": "Claude Fable 5.1",
+      "provider": "Anthropic",
+      "currency": "USD",
+      "unit": "per-million-tokens",
+      "input": 10,
+      "output": 50,
+      "cacheRead": 0.25,
+      "conditions": "常规 API 价格；不等同于 Claude 应用会员。",
+      "sourceId": "anthropic-api",
+      "checkedAt": "2026-09-26"
+    },
+    {
+      "id": "claude-opus-5",
+      "name": "Claude Opus 5",
+      "provider": "Anthropic",
+      "currency": "USD",
+      "unit": "per-million-tokens",
+      "input": 5,
+      "output": 25,
+      "cacheRead": 0.5,
+      "conditions": "常规 API 价格；缓存写入、工具调用等另计。",
+      "sourceId": "anthropic-api",
+      "checkedAt": "2026-09-26"
+    },
+    {
+      "id": "claude-fable-5",
+      "name": "Claude Fable 5",
+      "provider": "Anthropic",
+      "currency": "USD",
+      "unit": "per-million-tokens",
+      "input": 10,
+      "output": 50,
+      "cacheRead": 1,
+      "conditions": "常规 API 价格；不与不同评测配置视为同一榜单项。",
+      "sourceId": "anthropic-api",
+      "checkedAt": "2026-09-26"
+    }
+  ]
+}

@@ -21,6 +21,7 @@ export default function App() {
   const [isLight, setIsLight] = useState(true);
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
   const reduceMotion = useReducedMotion();
+  const desktopSidebarWidth = 'clamp(272px, 24vw, 304px)';
 
   const activeSpaceId = view.kind === 'home' ? DOC_SPACES[0].id : view.spaceId;
   const activeSpace = DOC_SPACES.find(space => space.id === activeSpaceId);
@@ -111,12 +112,15 @@ export default function App() {
       spaces={DOC_SPACES} activeSpaceId={activeSpace.id} onSelectSpace={enterDocs} isDesktop={isDesktop} />
 
     <motion.div
-      className="min-h-screen pt-11 w-full min-w-0"
+      className="min-h-screen pt-11 min-w-0"
       initial={false}
-      animate={{ paddingLeft: isDesktop && isSidebarOpen ? 320 : 0 }}
+      animate={{
+        marginLeft: isDesktop && isSidebarOpen ? desktopSidebarWidth : '0px',
+        width: isDesktop && isSidebarOpen ? `calc(100% - ${desktopSidebarWidth})` : '100%'
+      }}
       transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 360, damping: 38, mass: 0.8 }}
     >
-      {activeChapter ? <main className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-6 sm:py-8 lg:py-10 flex justify-center">
+      {activeChapter ? <main className="w-full min-w-0 px-4 sm:px-6 lg:px-6 xl:px-8 2xl:px-10 py-6 sm:py-8 lg:py-10 flex justify-center">
         <div className="w-full min-w-0 max-w-[820px]">
           <div className="pb-5 sm:pb-6 mb-5 sm:mb-7">
             <div className="flex flex-wrap items-center gap-2 mb-3">

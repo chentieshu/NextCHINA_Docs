@@ -23,13 +23,14 @@ for (const article of registry.articles) {
   const fences = markdown.match(/^\s{0,3}(`{3,}|~{3,})/gm) ?? [];
   assert.equal(fences.length % 2, 0, `${article.id}: unclosed fenced code block`);
   assert.ok(!markdown.toLowerCase().includes('<script'), `${article.id}: raw script HTML is not allowed`);
+  assert.ok(!/\\\\\[|\\\\\]|\\\\\(|\\\\\)/.test(markdown), `${article.id}: use $...$ / $...$ for math delimiters`);
 }
 
-for (const capability of ['remarkGfm', 'components={{', 'table:', 'pre:', 'code:', 'img:', 'input:']) {
+for (const capability of ['remarkGfm', 'remarkMath', 'rehypeKatex', 'MermaidDiagram', 'components={{', 'table:', 'pre:', 'code:', 'img:', 'input:']) {
   assert.ok(renderer.includes(capability), `Markdown renderer missing ${capability}`);
 }
-for (const selector of ['.markdown-body h1', '.markdown-body blockquote', '.markdown-body ul', '.md-codeblock', '.md-table-scroll', '.markdown-light', '.markdown-dark']) {
+for (const selector of ['.markdown-body h1', '.markdown-body blockquote', '.markdown-body ul', '.md-codeblock', '.md-table-scroll', '.katex-display', '.md-mermaid', '.markdown-light', '.markdown-dark']) {
   assert.ok(css.includes(selector), `Markdown CSS missing ${selector}`);
 }
 
-console.log(JSON.stringify({ status: 'pass', markdownDialect: 'CommonMark + GFM', articles: registry.articles.length }, null, 2));
+console.log(JSON.stringify({ status: 'pass', markdownDialect: 'CommonMark + GFM + Math + Mermaid', articles: registry.articles.length }, null, 2));

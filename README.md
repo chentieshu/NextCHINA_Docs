@@ -4,7 +4,12 @@ AI SaaS、大模型榜单、Agent 产品和构建平台的中文调研文档。�
 
 ## 数据入口
 
-- `src/data/ai-research.json`：产品、套餐、来源、基准快照、API 价格与待核验项的唯一数据源。
+- `content/data/research-meta.json`：研究库日期、口径、政策说明与待核验项。
+- `content/data/products.json`：AI SaaS、Agent、API 与基础设施产品。
+- `content/data/benchmarks.json`：模型与 Agent 基准快照。
+- `content/data/model-api-prices.json`：模型 API 价格。
+- `content/data/sources.json`：来源目录与核验状态。
+- `content/data/categories.json`：结构化产品分类。
 - `src/data/docs.ts`：由数据生成章节、表格、搜索内容和演示摘要。
 - `scripts/validate-research.mjs`：不依赖第三方包的数据结构与引用校验。
 
@@ -22,7 +27,7 @@ Arena 人类偏好、Artificial Analysis 指数和 Terminal-Bench 终端任务�
 
 ## 维护与验证
 
-修改 JSON 后先执行：
+修改 MD/JSON 后先执行：
 
 ```sh
 npm run test:data

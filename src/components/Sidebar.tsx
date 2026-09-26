@@ -99,7 +99,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <aside 
         id="vscode-style-sidebar"
         className={`
-          fixed bottom-0 left-0 w-72 md:w-80 flex flex-col transition-all duration-300 ease-in-out font-sans select-none
+          fixed bottom-0 left-0 lg:left-14 w-72 md:w-80 flex flex-col transition-all duration-300 ease-in-out font-sans select-none
           ${isOpenMobile 
             ? 'top-0 z-50 translate-x-0 opacity-100 shadow-2xl h-full' 
             : `lg:top-11 z-30 lg:h-[calc(100vh-44px)] ${

@@ -21,7 +21,6 @@ interface SidebarProps {
   isOpenMobile: boolean;
   onCloseMobile: () => void;
   isSidebarOpen: boolean;
-  onToggleSidebar: () => void;
   isLight?: boolean;
   spaces: DocSpace[];
   activeSpaceId: string;

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "title": "AI 到哪了？",
+  "subtitle": "NextCHINA · AI SaaS、大模型与 Agent 调研库",
+  "checkedAt": "2026-09-26",
+  "timezone": "Asia/Taipei",
+  "coverage": "按此前调研范围整理并补充官方核验，不是全球产品全量名单。此前完整大模型/Agent 对话结果未能恢复，因此用带日期的可复核公开快照替代，不声称逐字迁移。",
+  "countryPolicy": "国家字段本轮未逐一核实，originCountry 为 null；不要由创始人国籍、域名或语言推断公司国家，更不代表数据存储地。",
+  "rankingPolicy": "产品表是分场景选型清单，不伪造综合名次。仅在有明确来源、指标和版本时展示榜单。selection 与 caution 是编辑建议，不是实测结论。",
+  "pricingPolicy": "价格为本次可读取公开页面中的选定套餐，非各平台全部套餐。保留币种与月付/年付/用量区别；null 或空 plans 代表未核实，不代表免费。未计税与地区差异，过期促销不采用。",
+  "pendingItems": [
+    {
+      "name": "H3",
+      "reason": "此前范围中的名称含义未确认，不猜测其品牌或模型，也不纳入产品计数。"
+    },
+    {
+      "name": "OpenRouter 实时使用量排名",
+      "reason": "本次未取得完整可复核排名序列；不是没有数据或没有排名。"
+    },
+    {
+      "name": "SWE-bench 实时成绩",
+      "reason": "源站读取失败，未填分数。"
+    },
+    {
+      "name": "更多模型厂商 API 价格",
+      "reason": "Qwen、Kimi、DeepSeek、GLM、MiniMax 等当前具体模型与地区计费尚未逐项补核。"
+    }
+  ]
+}

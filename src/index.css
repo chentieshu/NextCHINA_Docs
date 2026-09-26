@@ -288,3 +288,65 @@ body {
 .markdown-dark th img {
   filter: invert(1);
 }
+
+/* Markdown extensions: KaTeX math + Mermaid diagrams */
+.markdown-body .katex-display {
+  width: 100%;
+  max-width: 100%;
+  margin: 1.4rem 0;
+  padding: 0.35rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+.markdown-body .katex-display > .katex {
+  white-space: nowrap;
+}
+.markdown-body .katex {
+  font-size: 1.02em;
+}
+.md-mermaid {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  overflow-x: auto;
+  border: 1px solid;
+  border-radius: 0.875rem;
+  text-align: center;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+.md-mermaid svg {
+  display: inline-block;
+  width: auto;
+  max-width: none;
+  height: auto;
+  margin: 0;
+  border-radius: 0;
+}
+.md-mermaid-error {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid;
+  border-radius: 0.875rem;
+}
+.md-mermaid-error pre {
+  margin: 0.75rem 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+}
+.markdown-light .md-mermaid,
+.markdown-light .md-mermaid-error {
+  background: #fafafd;
+  border-color: #e3e3e8;
+}
+.markdown-dark .md-mermaid,
+.markdown-dark .md-mermaid-error {
+  background: #1d1d21;
+  border-color: #34343a;
+}

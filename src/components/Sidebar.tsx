@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { DocChapter } from '../types';
+import { DocChapter, DocSpace } from '../types';
 import { 
   Search, 
   ChevronRight, 
@@ -9,7 +9,8 @@ import {
   FileText,
   ChevronsDownUp,
   ChevronsUpDown,
-  X
+  X,
+  ChevronsUpDown as SpaceChevron
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -22,8 +23,9 @@ interface SidebarProps {
   isSidebarOpen: boolean;
   onToggleSidebar: () => void;
   isLight?: boolean;
-  spaceName?: string;
-  onSpaceHome?: () => void;
+  spaces: DocSpace[];
+  activeSpaceId: string;
+  onSelectSpace: (id: string) => void;
 }
 
 
@@ -36,8 +38,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
   isSidebarOpen,
   isLight = false,
-  spaceName = 'NextCHINA',
-  onSpaceHome
+  spaces,
+  activeSpaceId,
+  onSelectSpace
 }) => {
 
   // Group chapters by category (Parent Folders)
@@ -99,7 +102,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <aside 
         id="vscode-style-sidebar"
         className={`
-          fixed bottom-0 left-0 lg:left-14 w-72 md:w-80 flex flex-col transition-all duration-300 ease-in-out font-sans select-none
+          fixed bottom-0 left-0 w-72 md:w-80 flex flex-col transition-all duration-300 ease-in-out font-sans select-none
           ${isOpenMobile 
             ? 'top-0 z-50 translate-x-0 opacity-100 shadow-2xl h-full' 
             : `lg:top-11 z-30 lg:h-[calc(100vh-44px)] ${
@@ -133,11 +136,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        {/* VS Code Explorer Title Header with Action Buttons */}
-        <div className={`px-4 pt-3.5 pb-2 flex items-center justify-between shrink-0 text-[11px] font-mono font-semibold uppercase tracking-wider ${
-          isLight ? 'text-[#74747c]' : 'text-[#8a8a92]'
-        }`}>
-          <button onClick={onSpaceHome} className="truncate hover:opacity-70" title="返回当前 Space 首页">{spaceName.toUpperCase()}</button>
+        {/* Space selector + tree actions */}
+        <div className="px-3 pt-3 pb-2 flex items-center gap-2 shrink-0">
+          <div className="relative flex-1 min-w-0">
+            <select
+              value={activeSpaceId}
+              onChange={(event) => onSelectSpace(event.target.value)}
+              aria-label="切换文档大分类"
+              className={`w-full appearance-none rounded-lg pl-3 pr-8 py-2 text-[12px] font-semibold outline-none cursor-pointer ${
+                isLight ? 'bg-[#f0f0f4] text-[#303036]' : 'bg-[#202024] text-[#d7d7de]'
+              }`}
+            >
+              {spaces.map(space => <option key={space.id} value={space.id}>{space.name}</option>)}
+            </select>
+            <SpaceChevron className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 opacity-45" />
+          </div>
 
           {/* Action Icons */}
           <div className="flex items-center gap-1">

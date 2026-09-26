@@ -1,0 +1,181 @@
+{
+  "products": [
+    {
+      "id": "meshy",
+      "name": "Meshy",
+      "aliases": [],
+      "categories": [
+        "3d"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "Meshy"
+      ],
+      "features": [
+        "文本或图像生成 3D",
+        "PBR 贴图、绑定与常用格式导出"
+      ],
+      "selection": "需要从概念快速得到可继续编辑的 3D 资产",
+      "caution": "免费输出与付费私密资产条款不同；拓扑仍需检查。",
+      "plans": [
+        {
+          "name": "Pro",
+          "amount": 20,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "1,000 credits/月"
+        }
+      ],
+      "priceNote": "月付；免费版有额度和署名要求，不视为无限商用。",
+      "verification": "verified",
+      "sourceIds": [
+        "meshy"
+      ]
+    },
+    {
+      "id": "tripo",
+      "name": "Tripo",
+      "aliases": [],
+      "categories": [
+        "3d"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "Tripo"
+      ],
+      "features": [
+        "多视图生成 3D",
+        "网格、部件与批量资产工作流"
+      ],
+      "selection": "需要多视图或批量 3D 资产制作",
+      "caution": "公开/私密资产、下载和商用权益随套餐变化。",
+      "plans": [],
+      "priceNote": "可见年付促销，结束日期未确认；不列为稳定常规月价。",
+      "verification": "verified",
+      "sourceIds": [
+        "tripo"
+      ]
+    },
+    {
+      "id": "rodin",
+      "name": "Hyper3D Rodin",
+      "aliases": [],
+      "categories": [
+        "3d"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "Rodin"
+      ],
+      "features": [
+        "3D 模型生成"
+      ],
+      "selection": "需要评估图像到三维的资产制作流程",
+      "caution": "具体面数、格式、价格和商用范围须按当前方案确认。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "verified",
+      "sourceIds": [
+        "rodin"
+      ]
+    },
+    {
+      "id": "sloyd",
+      "name": "Sloyd",
+      "aliases": [],
+      "categories": [
+        "3d"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "Sloyd"
+      ],
+      "features": [
+        "文本、图像与模板生成 3D"
+      ],
+      "selection": "需要模板参数化和生成结合的资产流程",
+      "caution": "结果是否适合游戏、打印或动画须检查，不承诺直接生产可用。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "verified",
+      "sourceIds": [
+        "sloyd"
+      ]
+    },
+    {
+      "id": "hunyuan3d",
+      "name": "腾讯混元 3D",
+      "aliases": [],
+      "categories": [
+        "3d"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [],
+      "features": [
+        "三维方向条目，网页能力待补核"
+      ],
+      "selection": "保留已有混元 3D 调研范围",
+      "caution": "网页服务、模型权重与云 API 的权益需分开确认。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "partial",
+      "sourceIds": [
+        "hunyuan"
+      ]
+    },
+    {
+      "id": "marble",
+      "name": "Marble",
+      "aliases": [],
+      "categories": [
+        "3d"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [],
+      "features": [
+        "空间创作方向条目，详情待补核"
+      ],
+      "selection": "保留已有世界/空间生成调研范围",
+      "caution": "不把可浏览空间等同可编辑游戏资产。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "partial",
+      "sourceIds": [
+        "marble"
+      ]
+    },
+    {
+      "id": "krea",
+      "name": "Krea",
+      "aliases": [],
+      "categories": [
+        "platform",
+        "image",
+        "video",
+        "3d"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "多模型目录"
+      ],
+      "features": [
+        "图像、视频和 3D 创作工具"
+      ],
+      "selection": "需要在同一创作套件探索多种媒介",
+      "caution": "首页可读不代表价格已核验；效果需用相同素材试用。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "verified",
+      "sourceIds": [
+        "krea"
+      ]
+    }
+  ]
+}

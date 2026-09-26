@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { createHeadingIdFactory, getReactNodeText } from '../utils/slugify';
+import { extractMarkdownHeadings, getReactNodeText, slugifyHeading } from '../utils/slugify';
 import { Copy, Check } from 'lucide-react';
 
 interface MarkdownRendererProps {
@@ -11,7 +11,9 @@ interface MarkdownRendererProps {
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, isLight }) => {
   const [copiedCode, setCopiedCode] = React.useState<string | null>(null);
-  const headingId = React.useMemo(() => createHeadingIdFactory(), [content]);
+  const renderedHeadingIds = React.useMemo(() => extractMarkdownHeadings(content, [1, 2, 3, 4, 5, 6]).map(heading => heading.id), [content]);
+  let headingIndex = 0;
+  const headingId = (text: string) => renderedHeadingIds[headingIndex++] ?? slugifyHeading(text) ?? 'section';
 
   const handleCopy = async (text: string) => {
     await navigator.clipboard?.writeText(text);
@@ -37,7 +39,10 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, isL
           img: ({ src, alt, title }) => <img src={src} alt={alt ?? ''} title={title} loading="lazy" decoding="async" />,
           input: (props) => <input {...props} disabled={props.type === 'checkbox' ? true : props.disabled} />,
           pre: ({ children }) => {
-            const child = React.Children.only(children) as React.ReactElement<{ className?: string; children?: React.ReactNode }>;
+            const child = React.Children.toArray(children)[0];
+            if (!React.isValidElement<{ className?: string; children?: React.ReactNode }>(child)) {
+              return <pre>{children}</pre>;
+            }
             const code = String(child.props.children ?? '').replace(/\n$/, '');
             const language = child.props.className?.replace('language-', '') || 'code';
             return (

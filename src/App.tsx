@@ -101,8 +101,7 @@ export default function App() {
   return <div id="nextchina-docs-root" className={`min-h-screen ${themeClasses} transition-colors duration-200`}>
     {activeChapter && <DocHeader currentChapter={activeChapter} isLight={isLight} onToggleTheme={() => setIsLight(value => !value)}
       isSidebarOpen={isSidebarOpen} onToggleSidebar={() => setIsSidebarOpen(value => !value)}
-      onOpenMobileMenu={() => setIsMobileMenuOpen(true)} onOpenSearch={() => setIsSearchOpen(true)}
-      isMobileMenuOpen={isMobileMenuOpen} isDesktop={isDesktop} />}
+      onOpenMobileMenu={() => setIsMobileMenuOpen(true)} onOpenSearch={() => setIsSearchOpen(true)} />}
 
 
 

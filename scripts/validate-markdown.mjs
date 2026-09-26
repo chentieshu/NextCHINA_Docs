@@ -3,11 +3,13 @@ import { readFileSync, existsSync } from 'node:fs';
 
 const renderer = readFileSync(new URL('../src/components/MarkdownRenderer.tsx', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8');
-const spaces = readFileSync(new URL('../src/data/spaces.ts', import.meta.url), 'utf8');
+const spaces = JSON.parse(readFileSync(new URL('../content/spaces.json', import.meta.url), 'utf8'));
 const registry = JSON.parse(readFileSync(new URL('../content/articles.json', import.meta.url), 'utf8'));
 
 assert.ok(Array.isArray(registry.articles) && registry.articles.length, 'Article registry is empty');
-assert.ok(spaces.includes('DOC_SPACES'), 'Missing documentation space registry');
+assert.ok(Array.isArray(spaces.spaces) && spaces.spaces.length, 'Missing documentation space registry');
+const assigned = new Set(spaces.spaces.flatMap(space => space.chapterIds));
+for (const article of registry.articles) assert.ok(assigned.has(article.id), `${article.id}: article is not assigned to a space`);
 
 const ids = new Set();
 for (const article of registry.articles) {

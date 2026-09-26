@@ -7,12 +7,13 @@
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "npm run validate && vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && npx wrangler deploy",
+    "deploy": "npm run build && wrangler deploy",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "test:data": "node scripts/validate-research.mjs",
     "test:markdown": "node scripts/validate-markdown.mjs",
-    "validate": "npm run test:data && npm run test:markdown && npm run lint"
+    "validate": "npm run test:data && npm run test:markdown && npm run lint",
+    "deploy:assets": "wrangler deploy"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
@@ -38,6 +39,10 @@
     "tailwindcss": "^4.3.3",
     "tsx": "^4.21.0",
     "typescript": "^7.0.2",
-    "github-slugger": "^2.0.0"
+    "github-slugger": "^2.0.0",
+    "wrangler": "^4.102.0"
+  },
+  "engines": {
+    "node": ">=22 <25"
   }
 }

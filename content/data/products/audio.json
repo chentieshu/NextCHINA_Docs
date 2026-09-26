@@ -1,0 +1,68 @@
+{
+  "products": [
+    {
+      "id": "cartesia",
+      "name": "Cartesia",
+      "aliases": [],
+      "categories": [
+        "audio"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "Sonic-3.5",
+        "Ink",
+        "Line"
+      ],
+      "features": [
+        "文本转语音",
+        "语音转写与语音 Agent"
+      ],
+      "selection": "需要语音 API 与交互式语音应用",
+      "caution": "语音合成额度与 Agent 分钟不是同一计费单位。",
+      "plans": [
+        {
+          "name": "Pro",
+          "amount": 5,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "100K credits/月"
+        },
+        {
+          "name": "Startup",
+          "amount": 49,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "1.25M credits/月"
+        }
+      ],
+      "priceNote": "月付；页面另列 Agent 预付额度。",
+      "verification": "verified",
+      "sourceIds": [
+        "cartesia"
+      ]
+    },
+    {
+      "id": "minimax-speech",
+      "name": "MiniMax Speech",
+      "aliases": [],
+      "categories": [
+        "audio"
+      ],
+      "kind": "api",
+      "originCountry": null,
+      "models": [],
+      "features": [
+        "语音方向条目，细节待本轮补核"
+      ],
+      "selection": "保留既有语音服务调研范围",
+      "caution": "首页不能替代语音 API 价格表。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "partial",
+      "sourceIds": [
+        "minimax"
+      ]
+    }
+  ]
+}

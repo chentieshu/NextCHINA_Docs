@@ -33,12 +33,10 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({
       const h2Match = line.match(/^##\s+(.+)$/);
       if (h2Match) {
         const rawText = h2Match[1].trim();
-        if (!rawText.includes('WIDGET:')) {
-          const cleanText = rawText.replace(/[*_`>#~]/g, '').trim();
-          const id = slugifyHeading(cleanText);
-          if (cleanText && id) {
-            items.push({ id, text: cleanText, level: 2 });
-          }
+        const cleanText = rawText.replace(/[*_`>#~]/g, '').trim();
+        const id = slugifyHeading(cleanText);
+        if (cleanText && id) {
+          items.push({ id, text: cleanText, level: 2 });
         }
       } else {
         const h3Match = line.match(/^###\s+(.+)$/);
@@ -174,13 +172,13 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({
     // Outer placeholder maintains layout space in the grid
     <div 
       ref={placeholderRef}
-      className="w-64 xl:w-72 shrink-0 hidden lg:block"
+      className="w-64 2xl:w-72 shrink-0 hidden xl:block"
     >
       {/* Inner outline is position: fixed. It never scrolls with the page at all. */}
       <aside 
         style={leftPos !== null ? { left: `${leftPos}px` } : undefined}
         aria-label="Table of contents"
-        className="fixed top-11 bottom-0 w-64 xl:w-72 overflow-y-auto pt-7 md:pt-10 pb-10 pl-4 pr-2 select-none scrollbar-none z-20"
+        className="fixed top-11 bottom-0 w-64 2xl:w-72 overflow-y-auto pt-10 pb-10 pl-4 pr-2 select-none scrollbar-none z-20"
       >
         <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider mb-3">
           <span className={`flex items-center gap-1.5 font-mono ${isLight ? 'text-[#6e6e76]' : 'text-[#a0a0a8]'}`}>

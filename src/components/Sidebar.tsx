@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { DocChapter } from '../types';
-import { extractMarkdownHeadings } from '../utils/slugify';
 import { 
   Search, 
   ChevronRight, 
@@ -25,11 +24,6 @@ interface SidebarProps {
   isLight?: boolean;
 }
 
-interface ChapterHeading {
-  id: string;
-  title: string;
-  level: number;
-}
 
 export const Sidebar: React.FC<SidebarProps> = ({
   chapters,
@@ -41,15 +35,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isSidebarOpen,
   isLight = false
 }) => {
-  // Extract sub-headings for each chapter to support VSCode outline nesting
-  const chapterHeadingsMap = useMemo(() => {
-    const map = new Map<string, ChapterHeading[]>();
-    chapters.forEach(ch => {
-      const headings = extractMarkdownHeadings(ch.content, [2, 3]);
-      map.set(ch.id, headings);
-    });
-    return map;
-  }, [chapters]);
 
   // Group chapters by category (Parent Folders)
   const categories = useMemo(() => {
@@ -72,20 +57,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
     return initial;
   });
 
-  // Chapter sub-headings expanded states
-  const [expandedFiles, setExpandedFiles] = useState<Record<string, boolean>>({
-    [activeChapterId]: true
-  });
 
   const toggleFolder = (catKey: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setExpandedFolders(prev => ({ ...prev, [catKey]: !prev[catKey] }));
   };
 
-  const toggleFile = (chapterId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setExpandedFiles(prev => ({ ...prev, [chapterId]: !prev[chapterId] }));
-  };
 
   const collapseAll = () => {
     const collapsed: Record<string, boolean> = {};
@@ -93,7 +70,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       collapsed[key] = false;
     });
     setExpandedFolders(collapsed);
-    setExpandedFiles({});
   };
 
   const expandAll = () => {
@@ -102,36 +78,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       expanded[key] = true;
     });
     setExpandedFolders(expanded);
-    const filesExp: Record<string, boolean> = {};
-    chapters.forEach(ch => {
-      filesExp[ch.id] = true;
-    });
-    setExpandedFiles(filesExp);
   };
 
-  const handleHeadingClick = (chapterId: string, headingId: string) => {
-    if (chapterId !== activeChapterId) {
-      onSelectChapter(chapterId);
-      setTimeout(() => {
-        const el = document.getElementById(headingId);
-        if (el) {
-          const yOffset = -60;
-          const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-          window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
-        }
-      }, 100);
-    } else {
-      const el = document.getElementById(headingId);
-      if (el) {
-        const yOffset = -60;
-        const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
-      }
-    }
-    if (window.innerWidth < 1024) {
-      onCloseMobile();
-    }
-  };
 
   return (
     <>
@@ -232,7 +180,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        {/* VS Code Tree Structure (Parent Folders -> Children Files -> Leaf Outline) */}
+        {/* Category folders and document files */}
         <div className="flex-1 overflow-y-auto px-2 py-1 space-y-1 scrollbar-thin pb-4">
           {categories.map(([catKey, cat]) => {
             const isFolderOpen = expandedFolders[catKey] ?? true;
@@ -293,9 +241,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                     {cat.items.map(chapter => {
                       const isActive = activeChapterId === chapter.id;
-                      const headings = chapterHeadingsMap.get(chapter.id) || [];
-                      const hasHeadings = headings.length > 0;
-                      const isFileExpanded = expandedFiles[chapter.id] ?? isActive;
 
                       return (
                         <div key={chapter.id} className="relative group/file">
@@ -325,23 +270,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             )}
 
                             <div className="flex items-center gap-2 min-w-0 pl-1">
-                              {/* Sub-tree toggle icon if chapter has headings */}
-                              {hasHeadings ? (
-                                <button
-                                  onClick={(e) => toggleFile(chapter.id, e)}
-                                  className="w-3.5 h-3.5 flex items-center justify-center shrink-0 opacity-50 hover:opacity-100 transition-opacity"
-                                  title={isFileExpanded ? '折叠小节' : '展开小节'}
-                                >
-                                  {isFileExpanded ? (
-                                    <ChevronDown className="h-3 w-3" />
-                                  ) : (
-                                    <ChevronRight className="h-3 w-3" />
-                                  )}
-                                </button>
-                              ) : (
-                                <span className="w-3.5" />
-                              )}
-
                               {/* Markdown File Icon */}
                               <FileText className={`h-3.5 w-3.5 shrink-0 ${
                                 isActive 
@@ -355,37 +283,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               </span>
                             </div>
                           </div>
-
-                          {/* Level 2: Sub-sections Outline */}
-                          {hasHeadings && isFileExpanded && (
-                            <div className="relative pl-6 py-0.5 space-y-0.5">
-                              {/* Nested Tree Guide Line */}
-                              <div className={`absolute left-6 top-1 bottom-1 w-[1px] ${
-                                isLight ? 'bg-[#e4e4e9]' : 'bg-[#222227]'
-                              }`} />
-
-                              {headings.map(h => (
-                                <div
-                                  key={h.id}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleHeadingClick(chapter.id, h.id);
-                                  }}
-                                  className={`flex items-center px-2 py-1.5 rounded-md cursor-pointer text-[11.5px] transition-colors truncate ${
-                                    isLight
-                                      ? 'text-[#66666e] hover:text-[#1c1c20] hover:bg-[#f0f0f4]'
-                                      : 'text-[#84848c] hover:text-[#dedee4] hover:bg-[#1a1a1d]'
-                                  }`}
-                                  title={h.title}
-                                >
-                                  {/* Clean sub-heading title without any # symbol */}
-                                  <span className="truncate">
-                                    {h.title}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
                         </div>
                       );
                     })}

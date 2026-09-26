@@ -124,7 +124,7 @@ export default function App() {
         <div className="w-full min-w-0 max-w-[820px]">
           <div className="pb-5 sm:pb-6 mb-5 sm:mb-7">
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <button onClick={() => setIsMobileMenuOpen(true)} className={`text-[11px] font-mono px-2.5 py-0.5 rounded-full ${isLight ? 'bg-[#f0f0f4] text-[#44444a]' : 'bg-[#26262a] text-[#a5a5ad]'}`}>{activeSpace.name} / {activeChapter.categoryName}</button>
+              <button onClick={() => isDesktop ? setIsSidebarOpen(true) : setIsMobileMenuOpen(true)} className={`text-[11px] font-mono px-2.5 py-0.5 rounded-full ${isLight ? 'bg-[#f0f0f4] text-[#44444a]' : 'bg-[#26262a] text-[#a5a5ad]'}`}>{activeSpace.name} / {activeChapter.categoryName}</button>
               <span className="opacity-30">•</span><span className="text-xs font-mono flex items-center gap-1 opacity-55"><Calendar className="h-3 w-3" /> {activeChapter.date}</span>
             </div>
             <h1 className="text-[1.65rem] sm:text-3xl lg:text-4xl font-bold tracking-tight mb-3 font-serif-sc leading-tight">{activeChapter.title}</h1>

@@ -1,6 +1,5 @@
 {
   "name": "AI 到哪了？｜NextCHINA AI 调研库",
-  "description": "AI SaaS、大模型榜单与 Agent 选型调研：功能、模型、价格、来源和明确的快照日期。",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "description": "AI SaaS、大模型榜单、Agent 与 AI 基础原理的中文研究平台。",
+  "requestFramePermissions": []
 }

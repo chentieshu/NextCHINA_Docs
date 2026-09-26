@@ -22,6 +22,8 @@ interface SidebarProps {
   isSidebarOpen: boolean;
   onToggleSidebar: () => void;
   isLight?: boolean;
+  spaceName?: string;
+  onSpaceHome?: () => void;
 }
 
 
@@ -33,7 +35,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpenMobile,
   onCloseMobile,
   isSidebarOpen,
-  isLight = false
+  isLight = false,
+  spaceName = 'NextCHINA',
+  onSpaceHome
 }) => {
 
   // Group chapters by category (Parent Folders)
@@ -133,7 +137,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className={`px-4 pt-3.5 pb-2 flex items-center justify-between shrink-0 text-[11px] font-mono font-semibold uppercase tracking-wider ${
           isLight ? 'text-[#74747c]' : 'text-[#8a8a92]'
         }`}>
-          <span>EXPLORER : NEXTCHINA</span>
+          <button onClick={onSpaceHome} className="truncate hover:opacity-70" title="返回当前 Space 首页">{spaceName.toUpperCase()}</button>
 
           {/* Action Icons */}
           <div className="flex items-center gap-1">
@@ -170,7 +174,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <span className="flex items-center gap-2">
               <Search className="h-3.5 w-3.5 opacity-60" />
-              <span className="text-[11px]">快速检索思辨论点...</span>
+              <span className="text-[11px]">搜索当前文档...</span>
             </span>
             <kbd className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
               isLight ? 'bg-[#e2e2e7] text-[#55555c]' : 'bg-[#18181b] text-[#8e8e96]'

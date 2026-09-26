@@ -3,11 +3,21 @@ import articleRegistry from '../../content/articles.json';
 import premiumVideoMarkdown from '../../content/craft/video/apple-style-premium-product-video.md?raw';
 import llmMarkdown from '../../content/models/llm/llm-how-it-works.md?raw';
 import vlmMarkdown from '../../content/models/vlm/vlm-how-it-works.md?raw';
+import diffusionMarkdown from '../../content/models/generative/diffusion-dit.md?raw';
+import embeddingMarkdown from '../../content/models/embedding/embedding-models.md?raw';
+import audioMarkdown from '../../content/models/audio/audio-models.md?raw';
+import videoMarkdown from '../../content/models/video/video-models.md?raw';
+import worldMarkdown from '../../content/models/world/world-models.md?raw';
 
 const contentById: Record<string, string> = {
   'apple-style-premium-product-video': premiumVideoMarkdown,
   'llm-how-it-works': llmMarkdown,
-  'vlm-how-it-works': vlmMarkdown
+  'vlm-how-it-works': vlmMarkdown,
+  'diffusion-dit': diffusionMarkdown,
+  'embedding-models': embeddingMarkdown,
+  'audio-models': audioMarkdown,
+  'video-models': videoMarkdown,
+  'world-models': worldMarkdown
 };
 
 export const ESSAY_CHAPTERS: DocChapter[] = articleRegistry.articles.map(article => {

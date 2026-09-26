@@ -8,8 +8,6 @@ import { DocHeader } from './components/DocHeader';
 import { MarkdownRenderer } from './components/MarkdownRenderer';
 import { SearchModal } from './components/SearchModal';
 import { DocsHome } from './components/DocsHome';
-import { SpaceHome } from './components/SpaceHome';
-import { SpaceSwitcher } from './components/SpaceSwitcher';
 import { ArrowLeft, ArrowRight, Calendar } from 'lucide-react';
 
 const ALL_CHAPTERS = [...RESEARCH_CHAPTERS, ...ESSAY_CHAPTERS];
@@ -21,7 +19,7 @@ export default function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isLight, setIsLight] = useState(true);
 
-  const activeSpaceId = view.kind === 'home' ? '' : view.spaceId;
+  const activeSpaceId = view.kind === 'home' ? DOC_SPACES[0].id : view.spaceId;
   const activeSpace = DOC_SPACES.find(space => space.id === activeSpaceId);
   const spaceChapters = useMemo(() => activeSpace ? chaptersForSpace(activeSpace.id, ALL_CHAPTERS) : [], [activeSpaceId]);
   const activeChapter = view.kind === 'article' ? ALL_CHAPTERS.find(chapter => chapter.id === view.chapterId) : undefined;
@@ -42,8 +40,10 @@ export default function App() {
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [view]);
 
-  const enterSpace = (spaceId: string) => {
-    setView({ kind: 'space', spaceId });
+  const enterDocs = (spaceId = DOC_SPACES[0].id) => {
+    const firstChapter = chaptersForSpace(spaceId, ALL_CHAPTERS)[0];
+    if (!firstChapter) return;
+    setView({ kind: 'article', spaceId, chapterId: firstChapter.id });
     setIsMobileMenuOpen(false);
   };
 
@@ -59,7 +59,7 @@ export default function App() {
 
   if (view.kind === 'home') {
     return <div id="nextchina-docs-root" className={`min-h-screen ${themeClasses}`}>
-      <DocsHome spaces={DOC_SPACES} chapters={ALL_CHAPTERS} isLight={isLight} onEnter={enterSpace} />
+      <DocsHome spaces={DOC_SPACES} chapters={ALL_CHAPTERS} isLight={isLight} onEnter={enterDocs} />
     </div>;
   }
 
@@ -70,25 +70,19 @@ export default function App() {
       isSidebarOpen={isSidebarOpen} onToggleSidebar={() => setIsSidebarOpen(value => !value)}
       onOpenMobileMenu={() => setIsMobileMenuOpen(true)} onOpenSearch={() => setIsSearchOpen(true)} />}
 
-    {!activeChapter && <header className={`fixed top-0 left-0 right-0 z-40 h-11 px-4 flex items-center justify-between backdrop-blur-xl ${isLight ? 'bg-white/85' : 'bg-[#18181b]/85'}`}>
-      <button onClick={() => setView({ kind: 'home' })} className="font-bold text-sm">NextCHINA</button>
-      <button onClick={() => setIsLight(value => !value)} className="text-xs font-mono opacity-60">{isLight ? 'DARK' : 'LIGHT'}</button>
-    </header>}
 
-    <SpaceSwitcher spaces={DOC_SPACES} activeSpaceId={activeSpace.id} isLight={isLight} onHome={() => setView({ kind: 'home' })} onSelectSpace={enterSpace} />
 
     <Sidebar chapters={spaceChapters} activeChapterId={activeChapter?.id ?? ''} onSelectChapter={openArticle}
       onOpenSearch={() => setIsSearchOpen(true)} isOpenMobile={isMobileMenuOpen} onCloseMobile={() => setIsMobileMenuOpen(false)}
       isSidebarOpen={isSidebarOpen} onToggleSidebar={() => setIsSidebarOpen(value => !value)} isLight={isLight}
-      spaceName={activeSpace.name} onSpaceHome={() => enterSpace(activeSpace.id)} />
+      spaces={DOC_SPACES} activeSpaceId={activeSpace.id} onSelectSpace={enterDocs} />
 
-    <div className={`min-h-screen pt-11 transition-all duration-300 ${isSidebarOpen ? 'lg:pl-[22.5rem]' : 'lg:pl-14'}`}>
-      {view.kind === 'space' ? <SpaceHome space={activeSpace} chapters={spaceChapters} isLight={isLight} onOpenArticle={openArticle} /> :
-      activeChapter ? <main className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-6 sm:py-8 lg:py-10 flex justify-center">
+    <div className={`min-h-screen pt-11 transition-all duration-300 ${isSidebarOpen ? 'lg:pl-80' : 'lg:pl-0'}`}>
+      {activeChapter ? <main className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-6 sm:py-8 lg:py-10 flex justify-center">
         <div className="w-full min-w-0 max-w-[820px]">
           <div className="pb-5 sm:pb-6 mb-5 sm:mb-7">
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <button onClick={() => enterSpace(activeSpace.id)} className={`text-[11px] font-mono px-2.5 py-0.5 rounded-full ${isLight ? 'bg-[#f0f0f4] text-[#44444a]' : 'bg-[#26262a] text-[#a5a5ad]'}`}>{activeSpace.name} / {activeChapter.categoryName}</button>
+              <button onClick={() => setIsMobileMenuOpen(true)} className={`text-[11px] font-mono px-2.5 py-0.5 rounded-full ${isLight ? 'bg-[#f0f0f4] text-[#44444a]' : 'bg-[#26262a] text-[#a5a5ad]'}`}>{activeSpace.name} / {activeChapter.categoryName}</button>
               <span className="opacity-30">•</span><span className="text-xs font-mono flex items-center gap-1 opacity-55"><Calendar className="h-3 w-3" /> {activeChapter.date}</span>
             </div>
             <h1 className="text-[1.65rem] sm:text-3xl lg:text-4xl font-bold tracking-tight mb-3 font-serif-sc leading-tight">{activeChapter.title}</h1>

@@ -25,7 +25,7 @@ export const DocHeader: React.FC<DocHeaderProps> = ({
 }) => (
   <header
     id="apple-style-navbar"
-    className={`fixed top-0 left-0 right-0 z-40 h-11 backdrop-blur-xl px-3 sm:px-5 flex items-center justify-between transition-colors ${
+    className={`fixed top-0 left-0 right-0 z-40 h-11 backdrop-blur-xl pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))] sm:px-5 flex items-center justify-between transition-colors ${
       isLight ? 'bg-white/85 text-[#2c2c30]' : 'bg-[#18181b]/85 text-[#d0d0d6]'
     }`}
   >
@@ -45,7 +45,7 @@ export const DocHeader: React.FC<DocHeaderProps> = ({
         isLight ? 'text-[#1a1a1e]' : 'text-[#f0f0f4]'
       }`}>NextCHINA</span>
 
-      <nav className={`hidden sm:flex items-center gap-1.5 text-[12px] truncate ml-1 ${
+      <nav className={`hidden md:flex items-center gap-1.5 text-[12px] truncate ml-1 ${
         isLight ? 'text-[#707076]' : 'text-[#8a8a92]'
       }`}>
         <ChevronRight className="h-3 w-3 opacity-30 shrink-0" />

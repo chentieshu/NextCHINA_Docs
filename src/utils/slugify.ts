@@ -20,7 +20,9 @@ export function markdownInlineText(raw: string): string {
   return raw
     .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
     .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/<((?:https?:\/\/|mailto:)[^>]+)>/g, '$1')
     .replace(/`([^`]+)`/g, '$1')
+    .replace(/\\([\\`*{}\[\]()#+\-.!_>~|])/g, '$1')
     .replace(/[*_~]/g, '')
     .replace(/<[^>]+>/g, '')
     .trim();
@@ -37,10 +39,22 @@ export function slugifyHeading(rawText: string): string {
 export function extractMarkdownHeadings(content: string, levels: number[] = [2, 3]): MarkdownHeading[] {
   const counts = new Map<string, number>();
   const headings: MarkdownHeading[] = [];
+  const lines = content.split('\n');
   let fenceMarker: '`' | '~' | null = null;
 
-  for (const line of content.split('\n')) {
-    const fenceMatch = line.match(/^\s*(`{3,}|~{3,})/);
+  const pushHeading = (raw: string, level: number) => {
+    if (!levels.includes(level)) return;
+    const text = markdownInlineText(raw);
+    if (!text) return;
+    const base = slugifyHeading(text) || 'section';
+    const occurrence = counts.get(base) ?? 0;
+    counts.set(base, occurrence + 1);
+    headings.push({ id: occurrence === 0 ? base : `${base}-${occurrence + 1}`, text, level });
+  };
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    const fenceMatch = line.match(/^\s{0,3}(`{3,}|~{3,})/);
     if (fenceMatch) {
       const marker = fenceMatch[1][0] as '`' | '~';
       fenceMarker = fenceMarker === null ? marker : fenceMarker === marker ? null : fenceMarker;
@@ -48,32 +62,20 @@ export function extractMarkdownHeadings(content: string, levels: number[] = [2, 
     }
     if (fenceMarker) continue;
 
-    const match = line.match(/^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$/);
-    if (!match) continue;
+    const atx = line.match(/^\s{0,3}(#{1,6})(?:[ \t]+|$)(.*?)(?:[ \t]+#+[ \t]*)?$/);
+    if (atx) {
+      pushHeading(atx[2], atx[1].length);
+      continue;
+    }
 
-    const level = match[1].length;
-    if (!levels.includes(level)) continue;
-
-    const text = markdownInlineText(match[2]);
-    const base = slugifyHeading(text) || 'section';
-    const occurrence = counts.get(base) ?? 0;
-    counts.set(base, occurrence + 1);
-    headings.push({
-      id: occurrence === 0 ? base : `${base}-${occurrence + 1}`,
-      text,
-      level
-    });
+    if (index + 1 < lines.length && line.trim()) {
+      const setext = lines[index + 1].match(/^\s{0,3}(=+|-+)\s*$/);
+      if (setext) {
+        pushHeading(line.trim(), setext[1][0] === '=' ? 1 : 2);
+        index += 1;
+      }
+    }
   }
 
   return headings;
-}
-
-export function createHeadingIdFactory() {
-  const counts = new Map<string, number>();
-  return (text: string) => {
-    const base = slugifyHeading(text) || 'section';
-    const occurrence = counts.get(base) ?? 0;
-    counts.set(base, occurrence + 1);
-    return occurrence === 0 ? base : `${base}-${occurrence + 1}`;
-  };
 }

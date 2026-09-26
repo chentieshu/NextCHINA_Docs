@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build",
+    "build": "npm run validate && vite build",
     "preview": "vite preview",
     "deploy": "npm run build && npx wrangler deploy",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "test:data": "node scripts/validate-research.mjs"
+    "test:data": "node scripts/validate-research.mjs",
+    "test:markdown": "node scripts/validate-markdown.mjs",
+    "validate": "npm run test:data && npm run test:markdown && npm run lint"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

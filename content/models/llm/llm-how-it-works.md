@@ -375,6 +375,22 @@ MoE 的价值是扩大容量与计算效率之间的设计空间，但也增加�
 
 这也是为什么 NextCHINA 不应该用“参数量最大”替代模型能力评价。
 
+## 10.5 计算量从哪里来？为什么长上下文贵？
+
+对长度为 \(n\) 的序列，标准 self-attention 需要形成一个近似 \(n\times n\) 的关系矩阵。
+
+因此 attention 的序列长度相关计算/内存压力具有二次项：
+
+\[
+O(n^2)
+\]
+
+而 MLP 等部分通常更接近随 token 数线性增长。
+
+这不意味着“整个 Transformer 的所有成本永远都是严格 \(O(n^2)\)”；真实系统还受到模型维度、KV cache、kernel、batching 和硬件影响。但它解释了为什么上下文从 4K 扩到 128K 并不是简单的 32 倍工程问题。
+
+FlashAttention 的关键贡献之一，是不改变 exact attention 数学结果，而通过 IO-aware tiling 减少 HBM 与片上 SRAM 之间的数据搬运。[8]
+
 ## 11. Base Model 为什么还不是好助手？
 
 Pretraining 首先教模型预测文本；用户真正需要的是遵循意图。
@@ -386,6 +402,27 @@ Pretraining → Base Model → Instruction / Preference Training → Assistant M
 ~~~
 
 现代厂商采用的后训练方法更加多样，不能把所有模型都描述为完全相同的 RLHF 流程。
+
+### Preference Optimization 在优化什么？
+
+一种经典 RLHF 表达是学习 reward model \(r_\phi(x,y)\)，再让 policy \(\pi_\theta\) 获得更高奖励，同时用 KL 项限制它不要离参考模型太远：
+
+\[
+\max_\theta\;\mathbb{E}[r_\phi(x,y)]-\beta D_{KL}(\pi_\theta\|\pi_{ref})
+\]
+
+直觉：
+
+~~~text
+更符合偏好
+   ↑
+但不要为了刷奖励
+偏离原模型太远
+~~~
+
+DPO 则证明在特定建模假设下，可以绕过显式 reward model + PPO 训练流程，直接从 chosen / rejected 偏好对优化 policy。[10]
+
+因此“对齐”不是给模型加几条 system prompt，而是可以真正改变参数和输出概率分布。
 
 ## 12. Prompt、RAG、Fine-tuning、LoRA 有什么不同？
 
@@ -482,11 +519,60 @@ Grouped-Query Attention（GQA）位于两者之间：多个 query heads 分组�
 
 所以今天看到模型规格中的 “GQA” 并不是小细节，它直接影响长上下文 serving 成本。
 
+## 14.5 数值精度与量化：FP16、BF16、INT8、INT4 在改变什么？
+
+神经网络最终是数值计算。
+
+如果一个权重用 FP16/BF16 保存，通常需要约 2 bytes；如果能安全压到 8-bit 或 4-bit，模型权重内存可以显著下降。
+
+最简单的量化直觉：
+
+\[
+q=round(x/s)
+\]
+
+其中 \(s\) 是 scale，推理时再近似恢复：
+
+\[
+\hat{x}=s\cdot q
+\]
+
+量化真正困难的是：不同权重/激活的分布并不一样，存在 outliers，过度压缩会损失精度。
+
+所以“70B 模型能否在某张 GPU 上运行”不仅取决于参数量，还取决于：
+
+- weight precision；
+- activation precision；
+- KV cache precision；
+- quantization scheme；
+- tensor parallel / pipeline parallel；
+- batch 与 context。
+
+**参数数量描述容量，bit-width 决定每个数值要占多少存储；两者不是同一个维度。**
+
 ## 15. FlashAttention：模型速度不只由模型决定
 
 标准 self-attention 在长序列上计算和内存成本高。FlashAttention 用 IO-aware tiling 减少 GPU 高带宽内存与片上 SRAM 之间的数据搬运，在保持 exact attention 的情况下提高速度并降低内存开销。[8]
 
 真实 AI 服务性能同时取决于 GPU、kernel、memory bandwidth、quantization、batching、cache 和 decoding。
+
+## 15.5 Speculative Decoding：为什么可以“先猜几个 token”再验证？
+
+自回归模型一次通常只能确认下一个 token。
+
+Speculative decoding 的核心是让更便宜的 draft model 先提出多个候选 token，再由 target model 并行验证；如果设计正确，可以保持目标模型分布不变，同时减少昂贵模型逐 token 串行等待。
+
+~~~text
+Draft Model
+  ↓ 猜 K 个 tokens
+Target Model
+  ↓ 一次验证
+Accept / Reject
+  ↓
+继续生成
+~~~
+
+这说明“模型数学能力”和“用户看到的生成速度”是两层问题：同一组权重可以通过不同 serving 算法得到不同延迟。
 
 ## 16. Reasoning 是不是模型像人在脑中说话？
 
@@ -495,6 +581,36 @@ Grouped-Query Attention（GQA）位于两者之间：多个 query heads 分组�
 当 reasoning 系统允许更多推理 token、候选、验证、搜索、代码执行或其他 inference-time compute 时，模型获得更多解决问题的计算过程。
 
 更稳妥的定义是：**reasoning model 通过训练与推理机制，在复杂问题上投入更多有效计算，提高多步问题求解表现。**
+
+DeepSeek-R1 的公开研究提供了一个重要例子：大规模 reinforcement learning 可以显著增强模型的 reasoning 行为；R1-Zero 在没有先做 SFT 的实验路线中也出现了推理行为，但存在可读性和语言混合问题，最终 R1 使用 cold-start 数据与多阶段训练改善整体表现。[11]
+
+这提醒我们：
+
+> **Reasoning 能力不是简单等于“预训练模型更大”，后训练目标和 inference-time computation 同样重要。**
+
+### Test-time compute 是什么？
+
+传统 scaling 主要在训练阶段花更多计算。
+
+reasoning 模型又增加了另一个轴：
+
+~~~text
+Training Compute
+      +
+Inference / Test-time Compute
+~~~
+
+模型可以在单个问题上生成更多中间状态、尝试多个候选、调用验证器或工具。
+
+因此今天比较模型不能只问“多少参数”，还要问：
+
+- 每个请求用了多少 reasoning tokens？
+- 是否使用工具？
+- 是否并行采样？
+- 是否有 verifier？
+- latency / cost 是多少？
+
+否则 benchmark 分数可能比较的是完全不同的计算预算。
 
 ## 17. RAG、工具和 Agent 都不是 LLM 本体
 
@@ -506,11 +622,82 @@ Agent: Goal → Model → Action → Environment → Observation → Model
 
 RAG 增加外部信息；Tool 增加外部行动能力；Agent 增加循环执行和状态管理。**LLM 是模型层；RAG、Tool、Agent 是系统层。**
 
+## 17.5 In-context Learning 为什么“不改参数也像学会了”？
+
+Prompt 中的 token 会改变后续 hidden states 和 attention 路由，所以同一组固定参数可以在不同上下文中表现出不同任务行为。
+
+可以把参数看成长期学习到的计算规则，而 context 是本次运行时状态：
+
+~~~text
+Weights = 长期参数记忆 / 计算结构
+Context = 当前工作记忆 / 条件
+Activations = 当前一次 forward 的动态状态
+~~~
+
+In-context learning 不等于 gradient descent，因为模型权重没有更新；它更接近“固定程序在不同输入状态下执行不同计算”。
+
+研究已经发现一些可解释的局部机制，例如 induction heads 与特定 circuits，但大型模型完整能力如何由分布式特征与电路组成，仍未被完全解释。
+
 ## 18. 为什么 LLM 会幻觉？
 
 因为它不是“没有记录就返回 NULL”的数据库。即使知识不足、上下文错误或推理失败，它仍然要对下一个 token 给出概率分布。
 
 RAG、引用、搜索、验证器和工具可以降低错误，但不能自动把概率生成模型变成绝对可靠的事实机器。
+
+从概率角度看，模型优化的是：
+
+\[
+P_\theta(text)
+\]
+
+或条件形式：
+
+\[
+P_\theta(answer\mid context)
+\]
+
+而不是一个直接的“事实真值函数”：
+
+\[
+Truth(answer)\in\{0,1\}
+\]
+
+训练语料中的事实、语言模式和错误都共同影响概率分布。一个句子可以**语言概率很高但事实为假**。
+
+这就是为什么：
+
+> fluency ≠ truth
+
+> confidence-like wording ≠ calibrated probability
+
+> next-token likelihood ≠ external-world verification
+
+## 18.5 LLM 到底有没有“理解”？
+
+这个问题必须先定义“理解”。
+
+如果“理解”指：
+
+- 能压缩语言规律；
+- 能在新上下文组合概念；
+- 能把描述映射到行动；
+- 能解决未逐字见过的问题；
+
+现代 LLM 显然表现出大量功能性能力。
+
+如果“理解”指：
+
+- 拥有人类式主观体验；
+- 内部概念与人类心理表征完全相同；
+- 我们已经知道每个神经元/特征为什么产生所有行为；
+
+目前没有这样的结论。
+
+更科学的说法是：
+
+> **我们非常清楚 forward pass 的数学运算，却仍没有完整的高层理论解释“这些数十亿参数为什么组合出所有观察到的能力”。**
+
+Mechanistic interpretability 已经能够发现部分 circuits、heads 与 features，但研究也显示，把大型模型完整还原成简单可读程序仍非常困难。
 
 ## 19. 应该怎样比较 LLM？
 
@@ -527,6 +714,13 @@ RAG、引用、搜索、验证器和工具可以降低错误，但不能自动�
 | Cost | 输入、输出、缓存和工具总成本 |
 | Reliability | 多次运行是否稳定 |
 | Factuality | 事实是否有证据支持 |
+| Calibration | 概率/置信是否与真实正确率匹配 |
+| Memory / KV | 长对话的缓存与显存代价 |
+| Active Parameters | MoE 每 token 实际用了多少参数 |
+| Precision | FP/BF16/INT8/INT4 的质量与成本 |
+| Test-time Compute | 为一个答案实际花了多少推理计算 |
+| Throughput | 系统每秒可服务多少 token / 请求 |
+| Energy / Hardware | 运行需要什么硬件与能源 |
 
 “总榜第一”只能回答其中很少的问题。
 
@@ -545,7 +739,33 @@ Hidden Representation → LM Head → Logits
 Decoding → Next Token → 循环
 ~~~
 
-LLM 的“魔法”最终可以拆回四件事：**表示、计算、训练、生成。**
+LLM 的“魔法”最终可以拆回六层：
+
+~~~text
+1. Representation
+   Token / Embedding / Position
+
+2. Computation
+   Attention / MLP / MoE / Residual
+
+3. Learning
+   Cross-Entropy / Backprop / Optimizer / Scaling
+
+4. Alignment
+   SFT / Preference Optimization / RL
+
+5. Inference
+   Prefill / KV Cache / Decode / Sampling / Quantization
+
+6. System
+   RAG / Tool / Agent / Serving / Verification
+~~~
+
+所以 LLM 既不是“一个概率鹦鹉”这么简单，也不是无法解释的魔法黑箱。
+
+底层每一步都是明确的线性代数、概率、优化和系统工程；真正尚未完全解决的是：
+
+> **为什么这些局部可描述的数学运算，在巨大规模、数据与训练压力下，会形成如此丰富的抽象表示、泛化、推理和工具使用能力。**
 
 ## 参考资料
 
@@ -557,3 +777,7 @@ LLM 的“魔法”最终可以拆回四件事：**表示、计算、训练、�
 6. Ouyang et al., Training language models to follow instructions with human feedback, 2022 — https://arxiv.org/abs/2203.02155
 7. Hu et al., LoRA, 2021 — https://arxiv.org/abs/2106.09685
 8. Dao et al., FlashAttention, 2022 — https://arxiv.org/abs/2205.14135
+9. Ainslie et al., GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints, 2023 — https://arxiv.org/abs/2305.13245
+10. Rafailov et al., Direct Preference Optimization, 2023 — https://arxiv.org/abs/2305.18290
+11. DeepSeek-AI, DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning, 2025 — https://arxiv.org/abs/2501.12948
+12. Sardana et al., Beyond Chinchilla-Optimal: Accounting for Inference in Language Model Scaling Laws, 2024 — https://arxiv.org/abs/2401.00448

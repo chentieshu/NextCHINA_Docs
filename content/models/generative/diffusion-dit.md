@@ -2,7 +2,7 @@
 
 ## 1. 生成模型在学什么？
 
-给定真实数据分布 \(p_{data}(x)\)，生成模型希望学习 \(p_\theta(x)\)，从而能够采样出新的图像、音频或视频。
+给定真实数据分布 $p_{data}(x)$，生成模型希望学习 $p_\theta(x)$，从而能够采样出新的图像、音频或视频。
 
 Diffusion 不一次生成完整图片，而是定义逐渐加噪的 forward process，再学习 reverse process。
 
@@ -10,25 +10,25 @@ Diffusion 不一次生成完整图片，而是定义逐渐加噪的 forward proc
 
 经典 DDPM：
 
-\[
+$$
 q(x_t|x_{t-1})=\mathcal N(\sqrt{1-\beta_t}x_{t-1},\beta_t I)
-\]
+$$
 
 利用重参数化，可直接写成：
 
-\[
+$$
 x_t=\sqrt{\bar\alpha_t}x_0+\sqrt{1-\bar\alpha_t}\epsilon
-\]
+$$
 
-其中 \(\epsilon\sim\mathcal N(0,I)\)。
+其中 $\epsilon\sim\mathcal N(0,I)$。
 
 ## 3. 模型训练什么？
 
 经典目标之一是预测加入的噪声：
 
-\[
+$$
 L=\mathbb E\left[\|\epsilon-\epsilon_\theta(x_t,t)\|^2\right]
-\]
+$$
 
 ~~~text
 Image → Add Noise → x_t → Network → Predicted Noise → Loss
@@ -38,11 +38,11 @@ Image → Add Noise → x_t → Network → Predicted Noise → Loss
 
 ## 4. 文本怎样控制图片？
 
-Prompt 先被 text encoder 编码为条件 \(c\)：
+Prompt 先被 text encoder 编码为条件 $c$：
 
-\[
+$$
 \epsilon_\theta(x_t,t,c)
-\]
+$$
 
 Cross-Attention 等机制让去噪网络读取文本条件。
 
@@ -60,15 +60,15 @@ Noise → Iterative Generative Dynamics → Image
 
 Latent Diffusion 先用 autoencoder：
 
-\[
+$$
 z=E(x)
-\]
+$$
 
 在 latent space 生成，再通过：
 
-\[
+$$
 \hat{x}=D(z)
-\]
+$$
 
 恢复像素。[2]
 
@@ -86,11 +86,11 @@ Noisy Latent → Patchify → Tokens → Transformer → Noise / Velocity Predic
 
 常见 CFG：
 
-\[
+$$
 \hat\epsilon=\epsilon_{uncond}+w(\epsilon_{cond}-\epsilon_{uncond})
-\]
+$$
 
-更高 \(w\) 通常强化 prompt 条件，但过高可能降低自然度和多样性。
+更高 $w$ 通常强化 prompt 条件，但过高可能降低自然度和多样性。
 
 ## 8. Diffusion、Score 与 Flow
 

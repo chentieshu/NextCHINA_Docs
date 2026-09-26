@@ -113,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={reduceMotion ? { duration: 0 } : { duration: 0.18 }}
-            className="fixed inset-0 z-40 bg-black/35 backdrop-blur-[2px] lg:hidden"
+            className={`fixed inset-0 z-40 backdrop-blur-[2px] lg:hidden ${isLight ? 'bg-white/70' : 'bg-black/55'}`}
           />
         )}
       </AnimatePresence>

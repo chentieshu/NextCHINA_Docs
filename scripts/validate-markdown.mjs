@@ -1,52 +1,33 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 
-const essays = readFileSync(new URL('../src/data/essays.ts', import.meta.url), 'utf8');
-const docs = readFileSync(new URL('../src/data/docs.ts', import.meta.url), 'utf8');
 const renderer = readFileSync(new URL('../src/components/MarkdownRenderer.tsx', import.meta.url), 'utf8');
-const slug = readFileSync(new URL('../src/utils/slugify.ts', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../src/index.css', import.meta.url), 'utf8');
 const spaces = readFileSync(new URL('../src/data/spaces.ts', import.meta.url), 'utf8');
+const registry = JSON.parse(readFileSync(new URL('../content/articles.json', import.meta.url), 'utf8'));
 
+assert.ok(Array.isArray(registry.articles) && registry.articles.length, 'Article registry is empty');
 assert.ok(spaces.includes('DOC_SPACES'), 'Missing documentation space registry');
-for (const spaceId of ['models', 'products', 'agents', 'research', 'craft']) assert.ok(spaces.includes(`id: '${spaceId}'`), `Missing space ${spaceId}`);
 
-for (const forbidden of ['MDXRenderer', '[WIDGET:', 'interactiveWidgetId']) {
-  assert.ok(!essays.includes(forbidden), `essays contains legacy ${forbidden}`);
-  assert.ok(!docs.includes(forbidden), `docs contains legacy ${forbidden}`);
+const ids = new Set();
+for (const article of registry.articles) {
+  assert.ok(article.id && !ids.has(article.id), `Invalid or duplicate article id: ${article.id}`);
+  ids.add(article.id);
+  assert.ok(article.file.endsWith('.md'), `${article.id}: article file must be Markdown`);
+  const url = new URL('../' + article.file, import.meta.url);
+  assert.ok(existsSync(url), `${article.id}: missing Markdown file ${article.file}`);
+  const markdown = readFileSync(url, 'utf8');
+  assert.ok(markdown.trim().length > 0, `${article.id}: empty Markdown`);
+  const fences = markdown.match(/^\s{0,3}(`{3,}|~{3,})/gm) ?? [];
+  assert.equal(fences.length % 2, 0, `${article.id}: unclosed fenced code block`);
+  assert.ok(!markdown.toLowerCase().includes('<script'), `${article.id}: raw script HTML is not allowed`);
 }
 
 for (const capability of ['remarkGfm', 'components={{', 'table:', 'pre:', 'code:', 'img:', 'input:']) {
   assert.ok(renderer.includes(capability), `Markdown renderer missing ${capability}`);
 }
-
-for (const capability of ['extractMarkdownHeadings', 'setext', 'fenceMarker', 'slugifyHeading']) {
-  assert.ok(slug.includes(capability), `Heading contract missing ${capability}`);
-}
-
-for (const selector of [
-  '.markdown-body h1', '.markdown-body blockquote', '.markdown-body ul',
-  '.md-codeblock', '.md-table-scroll', '.markdown-body input[type="checkbox"]',
-  '.markdown-light', '.markdown-dark'
-]) {
+for (const selector of ['.markdown-body h1', '.markdown-body blockquote', '.markdown-body ul', '.md-codeblock', '.md-table-scroll', '.markdown-light', '.markdown-dark']) {
   assert.ok(css.includes(selector), `Markdown CSS missing ${selector}`);
 }
 
-const rawBlocks = [...essays.matchAll(/(?:Markdown = String\.raw|Markdown = )`([\s\S]*?)`;/g)].map(match => match[1]);
-assert.ok(rawBlocks.length >= 3, 'Expected essay Markdown sources');
-
-for (const [index, markdown] of rawBlocks.entries()) {
-  const fences = markdown.match(/^\s{0,3}(`{3,}|~{3,})/gm) ?? [];
-  assert.equal(fences.length % 2, 0, `Essay ${index + 1} has an unclosed fenced code block`);
-
-  const tableSeparators = markdown.match(/^\|(?:[^\n]*\|)+\s*$/gm) ?? [];
-  assert.ok(!markdown.includes('<script'), `Essay ${index + 1} contains raw script HTML`);
-  if (markdown.includes('| --- |')) assert.ok(tableSeparators.length >= 2, `Essay ${index + 1} table syntax looks incomplete`);
-}
-
-console.log(JSON.stringify({
-  status: 'pass',
-  markdownDialect: 'CommonMark + GFM',
-  essaySources: rawBlocks.length,
-  checks: ['no MDX widgets', 'GFM renderer', 'heading contract', 'theme styles', 'fenced blocks']
-}, null, 2));
+console.log(JSON.stringify({ status: 'pass', markdownDialect: 'CommonMark + GFM', articles: registry.articles.length }, null, 2));

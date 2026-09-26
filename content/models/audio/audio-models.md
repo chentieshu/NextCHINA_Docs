@@ -4,19 +4,19 @@
 
 数字音频是随时间采样的波形：
 
-\[
+$$
 x[n]=x(n/f_s)
-\]
+$$
 
-\(f_s\) 是 sample rate。16 kHz 意味着每秒 16,000 个采样点。
+$f_s$ 是 sample rate。16 kHz 意味着每秒 16,000 个采样点。
 
 ## 2. 为什么要看频率？
 
 Short-Time Fourier Transform：
 
-\[
+$$
 X(m,\omega)=\sum_n x[n]w[n-m]e^{-j\omega n}
-\]
+$$
 
 把局部波形转换为“时间 × 频率”表示。Mel-spectrogram 又进一步接近人类听觉频率尺度。
 

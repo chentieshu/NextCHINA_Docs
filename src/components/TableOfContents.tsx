@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { TableOfContentItem } from '../types';
-import { slugifyHeading } from '../utils/slugify';
+import { extractMarkdownHeadings } from '../utils/slugify';
 import { AlignLeft } from 'lucide-react';
 
 interface TableOfContentsProps {
@@ -25,34 +25,7 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({
   const [leftPos, setLeftPos] = useState<number | null>(null);
 
   // Parse H2 and H3 headings from markdown content using unified slug generator
-  const headings: TableOfContentItem[] = useMemo(() => {
-    const lines = content.split('\n');
-    const items: TableOfContentItem[] = [];
-
-    lines.forEach(line => {
-      const h2Match = line.match(/^##\s+(.+)$/);
-      if (h2Match) {
-        const rawText = h2Match[1].trim();
-        const cleanText = rawText.replace(/[*_`>#~]/g, '').trim();
-        const id = slugifyHeading(cleanText);
-        if (cleanText && id) {
-          items.push({ id, text: cleanText, level: 2 });
-        }
-      } else {
-        const h3Match = line.match(/^###\s+(.+)$/);
-        if (h3Match) {
-          const rawText = h3Match[1].trim();
-          const cleanText = rawText.replace(/[*_`>#~]/g, '').trim();
-          const id = slugifyHeading(cleanText);
-          if (cleanText && id) {
-            items.push({ id, text: cleanText, level: 3 });
-          }
-        }
-      }
-    });
-
-    return items;
-  }, [content]);
+  const headings: TableOfContentItem[] = useMemo(() => extractMarkdownHeadings(content, [2, 3]), [content]);
 
   // Keep the fixed Table of Contents horizontally aligned with the flex grid
   // It is 100% position:fixed, so it never shifts vertically on window scroll

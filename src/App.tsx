@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { DOC_CHAPTERS } from './data/docs';
+import { DOC_CHAPTERS as RESEARCH_CHAPTERS } from './data/docs';
+import { ESSAY_CHAPTERS } from './data/essays';
 import { ReadingPreferences, DocChapter } from './types';
 import { Sidebar } from './components/Sidebar';
 import { DocHeader } from './components/DocHeader';
@@ -9,6 +10,8 @@ import { SearchModal } from './components/SearchModal';
 import { PresentationModal } from './components/presentation/PresentationModal';
 import { ArrowLeft, ArrowRight, Calendar } from 'lucide-react';
 
+const DOC_CHAPTERS = [...RESEARCH_CHAPTERS, ...ESSAY_CHAPTERS];
+
 export default function App() {
   const [activeChapterId, setActiveChapterId] = useState<string>(DOC_CHAPTERS[0].id);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
@@ -16,7 +19,6 @@ export default function App() {
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isPresentationOpen, setIsPresentationOpen] = useState<boolean>(false);
 
-  // Strictly two themes: light (white background) and dark (charcoal/deep gray)
   const [preferences, setPreferences] = useState<ReadingPreferences>(() => {
     try {
       const saved = localStorage.getItem('art_tech_read_pref');
@@ -40,7 +42,6 @@ export default function App() {
     };
   });
 
-  // Keyboard shortcut listener (Cmd+K for search)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -52,7 +53,6 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Scroll to top on chapter change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeChapterId]);
@@ -77,14 +77,12 @@ export default function App() {
 
   const isLight = preferences.themeScheme === 'light';
 
-  // Calibrated Soft Grayscale Theme: Light theme is pure white background (#ffffff) with gentle, harmonious grays
   const themeClasses = isLight
     ? 'bg-[#ffffff] text-[#2c2c30] selection:bg-[#e4e4e8] selection:text-[#1c1c20]'
     : 'bg-[#18181b] text-[#cfcfd5] selection:bg-[#34343a] selection:text-[#ececf0]';
 
   return (
     <div id="art-tech-docs-root" className={`min-h-screen ${themeClasses} transition-colors duration-200`}>
-      {/* Apple Height (44px) Sticky Header - Unified across full width */}
       <DocHeader
         currentChapter={activeChapter}
         preferences={preferences}
@@ -98,7 +96,6 @@ export default function App() {
         currentIndex={activeIndex + 1}
       />
 
-      {/* Smooth Collapsible Sidebar - Seamlessly docked underneath 44px navbar */}
       <Sidebar
         chapters={DOC_CHAPTERS}
         activeChapterId={activeChapterId}
@@ -111,20 +108,16 @@ export default function App() {
         isLight={isLight}
       />
 
-      {/* Main Content Area - Starts with pt-11 for 44px navbar, smooth left padding animation */}
       <div className={`flex flex-col min-h-screen pt-11 transition-all duration-300 ease-in-out ${
         isSidebarOpen ? 'lg:pl-72 md:pl-80' : 'lg:pl-0'
       }`}>
-        {/* Content & Table of Contents Grid */}
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 md:px-8 py-7 md:py-10 flex items-start justify-between gap-8">
-          {/* Main Editorial Canvas */}
           <div className="flex-1 max-w-3xl min-w-0">
-            {/* Chapter Header Card - No Borders */}
             <div className="pb-6 mb-7">
               <div className="flex flex-wrap items-center gap-2 mb-3">
                 <span className={`text-[11px] font-mono px-2.5 py-0.5 rounded-full ${
-                  isLight 
-                    ? 'bg-[#f0f0f4] text-[#44444a]' 
+                  isLight
+                    ? 'bg-[#f0f0f4] text-[#44444a]'
                     : 'bg-[#26262a] text-[#a5a5ad]'
                 }`}>
                   {activeChapter.categoryName}
@@ -150,20 +143,18 @@ export default function App() {
               </p>
             </div>
 
-            {/* Core MDX Rendered Body */}
             <MDXRenderer
               content={activeChapter.content}
               preferences={preferences}
             />
 
-            {/* Bottom Next/Previous Chapter Navigation - No Borders */}
             <div className="mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
               {prevChapter ? (
                 <button
                   onClick={() => setActiveChapterId(prevChapter.id)}
                   className={`w-full sm:w-auto flex items-center gap-3 p-3.5 rounded-xl text-left transition-all group ${
-                    isLight 
-                      ? 'bg-[#f5f5f8] hover:bg-[#eaebee] text-[#333338]' 
+                    isLight
+                      ? 'bg-[#f5f5f8] hover:bg-[#eaebee] text-[#333338]'
                       : 'bg-[#242428] hover:bg-[#2c2c31] text-[#cfcfd5]'
                   }`}
                 >
@@ -183,8 +174,8 @@ export default function App() {
                 <button
                   onClick={() => setActiveChapterId(nextChapter.id)}
                   className={`w-full sm:w-auto flex items-center gap-3 p-3.5 rounded-xl text-right transition-all group self-end ${
-                    isLight 
-                      ? 'bg-[#eeeff2] hover:bg-[#e4e4e8] text-[#202024]' 
+                    isLight
+                      ? 'bg-[#eeeff2] hover:bg-[#e4e4e8] text-[#202024]'
                       : 'bg-[#2a2a30] hover:bg-[#34343a] text-[#dedee4]'
                   }`}
                 >
@@ -199,7 +190,6 @@ export default function App() {
               )}
             </div>
 
-            {/* Document Colophon / Footer - No Borders */}
             <footer className={`mt-14 pt-6 text-xs flex flex-col sm:flex-row items-center justify-between gap-3 font-mono ${
               isLight ? 'text-[#8a8a92]' : 'text-[#707078]'
             }`}>
@@ -209,7 +199,6 @@ export default function App() {
             </footer>
           </div>
 
-          {/* Right Table of Contents */}
           <TableOfContents
             content={activeChapter.content}
             chapterTitle={activeChapter.title}
@@ -219,7 +208,6 @@ export default function App() {
         </main>
       </div>
 
-      {/* Global Cmd+K Search Modal */}
       <SearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
@@ -228,7 +216,6 @@ export default function App() {
         isLight={isLight}
       />
 
-      {/* Fullscreen PPT Presentation Mode (F11 style) */}
       <PresentationModal
         isOpen={isPresentationOpen}
         onClose={() => setIsPresentationOpen(false)}

@@ -1,0 +1,377 @@
+{
+  "products": [
+    {
+      "id": "runway",
+      "name": "Runway",
+      "aliases": [],
+      "categories": [
+        "video",
+        "image"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "Gen-4.5",
+        "Gen-4 Turbo",
+        "Aleph"
+      ],
+      "features": [
+        "视频生成与编辑",
+        "图像生成、放大与素材工作流"
+      ],
+      "selection": "需要生成后继续剪辑和修改镜头",
+      "caution": "不同模型、秒数、清晰度扣费不同；API 单独计费。",
+      "plans": [
+        {
+          "name": "Standard",
+          "amount": 15,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "625 credits/月"
+        },
+        {
+          "name": "Pro",
+          "amount": 35,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "2,250 credits/月"
+        },
+        {
+          "name": "Max",
+          "amount": 95,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "9,500 credits/月"
+        }
+      ],
+      "priceNote": "常规月付；不使用已过期促销，也不把年付折算价写成月付价。",
+      "verification": "verified",
+      "sourceIds": [
+        "runway"
+      ]
+    },
+    {
+      "id": "flow",
+      "name": "Google Flow",
+      "aliases": [],
+      "categories": [
+        "video",
+        "image"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "Veo",
+        "Nano Banana 2"
+      ],
+      "features": [
+        "参考素材创作视频",
+        "图像与影像工作流"
+      ],
+      "selection": "希望在 Google 创作入口完成影像制作",
+      "caution": "模型、地区、年龄和额度受 Google AI 计划约束。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "verified",
+      "sourceIds": [
+        "google"
+      ]
+    },
+    {
+      "id": "dreamina",
+      "name": "Dreamina",
+      "aliases": [
+        "即梦国际版"
+      ],
+      "categories": [
+        "video",
+        "image"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "Seedance 2.5",
+        "Seedream 5.0",
+        "Nano Banana Pro"
+      ],
+      "features": [
+        "文本或图像生成视频",
+        "图像编辑与会说话的头像"
+      ],
+      "selection": "需要模板、图片与短视频一起制作",
+      "caution": "本条为国际 Dreamina 页面，不把其价格等同国内即梦。",
+      "plans": [],
+      "priceNote": "可见免费每日积分说明；付费金额本次未核实。",
+      "verification": "verified",
+      "sourceIds": [
+        "dreamina"
+      ]
+    },
+    {
+      "id": "kling",
+      "name": "Kling / 可灵",
+      "aliases": [],
+      "categories": [
+        "video"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [],
+      "features": [
+        "视频方向条目，当前版本与套餐待补核"
+      ],
+      "selection": "保留此前可灵视频平台调研范围",
+      "caution": "官方页面读取受限，不复制第三方价格作为当前价。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "partial",
+      "sourceIds": [
+        "kling"
+      ]
+    },
+    {
+      "id": "wan",
+      "name": "Wan / 通义万相",
+      "aliases": [],
+      "categories": [
+        "video"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [],
+      "features": [
+        "视频方向条目，具体能力待补核"
+      ],
+      "selection": "保留此前万相调研范围",
+      "caution": "模型权重、API 和网页会员并非同一产品报价。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "partial",
+      "sourceIds": [
+        "wan"
+      ]
+    },
+    {
+      "id": "ltx",
+      "name": "LTX Studio",
+      "aliases": [],
+      "categories": [
+        "video"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "LTX"
+      ],
+      "features": [
+        "项目化视频制作",
+        "分镜与镜头组织"
+      ],
+      "selection": "需要从故事规划到镜头制作的工作台",
+      "caution": "网页版工作台与 LTX 模型/API 权益应分别核实。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "verified",
+      "sourceIds": [
+        "ltx"
+      ]
+    },
+    {
+      "id": "heygen",
+      "name": "HeyGen",
+      "aliases": [],
+      "categories": [
+        "video",
+        "audio"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "Avatar IV / V"
+      ],
+      "features": [
+        "数字人口播",
+        "翻译、配音与声音克隆"
+      ],
+      "selection": "需要讲解、培训或多语言数字人内容",
+      "caution": "头像生成引擎、输出时长和清晰度消耗不同额度。",
+      "plans": [
+        {
+          "name": "Creator",
+          "amount": 29,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "600 credits/月；1080p"
+        },
+        {
+          "name": "Pro",
+          "amount": 49,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "1,000 credits/月；4K"
+        }
+      ],
+      "priceNote": "月付；Creator 年付另有折算价，未混入此表。",
+      "verification": "verified",
+      "sourceIds": [
+        "heygen"
+      ]
+    },
+    {
+      "id": "midjourney",
+      "name": "Midjourney",
+      "aliases": [],
+      "categories": [
+        "image",
+        "video"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "V8.2"
+      ],
+      "features": [
+        "图像创作",
+        "图像到视频"
+      ],
+      "selection": "以风格探索与视觉概念为主要工作",
+      "caution": "Relax、视频额度与 Stealth 私密模式受套餐限制。",
+      "plans": [
+        {
+          "name": "Basic",
+          "amount": 10,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "3.3 Fast GPU 小时/月"
+        },
+        {
+          "name": "Standard",
+          "amount": 30,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "15 Fast GPU 小时/月"
+        },
+        {
+          "name": "Pro",
+          "amount": 60,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "30 Fast GPU 小时/月"
+        },
+        {
+          "name": "Mega",
+          "amount": 120,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "60 Fast GPU 小时/月"
+        }
+      ],
+      "priceNote": "常规月付；公司商用与私密输出需核对套餐条款。",
+      "verification": "verified",
+      "sourceIds": [
+        "midjourney",
+        "midjourney-model"
+      ]
+    },
+    {
+      "id": "firefly",
+      "name": "Adobe Firefly",
+      "aliases": [],
+      "categories": [
+        "image",
+        "video",
+        "audio"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "Firefly",
+        "第三方合作模型"
+      ],
+      "features": [
+        "图像与矢量创作",
+        "视频、音效和 Adobe 工作流"
+      ],
+      "selection": "已有 Adobe 设计工作流，需要生成与编辑衔接",
+      "caution": "高级模型消耗积分；模型商用条款需分别核实。",
+      "plans": [
+        {
+          "name": "Standard",
+          "amount": 9.99,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "2,000 credits/月"
+        },
+        {
+          "name": "Pro",
+          "amount": 19.99,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "4,000 credits/月"
+        },
+        {
+          "name": "Pro Plus",
+          "amount": 49.99,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "10,000 credits/月"
+        }
+      ],
+      "priceNote": "常规月付；舍弃已过期的限时促销金额。",
+      "verification": "verified",
+      "sourceIds": [
+        "firefly"
+      ]
+    },
+    {
+      "id": "leonardo",
+      "name": "Leonardo",
+      "aliases": [],
+      "categories": [
+        "image",
+        "video"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "Lucid Origin",
+        "Phoenix",
+        "Motion"
+      ],
+      "features": [
+        "图像与视频生成",
+        "个人模型与素材迭代"
+      ],
+      "selection": "需要资产创作、私密生成和个人模型",
+      "caution": "API 单独计费；无限生成仅覆盖指定模型。",
+      "plans": [
+        {
+          "name": "Essential",
+          "amount": 12,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "8,500 tokens/月"
+        },
+        {
+          "name": "Premium",
+          "amount": 30,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "25,000 tokens/月"
+        },
+        {
+          "name": "Ultimate",
+          "amount": 60,
+          "currency": "USD",
+          "billing": "monthly",
+          "quota": "60,000 tokens/月"
+        }
+      ],
+      "priceNote": "常规月付；token 为平台额度，不等于语言模型 token。",
+      "verification": "verified",
+      "sourceIds": [
+        "leonardo"
+      ]
+    }
+  ]
+}

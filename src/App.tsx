@@ -5,7 +5,6 @@ import { DocChapter } from './types';
 import { Sidebar } from './components/Sidebar';
 import { DocHeader } from './components/DocHeader';
 import { MarkdownRenderer } from './components/MarkdownRenderer';
-import { TableOfContents } from './components/TableOfContents';
 import { SearchModal } from './components/SearchModal';
 import { ArrowLeft, ArrowRight, Calendar } from 'lucide-react';
 
@@ -73,7 +72,7 @@ export default function App() {
       <div className={`flex flex-col min-h-screen pt-11 transition-all duration-300 ease-in-out ${
         isSidebarOpen ? 'lg:pl-72' : 'lg:pl-0'
       }`}>
-        <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-6 sm:py-8 lg:py-10 flex items-start justify-center xl:justify-between gap-8 xl:gap-10">
+        <main className="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-6 sm:py-8 lg:py-10 flex items-start justify-center">
           <div className="w-full min-w-0 max-w-[780px] xl:max-w-[820px]">
             <div className="pb-5 sm:pb-6 mb-5 sm:mb-7">
               <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -157,13 +156,6 @@ export default function App() {
               </div>
             </footer>
           </div>
-
-          <TableOfContents
-            content={activeChapter.content}
-            chapterTitle={activeChapter.title}
-            isLight={isLight}
-            isSidebarOpen={isSidebarOpen}
-          />
         </main>
       </div>
 

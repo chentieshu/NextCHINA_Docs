@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 @layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
   :root {
     --font-serif: "Noto Serif SC", serif;
     --font-display: "Cinzel", "Noto Serif SC", serif;
@@ -214,6 +218,8 @@ body {
   overflow-wrap: break-word;
 }
 .markdown-body th { font-weight: 650; white-space: nowrap; }
+.markdown-body td > :first-child { margin-top: 0; }
+.markdown-body td > :last-child { margin-bottom: 0; }
 .markdown-body tr:last-child td { border-bottom: 0; }
 
 .markdown-body input[type="checkbox"] {
@@ -251,20 +257,6 @@ body {
 .markdown-dark .md-codebar { color: #a0a0aa; background: #242429; }
 .markdown-dark thead { color: #e0e0e6; background: #28282d; }
 .markdown-dark tbody tr:nth-child(even) { background: #1d1d21; }
-
-@media (max-width: 1023px) {
-  html, body, #root {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-    overscroll-behavior-x: none;
-  }
-  body {
-    touch-action: pan-x pan-y;
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-  }
-}
 
 @media (max-width: 639px) {
   body { font-size: 16px; }

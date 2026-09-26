@@ -30,6 +30,54 @@ Image → Patches → Patch Embeddings → Vision Transformer → Visual Feature
 
 所以“看图”的第一步，本质上仍然是**表示学习**。
 
+## 2.5 从像素到矩阵：视觉模型真正收到什么？
+
+一张 RGB 图片可以写成张量：
+
+\[
+I\in\mathbb{R}^{H\times W\times 3}
+\]
+
+例如 1024×1024 图片包含：
+
+\[
+1024\times1024\times3=3,145,728
+\]
+
+个通道数值。模型不会把“三百万个像素值”直接当语言 token 使用，因此首先要压缩和结构化。
+
+如果 ViT 的 patch 大小是 \(P\times P\)，不考虑额外切图时 patch 数约为：
+
+\[
+N=\frac{H}{P}\times\frac{W}{P}
+\]
+
+例如 224×224 图片、16×16 patch：
+
+\[
+N=14\times14=196
+\]
+
+每个 patch 展平后：
+
+\[
+x_p\in\mathbb{R}^{P^2C}
+\]
+
+再通过线性投影：
+
+\[
+z_p=x_pE+b
+\]
+
+进入 Transformer hidden dimension。
+
+所以 Vision Transformer 的关键不是“把图片切块”这么简单，而是：
+
+> **把二维连续视觉信号转换成有限长度的向量序列。**
+
+这一步已经决定了模型后面能看到多少细节。
+
 ## 3. Visual Token 是什么？
 
 为了让视觉信息进入多模态 Transformer，图像通常会被编码成一组视觉特征或 visual tokens。
@@ -46,6 +94,22 @@ Image → Patches → Patch Embeddings → Vision Transformer → Visual Feature
 
 压缩越强，计算通常越省，但细粒度视觉信息也可能损失。这是 VLM 的核心工程 trade-off 之一。
 
+## 3.5 分辨率为什么直接影响 token 数和成本？
+
+如果 patch size 固定，图像宽高同时放大 2 倍，patch 数近似变成 4 倍。
+
+标准 self-attention 又需要比较 token 两两关系，因此视觉序列越长，计算和显存压力会快速上升。
+
+这就是为什么高分辨率 VLM 经常使用：
+
+- dynamic tiling；
+- multi-scale encoding；
+- resampler；
+- token pruning / merging；
+- region selection。
+
+模型不是“看到原图全部像素之后再决定忽略什么”，很多信息可能在视觉编码阶段就已经被压缩。
+
 ## 4. CLIP：视觉和语言为什么能对齐？
 
 CLIP 是理解现代 VLM 的关键节点。
@@ -61,6 +125,52 @@ Text  → Text Encoder ──┘
 CLIP 使用 4 亿图文对训练，并展示了自然语言作为视觉监督信号的可扩展性。[2]
 
 语言因此不只是输出，也可以成为理解视觉世界的监督接口。
+
+### CLIP 的数学核心：对比学习
+
+设一批训练数据有 \(N\) 对图像和文本。
+
+图像编码器得到：
+
+\[
+v_i=f_{image}(I_i)
+\]
+
+文本编码器得到：
+
+\[
+t_i=f_{text}(T_i)
+\]
+
+常见相似度使用归一化后的 cosine similarity：
+
+\[
+s_{ij}=\frac{v_i^Tt_j}{\|v_i\|\|t_j\|}
+\]
+
+正确配对 \((i,i)\) 应该比错误配对 \((i,j)\) 更相似。
+
+经过 temperature \(\tau\) 后，图像到文本方向的损失可以写成：
+
+\[
+L_{I\rightarrow T}
+=
+-\frac{1}{N}\sum_i
+\log
+\frac{\exp(s_{ii}/\tau)}
+{\sum_j\exp(s_{ij}/\tau)}
+\]
+
+再对文本到图像方向做同样计算。
+
+直觉：
+
+~~~text
+正确图文 → 拉近
+错误图文 → 推远
+~~~
+
+这就是“视觉和语言进入可比较语义空间”的数学基础之一。[2]
 
 ## 5. VLM 并没有唯一架构
 
@@ -90,6 +200,32 @@ Flamingo 连接预训练视觉和语言模型，通过跨模态机制处理任�
 
 但“原生多模态”不意味着所有厂商内部架构相同。商业模型往往不会公开完整实现。
 
+## 5.5 Cross-Attention：视觉和文字怎样真正发生计算交互？
+
+如果文本 hidden states 作为 Query，视觉 features 作为 Key/Value：
+
+\[
+Q=X_{text}W_Q
+\]
+
+\[
+K=X_{vision}W_K,\quad V=X_{vision}W_V
+\]
+
+则跨模态 attention：
+
+\[
+Attention(Q,K,V)
+=
+softmax\left(\frac{QK^T}{\sqrt{d_k}}\right)V
+\]
+
+含义是：
+
+> 当前语言位置根据自己的 Query，从视觉表示中选择性读取信息。
+
+不同架构可以反过来、双向交互，或者把视觉 token 与文字 token 直接拼到统一 Transformer 中。因此“VLM 如何融合视觉”必须看具体模型，不能统一画成一种 connector。
+
 ## 6. Connector 为什么关键？
 
 视觉编码器输出的空间，与 LLM 已经学到的语言表示并不天然兼容。
@@ -101,6 +237,14 @@ Vision Feature Space → Connector → Language-compatible Space
 ~~~
 
 Connector 可能是 linear projector、MLP、Q-Former、resampler、cross-attention 或更统一的 joint transformer。
+
+最简单的线性 projector 可以写成：
+
+\[
+Z_{lang}=Z_{vision}W_p+b
+\]
+
+它不是把图片“翻译成一句文字”，而是把视觉特征投影到后续语言模型更容易消费的 hidden dimension / representation space。
 
 BLIP-2 的 Q-Former 就是在冻结视觉编码器和冻结 LLM 之间建立信息桥梁。[4]
 
@@ -172,6 +316,30 @@ LLaVA 的 Visual Instruction Tuning 把视觉编码器与 LLM 连接，并使用
 
 普通互联网图文数据通常更强调“是什么”，而不是精确几何。SpatialVLM 等研究显示，加入高质量空间推理数据能够显著改善相关能力，说明空间能力并非只靠模型变大就自动完整出现。[6]
 
+## 11.5 视觉 Grounding 与“会说”为什么是两种能力？
+
+Caption 只要求模型生成总体描述；grounding 还要求语言概念对应到具体像素区域、box、point 或 object。
+
+例如：
+
+~~~text
+“红色杯子”
+   ↓
+语言概念
+   ↓
+必须对应 image 中某个区域
+~~~
+
+这需要模型保留更细的空间结构。
+
+如果视觉 encoder 过早把大量局部信息压成少数 global tokens，模型可能知道“有杯子”，却不知道杯子精确在哪里。
+
+因此：
+
+> semantic understanding ≠ spatial grounding
+
+同样，OCR 不是只识别“这是一张文档”，而是要求小尺度视觉 pattern 被保留到足以恢复字符。
+
 ## 12. 视频为什么比单张图片更难？
 
 视频增加了时间轴。
@@ -190,6 +358,22 @@ Multimodal Reasoning
 模型不仅要识别画面，还要理解事件先后、对象持续存在、动作、因果变化和长视频关键片段。
 
 如果每一帧都高分辨率 token 化，计算量会迅速增加，所以视频理解必须在采样、压缩、时序表示和上下文预算之间取舍。
+
+假设每帧产生 \(N_v\) 个 visual tokens，采样 \(F\) 帧，未经额外压缩时序列长度近似：
+
+\[
+N_{video}\approx F\times N_v
+\]
+
+如果每帧 576 visual tokens、采样 100 帧，就是约 57,600 个视觉位置，再加文本 token。
+
+这解释了为什么长视频模型必须认真处理：
+
+- frame sampling；
+- temporal pooling；
+- token compression；
+- key-frame selection；
+- memory hierarchy。
 
 2026 年 Gemini 3.6 Flash 的公开模型卡已把 image、audio、video 与 text 共同列为输入，并支持最高 1M token context。[7] 这代表产品级多模态理解已经远超早期“图片问答”的范围。
 
@@ -300,6 +484,38 @@ Multimodal Reasoning + Agent
 
 专业应用应把“模型回答”和“视觉证据”分开保存，必要时结合 OCR、检测器、搜索、代码和领域工具验证。
 
+## 19.5 VLM 训练实际上有多个目标层
+
+现代 VLM 训练不能简化成一个 loss。
+
+常见阶段可能包括：
+
+~~~text
+视觉自监督 / 分类预训练
+        ↓
+Image-Text Contrastive Alignment
+        ↓
+Caption / Next-token Training
+        ↓
+Multimodal Instruction Tuning
+        ↓
+Preference / RL / Reasoning Training
+~~~
+
+不同模型可能跳过、合并或联合训练这些阶段。
+
+因此 VLM 的能力可以拆成：
+
+| 层 | 学什么 |
+| --- | --- |
+| Vision Representation | 像素中有哪些模式 |
+| Alignment | 图像和语言如何对应 |
+| Fusion | 两种表示怎样交互 |
+| Generation | 怎样把联合状态生成语言 |
+| Instruction | 怎样遵循多模态要求 |
+| Reasoning | 怎样组合视觉证据解决复杂任务 |
+| Grounding | 语言概念怎样绑定到空间证据 |
+
 ## 20. 把 VLM 压缩成一张图
 
 ~~~text
@@ -320,9 +536,9 @@ Multimodal Transformer
 Language / Action / Tool Call
 ~~~
 
-VLM 的本质可以压缩成四件事：
+VLM 的本质可以压缩成六件事：
 
-> **视觉表示、跨模态对齐、联合计算、语言/行动输出。**
+> **像素压缩、视觉表示、跨模态对齐、联合计算、推理、语言/行动输出。**
 
 它与 LLM 最深层的连接是：两者都在把复杂世界压缩成可计算的表示，再通过大规模训练学习这些表示之间的关系。
 

@@ -34,41 +34,41 @@ Image → Patches → Patch Embeddings → Vision Transformer → Visual Feature
 
 一张 RGB 图片可以写成张量：
 
-\[
+$$
 I\in\mathbb{R}^{H\times W\times 3}
-\]
+$$
 
 例如 1024×1024 图片包含：
 
-\[
+$$
 1024\times1024\times3=3,145,728
-\]
+$$
 
 个通道数值。模型不会把“三百万个像素值”直接当语言 token 使用，因此首先要压缩和结构化。
 
-如果 ViT 的 patch 大小是 \(P\times P\)，不考虑额外切图时 patch 数约为：
+如果 ViT 的 patch 大小是 $P\times P$，不考虑额外切图时 patch 数约为：
 
-\[
+$$
 N=\frac{H}{P}\times\frac{W}{P}
-\]
+$$
 
 例如 224×224 图片、16×16 patch：
 
-\[
+$$
 N=14\times14=196
-\]
+$$
 
 每个 patch 展平后：
 
-\[
+$$
 x_p\in\mathbb{R}^{P^2C}
-\]
+$$
 
 再通过线性投影：
 
-\[
+$$
 z_p=x_pE+b
-\]
+$$
 
 进入 Transformer hidden dimension。
 
@@ -128,38 +128,38 @@ CLIP 使用 4 亿图文对训练，并展示了自然语言作为视觉监督信
 
 ### CLIP 的数学核心：对比学习
 
-设一批训练数据有 \(N\) 对图像和文本。
+设一批训练数据有 $N$ 对图像和文本。
 
 图像编码器得到：
 
-\[
+$$
 v_i=f_{image}(I_i)
-\]
+$$
 
 文本编码器得到：
 
-\[
+$$
 t_i=f_{text}(T_i)
-\]
+$$
 
 常见相似度使用归一化后的 cosine similarity：
 
-\[
+$$
 s_{ij}=\frac{v_i^Tt_j}{\|v_i\|\|t_j\|}
-\]
+$$
 
-正确配对 \((i,i)\) 应该比错误配对 \((i,j)\) 更相似。
+正确配对 $(i,i)$ 应该比错误配对 $(i,j)$ 更相似。
 
-经过 temperature \(\tau\) 后，图像到文本方向的损失可以写成：
+经过 temperature $\tau$ 后，图像到文本方向的损失可以写成：
 
-\[
+$$
 L_{I\rightarrow T}
 =
 -\frac{1}{N}\sum_i
 \log
 \frac{\exp(s_{ii}/\tau)}
 {\sum_j\exp(s_{ij}/\tau)}
-\]
+$$
 
 再对文本到图像方向做同样计算。
 
@@ -204,21 +204,21 @@ Flamingo 连接预训练视觉和语言模型，通过跨模态机制处理任�
 
 如果文本 hidden states 作为 Query，视觉 features 作为 Key/Value：
 
-\[
+$$
 Q=X_{text}W_Q
-\]
+$$
 
-\[
+$$
 K=X_{vision}W_K,\quad V=X_{vision}W_V
-\]
+$$
 
 则跨模态 attention：
 
-\[
+$$
 Attention(Q,K,V)
 =
 softmax\left(\frac{QK^T}{\sqrt{d_k}}\right)V
-\]
+$$
 
 含义是：
 
@@ -240,9 +240,9 @@ Connector 可能是 linear projector、MLP、Q-Former、resampler、cross-attent
 
 最简单的线性 projector 可以写成：
 
-\[
+$$
 Z_{lang}=Z_{vision}W_p+b
-\]
+$$
 
 它不是把图片“翻译成一句文字”，而是把视觉特征投影到后续语言模型更容易消费的 hidden dimension / representation space。
 
@@ -359,11 +359,11 @@ Multimodal Reasoning
 
 如果每一帧都高分辨率 token 化，计算量会迅速增加，所以视频理解必须在采样、压缩、时序表示和上下文预算之间取舍。
 
-假设每帧产生 \(N_v\) 个 visual tokens，采样 \(F\) 帧，未经额外压缩时序列长度近似：
+假设每帧产生 $N_v$ 个 visual tokens，采样 $F$ 帧，未经额外压缩时序列长度近似：
 
-\[
+$$
 N_{video}\approx F\times N_v
-\]
+$$
 
 如果每帧 576 visual tokens、采样 100 帧，就是约 57,600 个视觉位置，再加文本 token。
 

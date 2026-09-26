@@ -1,0 +1,57 @@
+{
+  "products": [
+    {
+      "id": "chatgpt",
+      "name": "ChatGPT",
+      "aliases": [],
+      "categories": [
+        "image",
+        "text",
+        "agent"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [],
+      "features": [
+        "文本、文件与图像处理",
+        "研究与已授权工具工作流"
+      ],
+      "selection": "通用写作、资料整理和多模态任务入口",
+      "caution": "应用订阅不等于 API 额度；工具权限和地区需单独核查。",
+      "plans": [],
+      "priceNote": "Free / Go / Plus / Pro 等套餐可见；本次返回文本未显示地区化金额。",
+      "verification": "verified",
+      "sourceIds": [
+        "chatgpt"
+      ]
+    },
+    {
+      "id": "gemini",
+      "name": "Gemini",
+      "aliases": [],
+      "categories": [
+        "text",
+        "image",
+        "agent"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [
+        "Gemini",
+        "Nano Banana 2"
+      ],
+      "features": [
+        "多模态助理",
+        "Deep Research 与 Google 应用协作"
+      ],
+      "selection": "需要 Google 应用生态和资料研究",
+      "caution": "应用套餐、API 和不同地区功能不可混为一谈。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "verified",
+      "sourceIds": [
+        "google"
+      ]
+    }
+  ]
+}

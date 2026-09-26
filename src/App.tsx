@@ -74,7 +74,7 @@ export default function App() {
 
     <Sidebar chapters={spaceChapters} activeChapterId={activeChapter?.id ?? ''} onSelectChapter={openArticle}
       onOpenSearch={() => setIsSearchOpen(true)} isOpenMobile={isMobileMenuOpen} onCloseMobile={() => setIsMobileMenuOpen(false)}
-      isSidebarOpen={isSidebarOpen} onToggleSidebar={() => setIsSidebarOpen(value => !value)} isLight={isLight}
+      isSidebarOpen={isSidebarOpen} isLight={isLight}
       spaces={DOC_SPACES} activeSpaceId={activeSpace.id} onSelectSpace={enterDocs} />
 
     <div className={`min-h-screen pt-11 transition-all duration-300 ${isSidebarOpen ? 'lg:pl-80' : 'lg:pl-0'}`}>

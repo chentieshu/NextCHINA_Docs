@@ -1,0 +1,319 @@
+{
+  "benchmarks": [
+    {
+      "id": "arena-text",
+      "title": "大模型榜单：Arena 人类偏好 Top 15 快照",
+      "scope": "model",
+      "sourceId": "arena",
+      "snapshotDate": "2026-08-06",
+      "metric": "Arena score",
+      "unit": "分",
+      "rankType": "source-order",
+      "warning": "2026-08-06 页面快照，不是 2026-09-26 即时榜。分数接近且误差重叠时，不能断言严格优劣；保留来源显示顺序。",
+      "rows": [
+        {
+          "id": "arena-1",
+          "rank": 1,
+          "name": "claude-fable-5",
+          "provider": "Anthropic",
+          "score": 1507,
+          "uncertainty": 6,
+          "votes": 19390,
+          "preliminary": false
+        },
+        {
+          "id": "arena-2",
+          "rank": 2,
+          "name": "claude-opus-4-6-thinking",
+          "provider": "Anthropic",
+          "score": 1505,
+          "uncertainty": 4,
+          "votes": 69336,
+          "preliminary": false
+        },
+        {
+          "id": "arena-3",
+          "rank": 3,
+          "name": "claude-opus-4-7-thinking",
+          "provider": "Anthropic",
+          "score": 1502,
+          "uncertainty": 4,
+          "votes": 57018,
+          "preliminary": false
+        },
+        {
+          "id": "arena-4",
+          "rank": 4,
+          "name": "muse-spark-1.2 (xHigh)",
+          "provider": "Meta",
+          "score": 1498,
+          "uncertainty": 13,
+          "votes": 2057,
+          "preliminary": false
+        },
+        {
+          "id": "arena-5",
+          "rank": 5,
+          "name": "claude-opus-4-6",
+          "provider": "Anthropic",
+          "score": 1497,
+          "uncertainty": 3,
+          "votes": 73158,
+          "preliminary": false
+        },
+        {
+          "id": "arena-6",
+          "rank": 6,
+          "name": "qwen3.8-max",
+          "provider": "Alibaba",
+          "score": 1497,
+          "uncertainty": 9,
+          "votes": 4662,
+          "preliminary": true
+        },
+        {
+          "id": "arena-7",
+          "rank": 7,
+          "name": "claude-opus-4-7",
+          "provider": "Anthropic",
+          "score": 1493,
+          "uncertainty": 4,
+          "votes": 58135,
+          "preliminary": false
+        },
+        {
+          "id": "arena-8",
+          "rank": 8,
+          "name": "claude-opus-5-high",
+          "provider": "Anthropic",
+          "score": 1493,
+          "uncertainty": 6,
+          "votes": 14902,
+          "preliminary": false
+        },
+        {
+          "id": "arena-9",
+          "rank": 9,
+          "name": "claude-opus-5-max",
+          "provider": "Anthropic",
+          "score": 1488,
+          "uncertainty": 8,
+          "votes": 7137,
+          "preliminary": false
+        },
+        {
+          "id": "arena-10",
+          "rank": 10,
+          "name": "muse-spark",
+          "provider": "Meta",
+          "score": 1488,
+          "uncertainty": 6,
+          "votes": 13476,
+          "preliminary": true
+        },
+        {
+          "id": "arena-11",
+          "rank": 11,
+          "name": "muse-spark-1.1",
+          "provider": "Meta",
+          "score": 1487,
+          "uncertainty": 6,
+          "votes": 14227,
+          "preliminary": true
+        },
+        {
+          "id": "arena-12",
+          "rank": 12,
+          "name": "gemini-3.1-pro-preview",
+          "provider": "Google",
+          "score": 1487,
+          "uncertainty": 3,
+          "votes": 91328,
+          "preliminary": false
+        },
+        {
+          "id": "arena-13",
+          "rank": 13,
+          "name": "gemini-3-pro",
+          "provider": "Google",
+          "score": 1486,
+          "uncertainty": 4,
+          "votes": 41242,
+          "preliminary": false
+        },
+        {
+          "id": "arena-14",
+          "rank": 14,
+          "name": "kimi-k3-max",
+          "provider": "Moonshot",
+          "score": 1485,
+          "uncertainty": 7,
+          "votes": 9861,
+          "preliminary": true
+        },
+        {
+          "id": "arena-15",
+          "rank": 15,
+          "name": "gemini-3.6-flash",
+          "provider": "Google",
+          "score": 1485,
+          "uncertainty": 6,
+          "votes": 10968,
+          "preliminary": true
+        }
+      ]
+    },
+    {
+      "id": "aa-intelligence",
+      "title": "大模型榜单：Artificial Analysis 已披露成绩",
+      "scope": "model",
+      "sourceId": "aa",
+      "snapshotDate": "2026-09-07",
+      "metric": "Intelligence Index v4.3",
+      "unit": "分",
+      "rankType": "unranked-excerpt",
+      "warning": "官方版本文章的六项成绩摘录，不是完整 Top 6 或实时总榜，名次为 null。不同评测版本不可跨表混排。",
+      "rows": [
+        {
+          "id": "aa-1",
+          "rank": null,
+          "name": "Claude Fable 5.1 (max with fallback)",
+          "score": 53
+        },
+        {
+          "id": "aa-2",
+          "rank": null,
+          "name": "GPT-6 Astra (max)",
+          "score": 53
+        },
+        {
+          "id": "aa-3",
+          "rank": null,
+          "name": "Claude Opus 5 (max)",
+          "score": 51
+        },
+        {
+          "id": "aa-4",
+          "rank": null,
+          "name": "Claude Fable 5 (with fallback)",
+          "score": 50
+        },
+        {
+          "id": "aa-5",
+          "rank": null,
+          "name": "Muse Spark 1.3 (max)",
+          "score": 48
+        },
+        {
+          "id": "aa-6",
+          "rank": null,
+          "name": "GPT-5.6 Sol (max)",
+          "score": 47
+        }
+      ]
+    },
+    {
+      "id": "terminal-bench",
+      "title": "Agent 榜单：Terminal-Bench 2.0 Top 10 快照",
+      "scope": "agent",
+      "sourceId": "tbench",
+      "snapshotDate": null,
+      "metric": "Accuracy",
+      "unit": "%",
+      "rankType": "source-order",
+      "warning": "历史 2.0 版本配置榜，非最新基准、非产品热度榜。每项成绩属于 Agent + 模型 + 运行配置；同名 LemonHarness 的两次不同成绩保留独立记录。",
+      "rows": [
+        {
+          "id": "tb2-1",
+          "rank": 1,
+          "name": "NexAU-AHE",
+          "model": "GPT-5.5",
+          "submittedAt": "2026-05-14",
+          "score": 84.7,
+          "uncertainty": 2.1
+        },
+        {
+          "id": "tb2-2",
+          "rank": 2,
+          "name": "LemonHarness",
+          "model": "Multiple",
+          "submittedAt": "2026-05-14",
+          "score": 84.5,
+          "uncertainty": 2.6
+        },
+        {
+          "id": "tb2-3",
+          "rank": 3,
+          "name": "Capy",
+          "model": "GPT-5.5",
+          "submittedAt": "2026-05-14",
+          "score": 83.1,
+          "uncertainty": 2.1
+        },
+        {
+          "id": "tb2-4",
+          "rank": 4,
+          "name": "Codex CLI",
+          "model": "GPT-5.5",
+          "submittedAt": "2026-04-23",
+          "score": 82.2,
+          "uncertainty": 2.2
+        },
+        {
+          "id": "tb2-5",
+          "rank": 5,
+          "name": "Polaris",
+          "model": "Multiple",
+          "submittedAt": "2026-05-14",
+          "score": 82.2,
+          "uncertainty": 2.8
+        },
+        {
+          "id": "tb2-6",
+          "rank": 6,
+          "name": "WOZCODE",
+          "model": "Claude Opus 4.7",
+          "submittedAt": "2026-05-14",
+          "score": 80.2,
+          "uncertainty": 2.1
+        },
+        {
+          "id": "tb2-7",
+          "rank": 7,
+          "name": "TongAgents",
+          "model": "Gemini 3.1 Pro",
+          "submittedAt": "2026-03-13",
+          "score": 80.2,
+          "uncertainty": 2.6
+        },
+        {
+          "id": "tb2-8",
+          "rank": 8,
+          "name": "LemonHarness",
+          "model": "Multiple",
+          "submittedAt": "2026-05-14",
+          "score": 79.9,
+          "uncertainty": 3
+        },
+        {
+          "id": "tb2-9",
+          "rank": 9,
+          "name": "SageAgent",
+          "model": "GPT-5.3-Codex",
+          "submittedAt": "2026-03-13",
+          "score": 78.4,
+          "uncertainty": 2.2
+        },
+        {
+          "id": "tb2-10",
+          "rank": 10,
+          "name": "Droid",
+          "model": "GPT-5.3-Codex",
+          "submittedAt": "2026-02-24",
+          "score": 77.3,
+          "uncertainty": 2.2
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { extractMarkdownHeadings, getReactNodeText, slugifyHeading } from '../utils/slugify';
+import { getReactNodeText, slugifyHeading } from '../utils/slugify';
 import { Copy, Check } from 'lucide-react';
 
 interface MarkdownRendererProps {
@@ -11,9 +11,13 @@ interface MarkdownRendererProps {
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, isLight }) => {
   const [copiedCode, setCopiedCode] = React.useState<string | null>(null);
-  const renderedHeadingIds = React.useMemo(() => extractMarkdownHeadings(content, [1, 2, 3, 4, 5, 6]).map(heading => heading.id), [content]);
-  let headingIndex = 0;
-  const headingId = (text: string) => renderedHeadingIds[headingIndex++] ?? slugifyHeading(text) ?? 'section';
+  const headingOccurrences = new Map<string, number>();
+  const headingId = (text: string) => {
+    const base = slugifyHeading(text) || 'section';
+    const occurrence = headingOccurrences.get(base) ?? 0;
+    headingOccurrences.set(base, occurrence + 1);
+    return occurrence === 0 ? base : `${base}-${occurrence + 1}`;
+  };
 
   const handleCopy = async (text: string) => {
     await navigator.clipboard?.writeText(text);
@@ -39,9 +43,9 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, isL
           img: ({ src, alt, title }) => <img src={src} alt={alt ?? ''} title={title} loading="lazy" decoding="async" />,
           input: (props) => <input {...props} disabled={props.type === 'checkbox' ? true : props.disabled} />,
           pre: ({ children }) => {
-            const child = React.Children.toArray(children)[0];
-            if (!React.isValidElement<{ className?: string; children?: React.ReactNode }>(child)) {
-              return <pre>{children}</pre>;
+            const child = React.Children.toArray(children).find((node) => React.isValidElement(node));
+            if (!React.isValidElement<{ className?: string; children?: React.ReactNode }>(child) || child.type !== 'code') {
+              return <pre className="md-plain-pre">{children}</pre>;
             }
             const code = String(child.props.children ?? '').replace(/\n$/, '');
             const language = child.props.className?.replace('language-', '') || 'code';

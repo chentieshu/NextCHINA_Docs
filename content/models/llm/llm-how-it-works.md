@@ -245,17 +245,125 @@ Transformer block 通常还包含占据大量参数和计算的前馈网络。
 
 ## 8. 参数与训练：模型究竟学了什么？
 
+训练目标可以从最大似然开始理解。给定 token 序列：
+
+\[
+x_1,x_2,...,x_T
+\]
+
+自回归模型把整段文本的概率分解为：
+
+\[
+P(x_1,...,x_T)=\prod_{t=1}^{T}P(x_t\mid x_{<t})
+\]
+
+直接最大化大量小概率的乘积在数值上不方便，所以通常取对数，并最小化负对数似然：
+
+\[
+\mathcal{L}_{NLL}=-\sum_{t=1}^{T}\log P_\theta(x_t\mid x_{<t})
+\]
+
+对于 one-hot 目标，这就是常见的 token-level cross-entropy。
+
+如果正确 token 的预测概率是 \(p\)，单个位置的 loss：
+
+\[
+L=-\log p
+\]
+
+例如：
+
+- 正确 token 概率 0.9 → loss 很小；
+- 正确 token 概率 0.01 → loss 很大。
+
+所以训练本质上是在不断推动：
+
+> **真实训练 token 的条件概率变高。**
+
+### Gradient 到底是什么？
+
+模型参数记作 \(\theta\)，loss 是 \(L(\theta)\)。
+
+梯度：
+
+\[
+\nabla_\theta L
+\]
+
+表示 loss 对每个参数变化的局部敏感方向。
+
+最基础的梯度下降可以写成：
+
+\[
+\theta_{t+1}=\theta_t-\eta\nabla_\theta L
+\]
+
+其中 \(\eta\) 是 learning rate。
+
+真实训练通常使用 Adam/AdamW 等优化器、学习率调度、混合精度、梯度裁剪和分布式训练，但底层逻辑仍然是：
+
 ~~~text
-训练文本 → 预测 next token → Loss → Backpropagation → Gradient + Optimizer → 更新参数
+Forward
+ ↓
+Prediction
+ ↓
+Loss
+ ↓
+Backpropagation
+ ↓
+Gradients
+ ↓
+Optimizer
+ ↓
+New Parameters
 ~~~
 
 参数不是“参数 10001 = 法国、参数 10002 = 巴黎”这样的知识表。知识、语言规律和计算模式以分布式方式存在于大量权重和运行时激活中。
+
+### Perplexity 是什么？
+
+语言模型常用 perplexity 描述平均预测不确定性：
+
+\[
+PPL=\exp\left(\frac{1}{T}\mathcal{L}_{NLL}\right)
+\]
+
+在相同 tokenizer、数据和评测设置下，perplexity 越低通常表示 next-token prediction 越好；但它不能直接等价为“推理能力”“事实正确率”或“用户更喜欢”。
 
 ## 9. 为什么预测下一个 token 能产生复杂能力？
 
 因为要持续预测正确，模型必须压缩训练数据里的大量结构。预测科学文本需要知识关系；补全代码需要语法、API 和算法模式；续写长文需要人物、主题和远距离依赖。
 
 但神经网络如何形成抽象概念、算法与推理机制，仍是活跃研究问题。
+
+## 9.5 Dense 与 MoE：参数是不是每次都全部运行？
+
+Dense Transformer 的一个典型特点是，每个 token 会经过同一组主要层参数。
+
+Mixture-of-Experts（MoE）则把部分 FFN/MLP 替换成多个 experts，并由 router 为每个 token 选择少量 expert：
+
+\[
+g(x)=softmax(W_r x)
+\]
+
+若只选择 Top-k experts：
+
+\[
+y=\sum_{i\in TopK(g(x))}g_i(x)E_i(x)
+\]
+
+于是模型可以拥有很大的**总参数量**，但每个 token 只激活其中一部分。
+
+因此必须区分：
+
+| 概念 | 含义 |
+| --- | --- |
+| Total Parameters | 模型总参数 |
+| Active Parameters | 一个 token 实际经过的参数 |
+| Experts | 可被 router 选择的子网络 |
+| Top-k Routing | 每个 token 激活多少 experts |
+
+MoE 的价值是扩大容量与计算效率之间的设计空间，但也增加路由、负载均衡、通信和 serving 的复杂度。**“总参数更大”不等于“每 token 计算量同比增加”。**
 
 ## 10. Scaling：参数越大一定越好吗？
 
@@ -299,6 +407,41 @@ Prompt → Tokenizer → Token IDs → Embedding → Transformer × N → Logits
 
 Logits 是词表候选的未归一化分数。Temperature、top-p 等 decoding 设置会影响最终选择，所以相同 prompt 不必产生完全相同回答。
 
+## 13.5 Prefill 与 Decode：一次请求其实有两个阶段
+
+LLM serving 常被拆成：
+
+### Prefill
+
+把整段 prompt 一次送入模型，计算所有输入 token 的 hidden states 和 K/V。
+
+它更像大矩阵并行计算，通常更偏 **compute-bound**。
+
+### Decode
+
+之后每次生成一个新 token，并读取历史 KV cache。
+
+~~~text
+Prompt tokens
+   ↓
+PREFILL
+   ↓
+KV Cache
+   ↓
+token 1
+   ↓
+DECODE → token 2 → DECODE → token 3 ...
+~~~
+
+Decode 每一步处理的新 token 很少，却需要反复读取大量模型权重与 KV cache，因此经常更受 memory bandwidth 影响。
+
+这也是为什么：
+
+- TTFT（Time To First Token）；
+- TPS（Tokens Per Second）；
+
+是两个不同的性能指标。
+
 ## 14. KV Cache：为什么历史计算可以复用？
 
 Attention 中历史 token 的 Key 和 Value 可以缓存，生成新 token 时复用，这就是 KV cache 的基本思想。
@@ -310,6 +453,34 @@ Attention 中历史 token 的 Key 和 Value 可以缓存，生成新 token 时�
 ~~~
 
 它显著加速生成，但上下文越长，缓存通常也越大，所以 context window 同时是算法和系统工程问题。
+
+### KV Cache 为什么这么占内存？
+
+粗略忽略实现差异，KV cache 的元素数量与：
+
+\[
+2\times L\times n_{kv}\times d_{head}\times T
+\]
+
+成正比，其中：
+
+- \(L\)：Transformer 层数；
+- \(n_{kv}\)：KV heads 数；
+- \(d_{head}\)：每个 head 维度；
+- \(T\)：缓存 token 数；
+- 乘 2 是因为同时缓存 K 与 V。
+
+再乘数据类型每元素字节数，就得到近似内存占用。
+
+### MHA、MQA、GQA 为什么影响推理？
+
+传统 Multi-Head Attention 通常让多个 query head 各自拥有 K/V head。
+
+Multi-Query Attention（MQA）让多个 query heads 共享一组 K/V，大幅减少 KV cache。
+
+Grouped-Query Attention（GQA）位于两者之间：多个 query heads 分组共享 K/V heads。研究显示 GQA 可以在质量接近 MHA 的同时获得接近 MQA 的推理速度优势。[9]
+
+所以今天看到模型规格中的 “GQA” 并不是小细节，它直接影响长上下文 serving 成本。
 
 ## 15. FlashAttention：模型速度不只由模型决定
 

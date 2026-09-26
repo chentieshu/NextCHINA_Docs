@@ -11,12 +11,12 @@
     },
     {
       "id": "aa",
-      "title": "Artificial Analysis Intelligence Index v4.3",
-      "url": "https://artificialanalysis.ai/articles/artificial-analysis-intelligence-index-v4-3",
-      "access": "snapshot",
-      "checkedAt": "2026-09-26",
-      "sourceDate": "2026-09-07",
-      "note": "官方文章披露的部分成绩；不是完整实时排行榜。实时模型榜页面本次未能完整读取。"
+      "title": "Artificial Analysis LLM Leaderboard",
+      "url": "https://artificialanalysis.ai/leaderboards/models",
+      "access": "read",
+      "checkedAt": "2026-09-27",
+      "sourceDate": null,
+      "note": "当前官方 Leaderboard / 模型页。Index v4.3.2 包含 10 项评测；官网当前状态仍持续更新，带分数快照与更晚出现的新模型需区分。"
     },
     {
       "id": "tbench",

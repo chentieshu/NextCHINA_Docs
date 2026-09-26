@@ -1,8 +1,12 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 import { createMarkdownSlugger, getReactNodeText } from '../utils/slugify';
 import { Copy, Check } from 'lucide-react';
+import { MermaidDiagram } from './MermaidDiagram';
 
 interface MarkdownRendererProps {
   content: string;
@@ -23,7 +27,8 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, isL
   return (
     <article className={`markdown-body w-full min-w-0 font-sans text-[15px] sm:text-base ${isLight ? 'markdown-light' : 'markdown-dark'}`}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkMath]}
+        rehypePlugins={[rehypeKatex]}
         components={{
           h1: ({ children }) => <h1 id={headingId(getReactNodeText(children))}>{children}</h1>,
           h2: ({ children }) => <h2 id={headingId(getReactNodeText(children))}>{children}</h2>,
@@ -44,6 +49,9 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, isL
             }
             const code = String(child.props.children ?? '').replace(/\n$/, '');
             const language = child.props.className?.replace('language-', '') || 'code';
+            if (language.toLowerCase() === 'mermaid') {
+              return <MermaidDiagram chart={code} isLight={isLight} />;
+            }
             return (
               <div className="md-codeblock">
                 <div className="md-codebar">

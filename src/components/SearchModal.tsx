@@ -67,7 +67,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, chapt
   if (!isOpen) return null;
 
   return (
-    <div onClick={onClose} className="fixed inset-0 z-50 flex items-start justify-center pt-16 px-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-150 cursor-pointer">
+    <div onClick={onClose} className={`fixed inset-0 z-50 flex items-start justify-center pt-16 px-4 backdrop-blur-sm animate-in fade-in duration-150 cursor-pointer ${isLight ? 'bg-white/80' : 'bg-black/65'}`}>
       <div onClick={event => event.stopPropagation()} role="dialog" aria-modal="true" aria-label="搜索 NextCHINA AI 调研库"
         className={`w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col cursor-default ${isLight ? 'bg-[#f6f6f9] text-[#2c2c30]' : 'bg-[#222226] text-[#cfcfd5]'}`}>
         <div className={`flex items-center px-4 py-3.5 ${isLight ? 'bg-[#eeeeF2]' : 'bg-[#1a1a1d]'}`}>

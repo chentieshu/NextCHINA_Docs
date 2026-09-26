@@ -1,7 +1,21 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const data = JSON.parse(readFileSync(new URL('../content/data/ai-research.json', import.meta.url), 'utf8'));
+const readJson = path => JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'));
+const meta = readJson('../content/data/research-meta.json');
+const categories = readJson('../content/data/categories.json');
+const sources = readJson('../content/data/sources.json');
+const products = readJson('../content/data/products.json');
+const benchmarks = readJson('../content/data/benchmarks.json');
+const apiPrices = readJson('../content/data/model-api-prices.json');
+const data = {
+  ...meta,
+  categories: categories.categories,
+  sources: sources.sources,
+  products: products.products,
+  benchmarks: benchmarks.benchmarks,
+  modelApiPrices: apiPrices.modelApiPrices
+};
 const uniqueIds = (items, label) => {
   assert.equal(new Set(items.map(item => item.id)).size, items.length, `${label}: duplicate IDs`);
   for (const item of items) assert.match(item.id, /^[a-z0-9][a-z0-9-]*$/, `${label}: invalid ID`);

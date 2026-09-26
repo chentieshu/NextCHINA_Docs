@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { DOC_CHAPTERS as RESEARCH_CHAPTERS } from './data/docs';
 import { ESSAY_CHAPTERS } from './data/essays';
-import { ReadingPreferences, DocChapter } from './types';
+import { DocChapter } from './types';
 import { Sidebar } from './components/Sidebar';
 import { DocHeader } from './components/DocHeader';
 import { MDXRenderer } from './components/MDXRenderer';
 import { TableOfContents } from './components/TableOfContents';
 import { SearchModal } from './components/SearchModal';
-import { PresentationModal } from './components/presentation/PresentationModal';
 import { ArrowLeft, ArrowRight, Calendar } from 'lucide-react';
 
 const DOC_CHAPTERS = [...RESEARCH_CHAPTERS, ...ESSAY_CHAPTERS];
@@ -17,30 +16,8 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
-  const [isPresentationOpen, setIsPresentationOpen] = useState<boolean>(false);
 
-  const [preferences, setPreferences] = useState<ReadingPreferences>(() => {
-    try {
-      const saved = localStorage.getItem('art_tech_read_pref');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return {
-          themeScheme: parsed.themeScheme === 'dark' ? 'dark' : 'light',
-          fontSize: parsed.fontSize || 'base',
-          fontFamily: parsed.fontFamily || 'sans',
-          contentWidth: parsed.contentWidth || 'normal'
-        };
-      }
-    } catch {
-      // ignore
-    }
-    return {
-      themeScheme: 'light',
-      fontSize: 'base',
-      fontFamily: 'sans',
-      contentWidth: 'normal'
-    };
-  });
+  const [isLight, setIsLight] = useState<boolean>(true);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -60,22 +37,8 @@ export default function App() {
   const activeChapter: DocChapter = DOC_CHAPTERS.find((c: DocChapter) => c.id === activeChapterId) || DOC_CHAPTERS[0];
   const activeIndex = DOC_CHAPTERS.findIndex((c: DocChapter) => c.id === activeChapter.id);
 
-  const handleUpdatePreferences = (updated: Partial<ReadingPreferences>) => {
-    setPreferences(prev => {
-      const next = { ...prev, ...updated };
-      try {
-        localStorage.setItem('art_tech_read_pref', JSON.stringify(next));
-      } catch {
-        // ignore
-      }
-      return next;
-    });
-  };
-
   const prevChapter = activeIndex > 0 ? DOC_CHAPTERS[activeIndex - 1] : null;
   const nextChapter = activeIndex < DOC_CHAPTERS.length - 1 ? DOC_CHAPTERS[activeIndex + 1] : null;
-
-  const isLight = preferences.themeScheme === 'light';
 
   const themeClasses = isLight
     ? 'bg-[#ffffff] text-[#2c2c30] selection:bg-[#e4e4e8] selection:text-[#1c1c20]'
@@ -85,13 +48,12 @@ export default function App() {
     <div id="art-tech-docs-root" className={`min-h-screen ${themeClasses} transition-colors duration-200`}>
       <DocHeader
         currentChapter={activeChapter}
-        preferences={preferences}
-        onUpdatePreferences={handleUpdatePreferences}
+        isLight={isLight}
+        onToggleTheme={() => setIsLight(prev => !prev)}
         isSidebarOpen={isSidebarOpen}
         onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
         onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
         onOpenSearch={() => setIsSearchOpen(true)}
-        onOpenPresentation={() => setIsPresentationOpen(true)}
         totalChapters={DOC_CHAPTERS.length}
         currentIndex={activeIndex + 1}
       />
@@ -143,10 +105,7 @@ export default function App() {
               </p>
             </div>
 
-            <MDXRenderer
-              content={activeChapter.content}
-              preferences={preferences}
-            />
+            <MDXRenderer content={activeChapter.content} isLight={isLight} />
 
             <div className="mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
               {prevChapter ? (
@@ -216,14 +175,6 @@ export default function App() {
         isLight={isLight}
       />
 
-      <PresentationModal
-        isOpen={isPresentationOpen}
-        onClose={() => setIsPresentationOpen(false)}
-        onNavigateToChapter={(id) => {
-          setActiveChapterId(id);
-          setIsPresentationOpen(false);
-        }}
-      />
     </div>
   );
 }

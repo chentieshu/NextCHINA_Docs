@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { DocChapter } from '../types';
-import { slugifyHeading } from '../utils/slugify';
+import { extractMarkdownHeadings } from '../utils/slugify';
 import { 
   Search, 
   ChevronRight, 
@@ -45,18 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const chapterHeadingsMap = useMemo(() => {
     const map = new Map<string, ChapterHeading[]>();
     chapters.forEach(ch => {
-      const headingRegex = /^(#{2,3})\s+(.+)$/gm;
-      const headings: ChapterHeading[] = [];
-      let match;
-      while ((match = headingRegex.exec(ch.content)) !== null) {
-        const level = match[1].length;
-        const rawText = match[2].trim();
-        const cleanTitle = rawText.replace(/[*_`>#~]/g, '').trim();
-        const id = slugifyHeading(cleanTitle);
-        if (cleanTitle && id) {
-          headings.push({ id, title: cleanTitle, level });
-        }
-      }
+      const headings = extractMarkdownHeadings(ch.content, [2, 3]);
       map.set(ch.id, headings);
     });
     return map;

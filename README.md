@@ -1,12 +1,11 @@
 # NextCHINA · AI 到哪了？
 
-AI SaaS、大模型榜单、Agent 产品和构建平台的中文调研文档。现有 React 阅读、搜索、目录与演示界面保留，活动内容统一由 JSON 数据生成。
+AI SaaS、大模型榜单、Agent 产品和构建平台的中文调研文档。现有 React 阅读、搜索与目录界面由统一 JSON 数据驱动。
 
 ## 数据入口
 
 - `src/data/ai-research.json`：产品、套餐、来源、基准快照、API 价格与待核验项的唯一数据源。
 - `src/data/docs.ts`：由数据生成章节、表格、搜索内容和演示摘要。
-- `src/components/presentation/presentationData.ts`：从章节与摘要派生演示，不另维护一套榜单数值。
 - `scripts/validate-research.mjs`：不依赖第三方包的数据结构与引用校验。
 
 ## 核验与排名规则
@@ -33,4 +32,4 @@ npm run build
 
 数据校验可不安装依赖直接运行 `node scripts/validate-research.mjs`；类型检查和 Vite 构建需要安装项目依赖。数据测试不能代替完整应用构建或浏览器验收。
 
-旧艺术科技交互组件与演示图形属于保留的 UI 组件库，本次活动章节不再引用这些组件的数据或旧主题。恢复之前内容应通过 Git 历史回滚，不在活动数据里并列保留另一套过期文档。
+旧艺术科技交互组件属于保留的 UI 组件库，本次活动章节不再引用这些组件的数据或旧主题。恢复之前内容应通过 Git 历史回滚，不在活动数据里并列保留另一套过期文档。

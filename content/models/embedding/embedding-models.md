@@ -2,9 +2,9 @@
 
 ## 1. Embedding 是什么？
 
-\[
+$$
 f(x)=z\in\mathbb R^d
-\]
+$$
 
 一句话、图片或商品最终变成固定维度向量。
 
@@ -12,9 +12,9 @@ f(x)=z\in\mathbb R^d
 
 常见 cosine similarity：
 
-\[
+$$
 cos(a,b)=\frac{a\cdot b}{\|a\|\|b\|}
-\]
+$$
 
 方向越接近，相似度越高。
 
@@ -28,9 +28,9 @@ Docs  → Embeddings ┘
 
 常见 contrastive objective：
 
-\[
+$$
 L=-\log\frac{\exp(sim(q,d^+)/\tau)}{\sum_j\exp(sim(q,d_j)/\tau)}
-\]
+$$
 
 正样本拉近，负样本推远。
 
@@ -50,9 +50,9 @@ Dense embedding 依赖连续向量语义；BM25 等 sparse retrieval 更强调�
 
 Hybrid search 可以组合：
 
-\[
+$$
 score=\lambda score_{dense}+(1-\lambda)score_{sparse}
-\]
+$$
 
 然后再使用 reranker。
 

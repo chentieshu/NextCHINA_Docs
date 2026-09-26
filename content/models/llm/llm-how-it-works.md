@@ -48,17 +48,181 @@ Hidden States → LM Head → Logits → Decoding → Next Token
 
 现代模型在 attention、MLP、MoE、normalization、位置机制等方面存在大量差异，因此这是一张原理图，不是所有模型完全相同的实现图。
 
+## 4.5 从 Logits 到概率：LLM 最基本的数学
+
+假设词表只有 4 个 token：
+
+| Token | Logit |
+| --- | ---: |
+| 猫 | 2.0 |
+| 狗 | 1.0 |
+| 飞机 | 0.0 |
+| 苹果 | -1.0 |
+
+神经网络最后一层先输出的不是概率，而是一组 **logits**：可以理解为尚未归一化的偏好分数。
+
+Softmax 把 logits \(z_i\) 转成概率：
+
+\[
+p_i = \frac{e^{z_i}}{\sum_j e^{z_j}}
+\]
+
+因为指数函数始终为正，再除以所有候选之和，最终每个 \(p_i\) 都在 0 到 1 之间，而且总和为 1。
+
+所以：
+
+~~~text
+Hidden State
+    ↓ Linear Projection
+Logits
+    ↓ Softmax
+Probability Distribution
+~~~
+
+### Temperature 在数学上做了什么？
+
+采样温度 \(T\) 通常作用在 softmax 之前：
+
+\[
+p_i(T)=\frac{e^{z_i/T}}{\sum_j e^{z_j/T}}
+\]
+
+- \(T<1\)：差距被放大，分布更尖锐；
+- \(T>1\)：差距被压平，输出更随机；
+- 接近 greedy decoding 时，系统倾向选择最大 logit 的 token。
+
+Temperature **不会让模型学到新知识**，它只是改变已有分布的采样形状。
+
 ## 5. Attention 到底在算什么？
 
-经典 attention 中，每个位置的表示产生 Query、Key、Value。
+经典 attention 中，每个 token 的当前表示组成矩阵 \(X\)。模型通过三个可训练矩阵生成：
 
-| 名称 | 直觉 |
-| --- | --- |
-| Query | 当前需要寻找什么 |
-| Key | 每个位置可以用什么特征被匹配 |
-| Value | 匹配后真正聚合什么信息 |
+\[
+Q=XW_Q,\quad K=XW_K,\quad V=XW_V
+\]
 
-Query 与 Key 的关系经过归一化后成为权重，再加权聚合 Value。[1] Multi-Head Attention 让多组 attention 在不同表示子空间并行工作。但 attention 权重不能简单等同于“模型为什么这样思考”的完整解释。
+如果序列有 \(n\) 个 token，隐藏维度为 \(d_{model}\)，可以粗略理解：
+
+~~~text
+X: [n × d_model]
+
+W_Q → Q
+W_K → K
+W_V → V
+~~~
+
+Attention 的经典公式是：
+
+\[
+Attention(Q,K,V)=softmax\left(\frac{QK^T}{\sqrt{d_k}}+M\right)V
+\]
+
+这里每一步都有具体意义。
+
+### 第一步：\(QK^T\)
+
+Query 与所有 Key 做点积。
+
+两个向量：
+
+\[
+q=(q_1,q_2,...,q_d),\quad k=(k_1,k_2,...,k_d)
+\]
+
+点积：
+
+\[
+q\cdot k=\sum_{i=1}^{d}q_i k_i
+\]
+
+它提供一种可学习的匹配分数。
+
+### 第二步：为什么除以 \(\sqrt{d_k}\)？
+
+如果 Q、K 各维度近似均值 0、方差 1，点积的方差会随维度 \(d_k\) 增长。维度越高，logit 绝对值越容易变大，softmax 越容易饱和，梯度变小。
+
+Transformer 因此用：
+
+\[
+\frac{1}{\sqrt{d_k}}
+\]
+
+缩放点积。[1]
+
+### 第三步：Causal Mask 为什么存在？
+
+生成模型不能在训练时偷看未来 token。
+
+如果序列是：
+
+~~~text
+我 / 喜欢 / 人工 / 智能
+~~~
+
+模型在预测“喜欢”时不能读取后面的“人工智能”。
+
+因此 decoder-only LLM 使用 causal mask：
+
+\[
+M_{ij}=
+\begin{cases}
+0,&j\le i\\
+-\infty,&j>i
+\end{cases}
+\]
+
+softmax 后，未来位置的概率变成 0。
+
+矩阵直觉：
+
+~~~text
+      1  2  3  4
+1     ✓  ×  ×  ×
+2     ✓  ✓  ×  ×
+3     ✓  ✓  ✓  ×
+4     ✓  ✓  ✓  ✓
+~~~
+
+这就是“自回归”的数学约束之一。
+
+### 第四步：乘以 V
+
+softmax 得到的权重再乘 Value：
+
+\[
+O=AV
+\]
+
+其中 \(A\) 是 attention 权重矩阵。
+
+所以 attention 可以被理解成：
+
+> **根据当前 token 的 Query，对上下文中的 Value 做一次内容相关的加权读取。**
+
+### Multi-Head Attention
+
+模型不会只进行一种读取。
+
+第 \(h\) 个 head：
+
+\[
+head_h=Attention(XW_Q^{(h)},XW_K^{(h)},XW_V^{(h)})
+\]
+
+最后：
+
+\[
+MultiHead(X)=Concat(head_1,...,head_H)W_O
+\]
+
+不同 head 可以形成不同的信息路由模式，但不能把某个 head 简单解释为一个固定的人类概念。
+
+| 名称 | 数学角色 | 直觉 |
+| --- | --- | --- |
+| Query | 当前位置发出的匹配向量 | 我要找什么 |
+| Key | 每个位置用于被匹配的向量 | 我有什么可被找到 |
+| Value | 真正被加权读取的信息 | 找到后读取什么 |
+| Mask | 禁止访问的位置 | 不能偷看未来 |
 
 ## 6. Position：模型为什么知道先后顺序？
 

@@ -9,7 +9,6 @@ export interface DocChapter {
   date: string;
   tags: string[];
   excerpt: string;
-  interactiveWidgetId?: string;
   content: string;
 }
 

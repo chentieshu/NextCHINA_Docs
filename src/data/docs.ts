@@ -82,7 +82,7 @@ ${research.coverage}
 
 ${research.rankingPolicy}
 
-Arena 展示人类偏好；Artificial Analysis 文章展示综合评测的部分成绩；Terminal-Bench 2.0 展示指定 Agent 与模型配置的历史终端任务成绩。产品清单没有虚构的“综合评分”。详见各榜单所附官方来源。
+Arena 展示人类偏好；Artificial Analysis 展示 Intelligence Index v4.3.2 的当前可复核快照；Terminal-Bench 2.0 展示指定 Agent 与模型配置的历史终端任务成绩。产品清单没有虚构的“综合评分”。详见各榜单所附官方来源。
 
 ## 价格与国家字段
 
@@ -116,9 +116,16 @@ for (const benchmark of research.benchmarks) {
   const isAgent = benchmark.scope === 'agent';
   const contents = isAgent
     ? table(['来源序位', 'Agent', '模型 / 配置', '准确率', '来源 ± 值', '提交日期'], rows.map(row => [row.rank, row.name, 'model' in row ? row.model : '', row.score, 'uncertainty' in row ? row.uncertainty : '', 'submittedAt' in row ? row.submittedAt : '']))
-    : benchmark.rankType === 'unranked-excerpt'
-      ? table(['模型与配置', '已披露成绩'], rows.map(row => [row.name, row.score]))
-      : table(['来源序位', '模型', '供应方', '分数', '来源 ± 值', '票数', '初步结果'], rows.map(row => [row.rank, row.name, 'provider' in row ? row.provider : '', row.score, 'uncertainty' in row ? row.uncertainty : '', 'votes' in row ? row.votes : '', 'preliminary' in row && row.preliminary ? '是' : '否']));
+    : benchmark.id === 'aa-intelligence'
+      ? table(['来源序位', '模型', '实验室', 'Intelligence'], rows.map(row => [
+          row.rank,
+          row.name,
+          'provider' in row ? (`![${row.provider}](${'logo' in row ? row.logo : ''}) ${row.provider}`) : '',
+          row.score
+        ]))
+      : benchmark.rankType === 'unranked-excerpt'
+        ? table(['模型与配置', '已披露成绩'], rows.map(row => [row.name, row.score]))
+        : table(['来源序位', '模型', '供应方', '分数', '来源 ± 值', '票数', '初步结果'], rows.map(row => [row.rank, row.name, 'provider' in row ? row.provider : '', row.score, 'uncertainty' in row ? row.uncertainty : '', 'votes' in row ? row.votes : '', 'preliminary' in row && row.preliminary ? '是' : '否']));
   sections.push(section(benchmark.id, benchmark.title, benchmark.warning, isAgent ? 'agents' : 'models', isAgent ? 'Agent 榜单与选型' : '大模型榜单与价格', `
 ## 范围与日期
 

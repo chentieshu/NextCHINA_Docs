@@ -61,13 +61,13 @@ Hidden States → LM Head → Logits → Decoding → Next Token
 
 神经网络最后一层先输出的不是概率，而是一组 **logits**：可以理解为尚未归一化的偏好分数。
 
-Softmax 把 logits \(z_i\) 转成概率：
+Softmax 把 logits $z_i$ 转成概率：
 
-\[
+$$
 p_i = \frac{e^{z_i}}{\sum_j e^{z_j}}
-\]
+$$
 
-因为指数函数始终为正，再除以所有候选之和，最终每个 \(p_i\) 都在 0 到 1 之间，而且总和为 1。
+因为指数函数始终为正，再除以所有候选之和，最终每个 $p_i$ 都在 0 到 1 之间，而且总和为 1。
 
 所以：
 
@@ -81,27 +81,27 @@ Probability Distribution
 
 ### Temperature 在数学上做了什么？
 
-采样温度 \(T\) 通常作用在 softmax 之前：
+采样温度 $T$ 通常作用在 softmax 之前：
 
-\[
+$$
 p_i(T)=\frac{e^{z_i/T}}{\sum_j e^{z_j/T}}
-\]
+$$
 
-- \(T<1\)：差距被放大，分布更尖锐；
-- \(T>1\)：差距被压平，输出更随机；
+- $T<1$：差距被放大，分布更尖锐；
+- $T>1$：差距被压平，输出更随机；
 - 接近 greedy decoding 时，系统倾向选择最大 logit 的 token。
 
 Temperature **不会让模型学到新知识**，它只是改变已有分布的采样形状。
 
 ## 5. Attention 到底在算什么？
 
-经典 attention 中，每个 token 的当前表示组成矩阵 \(X\)。模型通过三个可训练矩阵生成：
+经典 attention 中，每个 token 的当前表示组成矩阵 $X$。模型通过三个可训练矩阵生成：
 
-\[
+$$
 Q=XW_Q,\quad K=XW_K,\quad V=XW_V
-\]
+$$
 
-如果序列有 \(n\) 个 token，隐藏维度为 \(d_{model}\)，可以粗略理解：
+如果序列有 $n$ 个 token，隐藏维度为 $d_{model}$，可以粗略理解：
 
 ~~~text
 X: [n × d_model]
@@ -113,39 +113,39 @@ W_V → V
 
 Attention 的经典公式是：
 
-\[
+$$
 Attention(Q,K,V)=softmax\left(\frac{QK^T}{\sqrt{d_k}}+M\right)V
-\]
+$$
 
 这里每一步都有具体意义。
 
-### 第一步：\(QK^T\)
+### 第一步：$QK^T$
 
 Query 与所有 Key 做点积。
 
 两个向量：
 
-\[
+$$
 q=(q_1,q_2,...,q_d),\quad k=(k_1,k_2,...,k_d)
-\]
+$$
 
 点积：
 
-\[
+$$
 q\cdot k=\sum_{i=1}^{d}q_i k_i
-\]
+$$
 
 它提供一种可学习的匹配分数。
 
-### 第二步：为什么除以 \(\sqrt{d_k}\)？
+### 第二步：为什么除以 $\sqrt{d_k}$？
 
-如果 Q、K 各维度近似均值 0、方差 1，点积的方差会随维度 \(d_k\) 增长。维度越高，logit 绝对值越容易变大，softmax 越容易饱和，梯度变小。
+如果 Q、K 各维度近似均值 0、方差 1，点积的方差会随维度 $d_k$ 增长。维度越高，logit 绝对值越容易变大，softmax 越容易饱和，梯度变小。
 
 Transformer 因此用：
 
-\[
+$$
 \frac{1}{\sqrt{d_k}}
-\]
+$$
 
 缩放点积。[1]
 
@@ -163,13 +163,13 @@ Transformer 因此用：
 
 因此 decoder-only LLM 使用 causal mask：
 
-\[
+$$
 M_{ij}=
 \begin{cases}
 0,&j\le i\\
 -\infty,&j>i
 \end{cases}
-\]
+$$
 
 softmax 后，未来位置的概率变成 0。
 
@@ -189,11 +189,11 @@ softmax 后，未来位置的概率变成 0。
 
 softmax 得到的权重再乘 Value：
 
-\[
+$$
 O=AV
-\]
+$$
 
-其中 \(A\) 是 attention 权重矩阵。
+其中 $A$ 是 attention 权重矩阵。
 
 所以 attention 可以被理解成：
 
@@ -203,17 +203,17 @@ O=AV
 
 模型不会只进行一种读取。
 
-第 \(h\) 个 head：
+第 $h$ 个 head：
 
-\[
+$$
 head_h=Attention(XW_Q^{(h)},XW_K^{(h)},XW_V^{(h)})
-\]
+$$
 
 最后：
 
-\[
+$$
 MultiHead(X)=Concat(head_1,...,head_H)W_O
-\]
+$$
 
 不同 head 可以形成不同的信息路由模式，但不能把某个 head 简单解释为一个固定的人类概念。
 
@@ -247,29 +247,29 @@ Transformer block 通常还包含占据大量参数和计算的前馈网络。
 
 训练目标可以从最大似然开始理解。给定 token 序列：
 
-\[
+$$
 x_1,x_2,...,x_T
-\]
+$$
 
 自回归模型把整段文本的概率分解为：
 
-\[
+$$
 P(x_1,...,x_T)=\prod_{t=1}^{T}P(x_t\mid x_{<t})
-\]
+$$
 
 直接最大化大量小概率的乘积在数值上不方便，所以通常取对数，并最小化负对数似然：
 
-\[
+$$
 \mathcal{L}_{NLL}=-\sum_{t=1}^{T}\log P_\theta(x_t\mid x_{<t})
-\]
+$$
 
 对于 one-hot 目标，这就是常见的 token-level cross-entropy。
 
-如果正确 token 的预测概率是 \(p\)，单个位置的 loss：
+如果正确 token 的预测概率是 $p$，单个位置的 loss：
 
-\[
+$$
 L=-\log p
-\]
+$$
 
 例如：
 
@@ -282,23 +282,23 @@ L=-\log p
 
 ### Gradient 到底是什么？
 
-模型参数记作 \(\theta\)，loss 是 \(L(\theta)\)。
+模型参数记作 $\theta$，loss 是 $L(\theta)$。
 
 梯度：
 
-\[
+$$
 \nabla_\theta L
-\]
+$$
 
 表示 loss 对每个参数变化的局部敏感方向。
 
 最基础的梯度下降可以写成：
 
-\[
+$$
 \theta_{t+1}=\theta_t-\eta\nabla_\theta L
-\]
+$$
 
-其中 \(\eta\) 是 learning rate。
+其中 $\eta$ 是 learning rate。
 
 真实训练通常使用 Adam/AdamW 等优化器、学习率调度、混合精度、梯度裁剪和分布式训练，但底层逻辑仍然是：
 
@@ -324,9 +324,9 @@ New Parameters
 
 语言模型常用 perplexity 描述平均预测不确定性：
 
-\[
+$$
 PPL=\exp\left(\frac{1}{T}\mathcal{L}_{NLL}\right)
-\]
+$$
 
 在相同 tokenizer、数据和评测设置下，perplexity 越低通常表示 next-token prediction 越好；但它不能直接等价为“推理能力”“事实正确率”或“用户更喜欢”。
 
@@ -342,15 +342,15 @@ Dense Transformer 的一个典型特点是，每个 token 会经过同一组主�
 
 Mixture-of-Experts（MoE）则把部分 FFN/MLP 替换成多个 experts，并由 router 为每个 token 选择少量 expert：
 
-\[
+$$
 g(x)=softmax(W_r x)
-\]
+$$
 
 若只选择 Top-k experts：
 
-\[
+$$
 y=\sum_{i\in TopK(g(x))}g_i(x)E_i(x)
-\]
+$$
 
 于是模型可以拥有很大的**总参数量**，但每个 token 只激活其中一部分。
 
@@ -377,17 +377,17 @@ MoE 的价值是扩大容量与计算效率之间的设计空间，但也增加�
 
 ## 10.5 计算量从哪里来？为什么长上下文贵？
 
-对长度为 \(n\) 的序列，标准 self-attention 需要形成一个近似 \(n\times n\) 的关系矩阵。
+对长度为 $n$ 的序列，标准 self-attention 需要形成一个近似 $n\times n$ 的关系矩阵。
 
 因此 attention 的序列长度相关计算/内存压力具有二次项：
 
-\[
+$$
 O(n^2)
-\]
+$$
 
 而 MLP 等部分通常更接近随 token 数线性增长。
 
-这不意味着“整个 Transformer 的所有成本永远都是严格 \(O(n^2)\)”；真实系统还受到模型维度、KV cache、kernel、batching 和硬件影响。但它解释了为什么上下文从 4K 扩到 128K 并不是简单的 32 倍工程问题。
+这不意味着“整个 Transformer 的所有成本永远都是严格 $O(n^2)$”；真实系统还受到模型维度、KV cache、kernel、batching 和硬件影响。但它解释了为什么上下文从 4K 扩到 128K 并不是简单的 32 倍工程问题。
 
 FlashAttention 的关键贡献之一，是不改变 exact attention 数学结果，而通过 IO-aware tiling 减少 HBM 与片上 SRAM 之间的数据搬运。[8]
 
@@ -405,11 +405,11 @@ Pretraining → Base Model → Instruction / Preference Training → Assistant M
 
 ### Preference Optimization 在优化什么？
 
-一种经典 RLHF 表达是学习 reward model \(r_\phi(x,y)\)，再让 policy \(\pi_\theta\) 获得更高奖励，同时用 KL 项限制它不要离参考模型太远：
+一种经典 RLHF 表达是学习 reward model $r_\phi(x,y)$，再让 policy $\pi_\theta$ 获得更高奖励，同时用 KL 项限制它不要离参考模型太远：
 
-\[
+$$
 \max_\theta\;\mathbb{E}[r_\phi(x,y)]-\beta D_{KL}(\pi_\theta\|\pi_{ref})
-\]
+$$
 
 直觉：
 
@@ -495,16 +495,16 @@ Attention 中历史 token 的 Key 和 Value 可以缓存，生成新 token 时�
 
 粗略忽略实现差异，KV cache 的元素数量与：
 
-\[
+$$
 2\times L\times n_{kv}\times d_{head}\times T
-\]
+$$
 
 成正比，其中：
 
-- \(L\)：Transformer 层数；
-- \(n_{kv}\)：KV heads 数；
-- \(d_{head}\)：每个 head 维度；
-- \(T\)：缓存 token 数；
+- $L$：Transformer 层数；
+- $n_{kv}$：KV heads 数；
+- $d_{head}$：每个 head 维度；
+- $T$：缓存 token 数；
 - 乘 2 是因为同时缓存 K 与 V。
 
 再乘数据类型每元素字节数，就得到近似内存占用。
@@ -527,15 +527,15 @@ Grouped-Query Attention（GQA）位于两者之间：多个 query heads 分组�
 
 最简单的量化直觉：
 
-\[
+$$
 q=round(x/s)
-\]
+$$
 
-其中 \(s\) 是 scale，推理时再近似恢复：
+其中 $s$ 是 scale，推理时再近似恢复：
 
-\[
+$$
 \hat{x}=s\cdot q
-\]
+$$
 
 量化真正困难的是：不同权重/激活的分布并不一样，存在 outliers，过度压缩会损失精度。
 
@@ -646,21 +646,21 @@ RAG、引用、搜索、验证器和工具可以降低错误，但不能自动�
 
 从概率角度看，模型优化的是：
 
-\[
+$$
 P_\theta(text)
-\]
+$$
 
 或条件形式：
 
-\[
+$$
 P_\theta(answer\mid context)
-\]
+$$
 
 而不是一个直接的“事实真值函数”：
 
-\[
+$$
 Truth(answer)\in\{0,1\}
-\]
+$$
 
 训练语料中的事实、语言模式和错误都共同影响概率分布。一个句子可以**语言概率很高但事实为假**。
 

@@ -19,11 +19,6 @@ export interface TableOfContentItem {
   level: number;
 }
 
-export interface ReadingPreferences {
-  fontSize: 'sm' | 'base' | 'lg' | 'xl';
-  fontFamily: 'sans' | 'serif';
-  themeScheme: 'light' | 'dark';
-}
 
 export interface SearchResult {
   chapterId: string;

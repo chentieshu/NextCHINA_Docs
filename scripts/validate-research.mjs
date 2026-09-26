@@ -52,6 +52,9 @@ for (const product of data.products) {
   assert.ok(product.categories.length && product.sourceIds.length);
   product.categories.forEach(category => assert.ok(categoryIds.has(category), `Unknown category: ${category}`));
   product.sourceIds.forEach(requireSource);
+  assert.ok(product.sourceIds.length > 0, `${product.id}: missing official website/source link`);
+  const primarySource = data.sources.find(source => source.id === product.sourceIds[0]);
+  assert.ok(primarySource && new URL(primarySource.url).protocol === 'https:', `${product.id}: invalid primary official link`);
   assert.ok(product.originCountry === null || typeof product.originCountry === 'string');
   // Absence of a plan is unknown, never an implicit zero/free price.
   assert.ok(Array.isArray(product.plans));

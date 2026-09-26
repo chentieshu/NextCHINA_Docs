@@ -51,3 +51,45 @@ Docs Home → Article；进入文档后通过 Sidebar 顶部 Space 切换器选�
 顶层 Space 由 `content/spaces.json` 注册，`src/data/spaces.ts` 只负责读取与查询。切换 Space 类似切换 Obsidian Vault，但入口直接位于 Sidebar 顶部：选择大分类后，下方文档树立即切换为该 Space 的小分类和文章，不再经过独立 Space Home。搜索、上一篇和下一篇也限制在当前 Space 内。
 
 当前仍保持纯静态架构。GitHub 是内容源和版本历史，Cloudflare 只负责构建和静态发布；不引入数据库、CMS 服务端或动态 API。文章正文存放于 `content/<space>/<category>/*.md`，文章元数据位于 `content/articles.json`；榜单和结构化资料位于 `content/data/*.json`。React/Vite 只负责构建时读取和渲染。
+
+
+## 部署
+
+生产部署采用 **GitHub Actions + Wrangler Direct Upload + Cloudflare Workers Static Assets**。
+
+```text
+push main
+  ↓
+GitHub Actions / Node 24
+  ↓
+npm ci
+  ↓
+npm run build
+  ├─ validate data
+  ├─ validate Markdown
+  ├─ TypeScript
+  └─ Vite build
+  ↓
+dist/
+  ↓
+wrangler deploy
+  ↓
+Cloudflare Workers Static Assets
+```
+
+GitHub Repository → Settings → Secrets and variables → Actions 中必须配置：
+
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN`
+
+API Token 应使用 Cloudflare Workers 编辑权限并限制到部署所需账户。不要把 Token 写入仓库。
+
+Cloudflare Dashboard 中如果仍保留旧的 Git 自动 Build/Deploy，请关闭该项目的自动生产部署，避免一次 push 同时触发 Cloudflare Build 与 GitHub Actions 两套部署。
+
+本地已登录 Wrangler 时也可执行：
+
+```bash
+npm run deploy
+```
+
+`wrangler.jsonc` 是 Cloudflare 部署配置的唯一事实源，静态资产目录固定为 `./dist`。

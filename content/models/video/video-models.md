@@ -4,17 +4,17 @@
 
 视频张量：
 
-\[
+$$
 V\in\mathbb R^{T\times H\times W\times C}
-\]
+$$
 
-多出的 \(T\) 是时间维。
+多出的 $T$ 是时间维。
 
-如果每帧有 \(N\) 个视觉 patch/token：
+如果每帧有 $N$ 个视觉 patch/token：
 
-\[
+$$
 N_{video}\approx T\times N
-\]
+$$
 
 因此视频序列长度非常容易爆炸。
 
@@ -52,9 +52,9 @@ Spatial Attention → Temporal Attention
 
 模型还需要维持：
 
-\[
+$$
 identity(t_1)\approx identity(t_2)\approx...\approx identity(t_T)
-\]
+$$
 
 同样需要保持衣服、物体、背景和场景状态。
 
@@ -84,11 +84,11 @@ Temporal Causality
 
 长度增加意味着更多 token、更长状态依赖和更多累积误差。
 
-如果模型每秒采样 \(F\) 个 temporal units、每个单位 \(N\) tokens，时长 \(S\) 秒：
+如果模型每秒采样 $F$ 个 temporal units、每个单位 $N$ tokens，时长 $S$ 秒：
 
-\[
+$$
 N_{total}\propto S\times F\times N
-\]
+$$
 
 所以长视频需要 temporal compression、hierarchical generation、memory 或分段一致性机制。
 
@@ -96,15 +96,15 @@ N_{total}\propto S\times F\times N
 
 普通视频生成近似学习：
 
-\[
+$$
 p(video|condition)
-\]
+$$
 
 当模型进一步根据 action 预测环境：
 
-\[
+$$
 p(s_{t+1}|s_t,a_t)
-\]
+$$
 
 问题就开始靠近 world model。
 

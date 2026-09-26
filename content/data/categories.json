@@ -1,0 +1,40 @@
+{
+  "categories": [
+    {
+      "id": "audio",
+      "title": "Audio · 语音与音频"
+    },
+    {
+      "id": "video",
+      "title": "Video · 视频与数字人"
+    },
+    {
+      "id": "image",
+      "title": "Image · 图像与设计"
+    },
+    {
+      "id": "3d",
+      "title": "3D · 资产与空间"
+    },
+    {
+      "id": "music",
+      "title": "Music · 音乐创作"
+    },
+    {
+      "id": "code",
+      "title": "Code · AI 编程"
+    },
+    {
+      "id": "platform",
+      "title": "多模型平台与基础设施"
+    },
+    {
+      "id": "text",
+      "title": "通用多模态助手"
+    },
+    {
+      "id": "agent",
+      "title": "Agent 产品与构建平台"
+    }
+  ]
+}

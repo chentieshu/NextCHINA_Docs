@@ -30,6 +30,14 @@ function section(id: string, title: string, subtitle: string, category: string,
   };
 }
 type Product = typeof research.products[number];
+function productOfficialUrl(product: Product): string {
+  const source = product.sourceIds.map(id => sourceMap.get(id)).find(Boolean);
+  if (!source) throw new Error(`Missing official source for product: ${product.id}`);
+  return source.url;
+}
+function productLink(product: Product): string {
+  return `[${product.name}](${productOfficialUrl(product)})`;
+}
 function priceText(product: Product): string {
   if (!product.plans.length) return '未录入数值价格';
   return product.plans.map(plan => `${plan.name}：${plan.currency} ${plan.amount}/${plan.billing === 'annual' ? '年付' : '月付'}`).join('；');
@@ -38,7 +46,7 @@ function productDetail(product: Product): string {
   const plans = product.plans.length ? table(['套餐', '金额与周期', '所含额度 / 限制'], product.plans.map(plan => [
     plan.name, `${plan.currency} ${plan.amount} / ${plan.billing === 'annual' ? '年付' : '月付'}`, plan.quota || '以官方计划为准'
   ])) : '**价格：未录入可确认的数值。**';
-  return `### ${product.name}\n\n${product.aliases.length ? `别名：${product.aliases.join(' / ')}。\n\n` : ''}` +
+  return `### ${productLink(product)}\n\n${product.aliases.length ? `别名：${product.aliases.join(' / ')}。\n\n` : ''}` +
     `**性质：** ${kindNames[product.kind]}。 **核验：** ${product.verification === 'partial' ? '信息不完整，待补核' : '已核对公开页面，未进行功能实测'}。\n\n` +
     `**功能：** ${product.features.join('；')}。\n\n**涉及模型：** ${product.models.join('、') || '当前具体版本未核验'}。\n\n` +
     `**选型建议（编辑判断）：** ${product.selection}。\n\n**注意：** ${product.caution}\n\n` +
@@ -46,7 +54,7 @@ function productDetail(product: Product): string {
 }
 function catalogueContent(products: Product[]): string {
   return `> 这里是分场景清单，不是性能或热度总排名。分类可以重叠，同一产品在主数据中只保存一次。\n\n` +
-    table(['产品', '性质', '所选套餐价格', '核验范围'], products.map(product => [product.name, kindNames[product.kind], priceText(product), product.verification === 'partial' ? '待补核' : '公开页面'])) +
+    table(['产品', '性质', '所选套餐价格', '核验范围'], products.map(product => [productLink(product), kindNames[product.kind], priceText(product), product.verification === 'partial' ? '待补核' : '公开页面'])) +
     '\n\n## 产品详情与差异\n\n' + products.map(productDetail).join('\n');
 }
 const partialCount = research.products.filter(product => product.verification === 'partial').length;
@@ -203,11 +211,11 @@ ${table(['项目', '说明'], research.pendingItems.map(item => [item.name, item
 
 ## 如何更新
 
-只编辑 src/data/ai-research.json。正文、导航和搜索从该文件派生，不分别维护多份数值。每次修改保留来源、日期、币种、计价周期与基准版本；来源无法核实就保留缺失标记。运行 npm run test:data 检查数据，再运行 npm run lint 与 npm run build 检查应用。
+只编辑 content/ 下对应的 Markdown 或 JSON。正文、导航和搜索由这些静态内容文件派生，不分别维护多份事实。每次修改保留来源、日期、币种、计价周期与基准版本；来源无法核实就保留缺失标记。运行 npm run test:data 检查数据，再运行 npm run lint 与 npm run build 检查应用。
 `, [
   { label: '来源', desc: `${research.sources.length} 个官方/基准机构入口，状态逐一记录` },
   { label: '缺口', desc: '未读到动态页面时不补猜测价格；国家字段未逐项核验' },
-  { label: '维护', desc: '一个 JSON 数据源，正文、导航与搜索同步派生' }
+  { label: '维护', desc: 'GitHub content 目录是唯一内容源，正文、导航与搜索同步派生' }
 ], ['来源', '核验', '缺失', '更新', '价格']));
 
 export const DOC_CHAPTERS: DocChapter[] = sections.map(({ brief: _brief, ...chapter }) => chapter);

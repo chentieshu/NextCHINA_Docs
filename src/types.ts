@@ -12,11 +12,6 @@ export interface DocChapter {
   content: string;
 }
 
-export interface TableOfContentItem {
-  id: string;
-  text: string;
-  level: number;
-}
 
 
 export interface SearchResult {

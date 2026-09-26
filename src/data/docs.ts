@@ -211,4 +211,3 @@ ${table(['项目', '说明'], research.pendingItems.map(item => [item.name, item
 ], ['来源', '核验', '缺失', '更新', '价格']));
 
 export const DOC_CHAPTERS: DocChapter[] = sections.map(({ brief: _brief, ...chapter }) => chapter);
-export const CHAPTER_BRIEFS: Record<string, Brief[]> = Object.fromEntries(sections.map(chapter => [chapter.id, chapter.brief]));

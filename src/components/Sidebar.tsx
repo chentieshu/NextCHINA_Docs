@@ -10,7 +10,6 @@ import {
   FileText,
   ChevronsDownUp,
   ChevronsUpDown,
-  Zap,
   X
 } from 'lucide-react';
 
@@ -54,7 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         const rawText = match[2].trim();
         const cleanTitle = rawText.replace(/[*_`>#~]/g, '').trim();
         const id = slugifyHeading(cleanTitle);
-        if (cleanTitle && !cleanTitle.includes('WIDGET:') && id) {
+        if (cleanTitle && id) {
           headings.push({ id, title: cleanTitle, level });
         }
       }
@@ -366,15 +365,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                 {chapter.title}
                               </span>
                             </div>
-
-                            {/* Optional Widget Indicator */}
-                            {chapter.interactiveWidgetId && (
-                              <div className="shrink-0 ml-1">
-                                <Zap className={`h-3 w-3 ${
-                                  isActive ? 'text-[#606068]' : 'text-[#94949c]'
-                                }`} />
-                              </div>
-                            )}
                           </div>
 
                           {/* Level 2: Sub-sections Outline */}

@@ -32,4 +32,4 @@ npm run build
 
 数据校验可不安装依赖直接运行 `node scripts/validate-research.mjs`；类型检查和 Vite 构建需要安装项目依赖。数据测试不能代替完整应用构建或浏览器验收。
 
-内容层禁止 React/JSX、MDX 和私有 Widget 标记。需要交互能力时应在应用 UI 层实现，不嵌入 Markdown 正文。恢复历史内容应通过 Git 历史回滚。
+内容层统一使用 CommonMark + GFM，禁止 React/JSX、MDX 和私有 Widget 标记。渲染由 react-markdown / remark-gfm 负责，标题 ID 统一使用 github-slugger；交互能力应在应用 UI 层实现，不嵌入 Markdown 正文。恢复历史内容应通过 Git 历史回滚。

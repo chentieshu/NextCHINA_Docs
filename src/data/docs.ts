@@ -39,9 +39,9 @@ function productDetail(product: Product): string {
     plan.name, `${plan.currency} ${plan.amount} / ${plan.billing === 'annual' ? '年付' : '月付'}`, plan.quota || '以官方计划为准'
   ])) : '**价格：未录入可确认的数值。**';
   return `### ${product.name}\n\n${product.aliases.length ? `别名：${product.aliases.join(' / ')}。\n\n` : ''}` +
-    `**性质：**${kindNames[product.kind]}。**核验：**${product.verification === 'partial' ? '信息不完整，待补核' : '已核对公开页面，未进行功能实测'}。\n\n` +
-    `**功能：**${product.features.join('；')}。\n\n**涉及模型：**${product.models.join('、') || '当前具体版本未核验'}。\n\n` +
-    `**选型建议（编辑判断）：**${product.selection}。\n\n**注意：**${product.caution}\n\n` +
+    `**性质：** ${kindNames[product.kind]}。 **核验：** ${product.verification === 'partial' ? '信息不完整，待补核' : '已核对公开页面，未进行功能实测'}。\n\n` +
+    `**功能：** ${product.features.join('；')}。\n\n**涉及模型：** ${product.models.join('、') || '当前具体版本未核验'}。\n\n` +
+    `**选型建议（编辑判断）：** ${product.selection}。\n\n**注意：** ${product.caution}\n\n` +
     `${plans}\n\n${product.priceNote}\n\n来源：${sourceLinks(product.sourceIds)}\n`;
 }
 function catalogueContent(products: Product[]): string {

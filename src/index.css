@@ -40,3 +40,21 @@ html {
   scroll-behavior: smooth;
 }
 
+
+/* Mobile app-like viewport: keep one-finger scrolling, suppress browser gesture handling. */
+@media (max-width: 1023px) {
+  html,
+  body,
+  #root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+  }
+
+  body {
+    touch-action: pan-x pan-y;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+}

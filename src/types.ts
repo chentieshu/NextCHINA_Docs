@@ -22,7 +22,6 @@ export interface DocSpace {
 
 export type DocView =
   | { kind: 'home' }
-  | { kind: 'space'; spaceId: string }
   | { kind: 'article'; spaceId: string; chapterId: string };
 
 export interface SearchResult {

@@ -1,0 +1,48 @@
+{
+  "products": [
+    {
+      "id": "ideogram",
+      "name": "Ideogram",
+      "aliases": [],
+      "categories": [
+        "image"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [],
+      "features": [
+        "图像创作条目，详情待补核"
+      ],
+      "selection": "保留既有图片平台比较范围",
+      "caution": "本次动态页面信息有限，不填未经核实的模型和套餐。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "partial",
+      "sourceIds": [
+        "ideogram"
+      ]
+    },
+    {
+      "id": "recraft",
+      "name": "Recraft",
+      "aliases": [],
+      "categories": [
+        "image"
+      ],
+      "kind": "saas",
+      "originCountry": null,
+      "models": [],
+      "features": [
+        "图像与设计方向条目，详情待补核"
+      ],
+      "selection": "保留既有设计平台比较范围",
+      "caution": "不依据历史印象填写当前矢量或商用套餐权益。",
+      "plans": [],
+      "priceNote": "未录入可确认的数值套餐；以所列官方来源和账号结算页为准。",
+      "verification": "partial",
+      "sourceIds": [
+        "recraft"
+      ]
+    }
+  ]
+}

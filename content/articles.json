@@ -24,19 +24,24 @@
       "space": "models",
       "category": "foundations",
       "categoryName": "AI 基础原理",
-      "title": "LLM 的本质：大语言模型究竟是如何运转的？",
-      "subtitle": "从 Token、Embedding、Attention 到训练、推理、KV Cache、RAG 与 Agent",
+      "title": "LLM 的本质：从数学、训练到推理系统彻底理解大语言模型",
+      "subtitle": "从概率、向量、Softmax、Attention、Cross-Entropy 到 MoE、KV Cache、Reasoning 与 Agent",
       "date": "2026-09-27",
       "tags": [
         "LLM",
         "Transformer",
+        "数学",
+        "Softmax",
+        "Cross-Entropy",
         "Attention",
-        "Token",
-        "Embedding",
-        "推理",
-        "KV Cache"
+        "MoE",
+        "KV Cache",
+        "Reasoning",
+        "Inference",
+        "RLHF",
+        "DPO"
       ],
-      "excerpt": "从微观计算到宏观系统，一篇讲清大语言模型真正如何工作。"
+      "excerpt": "从概率论、线性代数和优化目标出发，一路推到 Transformer、训练、后训练、推理系统与 Reasoning，建立完整的大语言模型心智模型。"
     },
     {
       "id": "vlm-how-it-works",

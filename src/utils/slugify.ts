@@ -1,4 +1,5 @@
 import React from 'react';
+import GithubSlugger from 'github-slugger';
 
 export interface MarkdownHeading {
   id: string;
@@ -28,16 +29,12 @@ export function markdownInlineText(raw: string): string {
     .trim();
 }
 
-export function slugifyHeading(rawText: string): string {
-  return markdownInlineText(rawText)
-    .toLowerCase()
-    .replace(/[^\w\u4e00-\u9fff-]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
+export function createMarkdownSlugger() {
+  return new GithubSlugger();
 }
 
 export function extractMarkdownHeadings(content: string, levels: number[] = [2, 3]): MarkdownHeading[] {
-  const counts = new Map<string, number>();
+  const slugger = createMarkdownSlugger();
   const headings: MarkdownHeading[] = [];
   const lines = content.split('\n');
   let fenceMarker: '`' | '~' | null = null;
@@ -46,10 +43,7 @@ export function extractMarkdownHeadings(content: string, levels: number[] = [2, 
     if (!levels.includes(level)) return;
     const text = markdownInlineText(raw);
     if (!text) return;
-    const base = slugifyHeading(text) || 'section';
-    const occurrence = counts.get(base) ?? 0;
-    counts.set(base, occurrence + 1);
-    headings.push({ id: occurrence === 0 ? base : `${base}-${occurrence + 1}`, text, level });
+    headings.push({ id: slugger.slug(text), text, level });
   };
 
   for (let index = 0; index < lines.length; index += 1) {

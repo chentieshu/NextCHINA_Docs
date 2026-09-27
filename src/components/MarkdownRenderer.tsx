@@ -8,6 +8,22 @@ import { createMarkdownSlugger, getReactNodeText } from '../utils/slugify';
 import { Copy, Check } from 'lucide-react';
 import { MermaidDiagram } from './MermaidDiagram';
 
+
+function getTableColumnCount(children: React.ReactNode): number {
+  const sections = React.Children.toArray(children);
+  const thead = sections.find(
+    child => React.isValidElement<{ children?: React.ReactNode }>(child) && child.type === 'thead'
+  );
+  if (!React.isValidElement<{ children?: React.ReactNode }>(thead)) return 0;
+
+  const row = React.Children.toArray(thead.props.children).find(
+    child => React.isValidElement<{ children?: React.ReactNode }>(child) && child.type === 'tr'
+  );
+  if (!React.isValidElement<{ children?: React.ReactNode }>(row)) return 0;
+
+  return React.Children.count(row.props.children);
+}
+
 interface MarkdownRendererProps {
   content: string;
   isLight: boolean;
@@ -67,7 +83,22 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, isL
           code: ({ children, className }) => className
             ? <code className={className}>{children}</code>
             : <code className="md-inline-code">{children}</code>,
-          table: ({ children }) => <div className="md-table-scroll"><table>{children}</table></div>
+          table: ({ children }) => {
+            const columns = getTableColumnCount(children);
+            const layout = columns <= 2 ? 'narrow' : columns <= 4 ? 'standard' : 'wide';
+            return (
+              <div className={`md-table-region md-table-${layout}`} data-columns={columns || undefined}>
+                <div
+                  className="md-table-scroll"
+                  tabIndex={0}
+                  role="region"
+                  aria-label={columns ? `Markdown 表格，共 ${columns} 列` : 'Markdown 表格'}
+                >
+                  <table>{children}</table>
+                </div>
+              </div>
+            );
+          }
         }}
       >
         {content}

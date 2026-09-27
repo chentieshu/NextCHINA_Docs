@@ -15,6 +15,14 @@
     --scrollbar-thumb: rgba(70, 70, 78, 0.24);
     --scrollbar-thumb-hover: rgba(55, 55, 62, 0.42);
     --scrollbar-track: transparent;
+
+    --table-bg: #ffffff;
+    --table-head-bg: #f3f3f6;
+    --table-row-alt: #fafafd;
+    --table-row-hover: #f5f5f8;
+    --table-border: #e3e3e8;
+    --table-head-fg: #222226;
+    --table-focus: rgba(74, 74, 84, 0.28);
   }
 
   html[data-theme="dark"] {
@@ -23,6 +31,14 @@
     --scrollbar-thumb: rgba(205, 205, 215, 0.24);
     --scrollbar-thumb-hover: rgba(225, 225, 235, 0.42);
     --scrollbar-track: transparent;
+
+    --table-bg: #1b1b1f;
+    --table-head-bg: #28282d;
+    --table-row-alt: #1f1f23;
+    --table-row-hover: #25252a;
+    --table-border: #34343a;
+    --table-head-fg: #e0e0e6;
+    --table-focus: rgba(210, 210, 220, 0.24);
     color-scheme: dark;
   }
 
@@ -267,38 +283,137 @@ body {
 .md-plain-pre { margin: 1.25rem 0; border-radius: 0.875rem; }
 .md-codeblock pre code { white-space: pre; overflow-wrap: normal; word-break: normal; }
 
+/* Responsive Markdown tables.
+   1–2 cols: fill and wrap.
+   3–4 cols: fit the reading column on tablet/desktop.
+   5+ cols: preserve useful column width and scroll locally. */
+.md-table-region {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 1.4rem 0;
+  overflow: hidden;
+  border: 1px solid var(--table-border);
+  border-radius: 0.875rem;
+  background: var(--table-bg);
+}
+
 .md-table-scroll {
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  margin: 1.5rem 0;
+  margin: 0;
   overflow-x: auto;
+  overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
-  border-radius: 0.875rem;
-  border: 1px solid;
+  scrollbar-gutter: stable;
+  outline: none;
 }
+
+.md-table-scroll:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--table-focus);
+}
+
 .markdown-body table {
-  width: max-content;
+  width: 100%;
   min-width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: auto;
   font-size: 0.875rem;
   line-height: 1.5;
+  font-variant-numeric: tabular-nums;
 }
+
 .markdown-body th,
 .markdown-body td {
-  padding: 0.7rem 0.85rem;
+  min-width: 0;
+  max-width: 22rem;
+  padding: 0.7rem 0.8rem;
   text-align: left;
   vertical-align: top;
-  border-bottom: 1px solid;
-  min-width: 7.5rem;
-  max-width: 24rem;
-  overflow-wrap: break-word;
+  border-inline-end: 1px solid var(--table-border);
+  border-bottom: 1px solid var(--table-border);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
-.markdown-body th { font-weight: 650; white-space: nowrap; }
+
+.markdown-body th {
+  color: var(--table-head-fg);
+  background: var(--table-head-bg);
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.markdown-body th:last-child,
+.markdown-body td:last-child {
+  border-inline-end: 0;
+}
+
+.markdown-body tbody tr:nth-child(even) td {
+  background: var(--table-row-alt);
+}
+
+.markdown-body tbody tr:hover td {
+  background: var(--table-row-hover);
+}
+
+.markdown-body tbody tr:last-child td {
+  border-bottom: 0;
+}
+
 .markdown-body td > :first-child { margin-top: 0; }
 .markdown-body td > :last-child { margin-bottom: 0; }
-.markdown-body tr:last-child td { border-bottom: 0; }
+
+.markdown-body td a,
+.markdown-body th a {
+  overflow-wrap: anywhere;
+}
+
+/* Compact informational tables such as key/value comparisons. */
+.md-table-narrow table {
+  table-layout: fixed;
+}
+
+.md-table-narrow th:first-child,
+.md-table-narrow td:first-child {
+  width: 34%;
+}
+
+/* 3–4 column tables prefer wrapping over page-wide scrolling. */
+.md-table-standard table {
+  table-layout: auto;
+}
+
+.md-table-standard th:first-child,
+.md-table-standard td:first-child {
+  min-width: 7rem;
+}
+
+/* Wide rankings/pricing tables intentionally own horizontal scrolling. */
+.md-table-wide table {
+  width: max-content;
+  min-width: 100%;
+}
+
+.md-table-wide th,
+.md-table-wide td {
+  min-width: 6.25rem;
+  max-width: 18rem;
+}
+
+.md-table-wide th:nth-child(2),
+.md-table-wide td:nth-child(2) {
+  min-width: 11rem;
+}
+
+.md-table-wide th:last-child,
+.md-table-wide td:last-child {
+  min-width: 8rem;
+  max-width: 20rem;
+}
 
 .markdown-body ul.contains-task-list {
   padding-inline-start: 0;
@@ -334,12 +449,11 @@ body {
 .markdown-light strong { color: #1a1a1d; }
 .markdown-light li::marker { color: #7a7a82; }
 .markdown-light blockquote { color: #45454c; background: #f5f5f8; border-color: #c7c7ce; }
-.markdown-light hr, .markdown-light .md-table-scroll, .markdown-light th, .markdown-light td { border-color: #e3e3e8; }
+.markdown-light hr { border-color: #e3e3e8; }
 .markdown-light .md-inline-code { color: #2c2c30; background: #f0f0f4; }
 .markdown-light .md-codeblock { background: #f5f5f8; }
 .markdown-light .md-codebar { color: #55555c; background: #ececf0; }
-.markdown-light thead { color: #222226; background: #ededf1; }
-.markdown-light tbody tr:nth-child(even) { background: #fafafd; }
+
 
 .markdown-dark { color: #b8b8c2; }
 .markdown-dark h1, .markdown-dark h2 { color: #e4e4ea; }
@@ -348,12 +462,11 @@ body {
 .markdown-dark strong { color: #ededf4; }
 .markdown-dark li::marker { color: #868690; }
 .markdown-dark blockquote { color: #c5c5cd; background: #222226; border-color: #55555f; }
-.markdown-dark hr, .markdown-dark .md-table-scroll, .markdown-dark th, .markdown-dark td { border-color: #34343a; }
+.markdown-dark hr { border-color: #34343a; }
 .markdown-dark .md-inline-code { color: #d6d6de; background: #26262b; }
 .markdown-dark .md-codeblock { background: #1c1c20; }
 .markdown-dark .md-codebar { color: #a0a0aa; background: #242429; }
-.markdown-dark thead { color: #e0e0e6; background: #28282d; }
-.markdown-dark tbody tr:nth-child(even) { background: #1d1d21; }
+
 
 @media (max-width: 639px) {
   body { font-size: 16px; }
@@ -385,8 +498,44 @@ body {
     padding-inline-start: 1.5rem;
   }
   .markdown-body blockquote { margin: 1.25rem 0; padding: 0.8rem 0.9rem; }
-  .markdown-body table { font-size: 0.75rem; }
-  .markdown-body th, .markdown-body td { padding: 0.6rem 0.7rem; min-width: 7rem; }
+  .md-table-region {
+    margin: 1.1rem 0;
+    border-radius: 0.75rem;
+  }
+  .markdown-body table {
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+  .markdown-body th,
+  .markdown-body td {
+    padding: 0.58rem 0.62rem;
+  }
+  .md-table-narrow th:first-child,
+  .md-table-narrow td:first-child {
+    width: 38%;
+  }
+  .md-table-standard table {
+    width: max-content;
+    min-width: 100%;
+  }
+  .md-table-standard th,
+  .md-table-standard td {
+    min-width: 6.5rem;
+    max-width: 14rem;
+  }
+  .md-table-standard th:first-child,
+  .md-table-standard td:first-child {
+    min-width: 7.5rem;
+  }
+  .md-table-wide th,
+  .md-table-wide td {
+    min-width: 5.75rem;
+    max-width: 15rem;
+  }
+  .md-table-wide th:nth-child(2),
+  .md-table-wide td:nth-child(2) {
+    min-width: 9.5rem;
+  }
   .md-codeblock pre { padding: 0.875rem; font-size: 0.74rem; }
 }
 

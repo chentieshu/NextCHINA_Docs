@@ -48,6 +48,7 @@ export default function GardenPage({ route, chapters, isLight, navigate, onRead,
   }, [route, navigate]);
   const related = useCallback((id: string) => { setQuery(''); navigate({ ...route, scopeId: id, nodeId: id, mode: 'explore' }); }, [route, navigate]);
   const overview = () => { setQuery(''); navigate({ ...gardenHome(), display: route.display }); };
+  const openLLM = () => { setQuery(''); setCopyState(''); navigate({ ...gardenHome(), scopeId: 'hub:llm' }); };
   useEffect(() => {
     const key = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); input.current?.focus(); }
@@ -71,7 +72,7 @@ export default function GardenPage({ route, chapters, isLight, navigate, onRead,
           onChange={event => { setQuery(event.target.value); setSearchLimit(24); }} onKeyDown={event => { if (event.key === 'Escape') setQuery(''); }} placeholder="搜索概念、专题或文章" aria-label="搜索整个知识花园" />
           {query && <button aria-label="清空花园搜索" onClick={() => { setQuery(''); input.current?.focus(); }}><X /></button>}
         </div>
-        <div className="garden-header-actions"><button className="hub-entry-button" onClick={() => navigate({ ...gardenHome(), scopeId:'hub:llm' })}>LLM 专题</button><button type="button" onClick={onExit}><BookOpen /><span>返回文档</span></button>
+        <div className="garden-header-actions"><button type="button" className="hub-entry-button" onClick={openLLM}>LLM 专题</button><button type="button" onClick={onExit}><BookOpen /><span>返回文档</span></button>
           <button type="button" aria-label={isLight ? '切换为暗黑模式' : '切换为明亮模式'} onClick={onToggleTheme}>{isLight ? <Moon /> : <Sun />}</button></div>
       </header>
       <div className="garden-body">

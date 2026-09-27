@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "title": "AI 到哪了？",
   "subtitle": "NextCHINA · AI SaaS、大模型与 Agent 调研库",
-  "checkedAt": "2026-09-26",
+  "checkedAt": "2026-09-27",
   "timezone": "Asia/Taipei",
   "coverage": "按此前调研范围整理并补充官方核验，不是全球产品全量名单。此前完整大模型/Agent 对话结果未能恢复，因此用带日期的可复核公开快照替代，不声称逐字迁移。",
   "countryPolicy": "国家字段本轮未逐一核实，originCountry 为 null；不要由创始人国籍、域名或语言推断公司国家，更不代表数据存储地。",

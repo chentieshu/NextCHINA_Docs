@@ -41,7 +41,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: garden-browser-report
-          path: test-results/
+          path: |
+            test-results/
+            test-results-production/
           retention-days: 7
       - name: Record generated lockfile on this implementation branch only
         run: |

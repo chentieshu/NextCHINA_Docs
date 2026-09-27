@@ -1,4 +1,4 @@
-import raw from '../../generated/garden.json';
+import raw from '../../generated/garden.json' with { type: 'json' };
 import type { GardenGraph, KnowledgeNode } from './domain';
 
 export const graph = raw as GardenGraph;

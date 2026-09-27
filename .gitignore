@@ -12,5 +12,6 @@ coverage/
 # Deterministic, build-time derivative of content/garden (not a second source).
 src/generated/
 test-results/
+test-results-production/
 playwright-report/
 .markdown-render-test-*/

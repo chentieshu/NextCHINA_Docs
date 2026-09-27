@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#ffffff" />
+    <script>
+      (() => {
+        try {
+          const theme = localStorage.getItem('nextchina-theme') === 'dark' ? 'dark' : 'light';
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.style.colorScheme = theme;
+          document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#18181b' : '#ffffff');
+        } catch {}
+      })();
+    </script>
     <title>AI 到哪了？｜NextCHINA AI 调研库</title>
     <meta name="description" content="AI SaaS、大模型榜单与 Agent 选型调研：按场景比较功能、模型、价格与来源，明确榜单快照日期和待核验项。" />
     <meta property="og:title" content="AI 到哪了？｜NextCHINA AI 调研库" />

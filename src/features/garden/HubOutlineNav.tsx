@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronDown, Compass } from 'lucide-react';
 import { ancestors, childrenById } from './data';
 import type { KnowledgeNode } from './domain';
 
 interface Props { hub: KnowledgeNode; scopeId: string; onOpen: (id: string) => void; onOverview: () => void; }
 export function HubOutlineNav({ hub, scopeId, onOpen, onOverview }: Props) {
-  const [open, setOpen] = useState<Set<string>>(() => new Set());
+  const [expansion, setExpansion] = useState<Record<string,boolean>>({});
   const active = new Set(ancestors(scopeId).map(node => node.id));
+  useEffect(() => { setExpansion({}); }, [scopeId]);
   const render = (parent: string): React.ReactNode => <ul>{(childrenById.get(parent) ?? []).filter(node => node.kind === 'branch').map(node => {
     const children = childrenById.get(node.id) ?? [];
-    const expanded = active.has(node.id) || open.has(node.id);
-    return <li key={node.id}><div className="hub-nav-row"><button onClick={() => onOpen(node.id)} aria-current={scopeId === node.id ? 'page' : undefined}>{node.label}</button>
-      {children.length > 0 && <button className="hub-nav-toggle" aria-label={`切换目录 ${node.label}`} aria-expanded={expanded} onClick={() => setOpen(previous => { const next = new Set(previous); next.has(node.id) ? next.delete(node.id) : next.add(node.id); return next; })}><ChevronDown data-expanded={expanded} /></button>}
+    const expanded = expansion[node.id] ?? active.has(node.id);
+    return <li key={node.id}><div className="hub-nav-row"><button type="button" onClick={() => onOpen(node.id)} aria-current={scopeId === node.id ? 'page' : undefined}>{node.label}</button>
+      {children.length > 0 && <button type="button" className="hub-nav-toggle" aria-label={`切换目录 ${node.label}`} aria-expanded={expanded} onClick={() => setExpansion(previous => ({...previous,[node.id]:!expanded}))}><ChevronDown data-expanded={expanded} /></button>}
     </div>{children.length > 0 && expanded && render(node.id)}</li>;
   })}</ul>;
   return <nav className="garden-domain-nav hub-outline-nav" aria-label="专题分支目录"><button onClick={onOverview}><Compass />全部知识领域</button>

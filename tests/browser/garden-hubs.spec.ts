@@ -2,8 +2,10 @@ import { test, expect, type Page } from '@playwright/test';
 import { byId, childrenById, readingEntries, graph } from '../../src/features/garden/data';
 import { resourcesUnder, resourceTarget } from '../../src/features/garden/hub-data';
 import { project } from '../../src/features/garden/projection';
+import { gardenHome, readRoute, routeUrl, type GardenRoute } from '../../src/routing';
 
-const at = (scope:string, display='auto') => `/?view=garden&scope=${encodeURIComponent(scope)}&display=${display}`;
+// Use the application's canonical URL encoding; an explicit default is not state.
+const at = (scope:string, display:GardenRoute['display']='auto') => `/${routeUrl({...gardenHome(),scopeId:scope,display})}`;
 async function bounds(page:Page) {
   const box=await page.evaluate(()=>{
     const host=document.querySelector('.hub-content') as HTMLElement|null;
@@ -26,6 +28,9 @@ test('LLM is a recursive hub; shared concepts and resources are not cloned',()=>
   expect(resourcesUnder('hub:llm').some(r=>r.articleId==='model-api-prices')).toBe(true);
   expect(project('branch:llm:mechanisms/attention','atlas').nodes).toHaveLength(8);
   expect(project('branch:llm:mechanisms/attention/qkv','atlas').nodes.some(n=>n.id==='concept:qkv')).toBe(true);
+  const state=readRoute('?view=garden&scope=branch%3Allm%3Apricing%2Foffers&display=auto');
+  expect(readRoute(routeUrl(state))).toEqual(state);
+  expect(routeUrl(state)).not.toContain('display=auto');
 });
 for(const width of [320,390,768,1024,1280,1440]) for(const theme of ['light','dark']) {
   test(`topic hub ${width}px ${theme}`,async({page})=>{
@@ -114,4 +119,14 @@ test('unknown branch, large text and short landscape remain recoverable',async({
   await page.addStyleTag({content:'html {font-size:20px}'});
   await bounds(page);
   await expect(page.locator('.hub-content')).toBeVisible();
+});
+test('desktop outline can collapse an active ancestor',async({page})=>{
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto(at('branch:llm:mechanisms/attention/qkv'));
+  const toggle=page.getByRole('button',{name:'切换目录 Attention 的逐步计算',exact:true});
+  await expect(toggle).toHaveAttribute('aria-expanded','true');
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded','false');
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded','true');
 });

@@ -7,9 +7,10 @@ export const DocsHome: React.FC<Props> = ({ spaces, chapters, isLight, onEnter, 
     <div className="max-w-6xl mx-auto"><div className="max-w-3xl pt-8 sm:pt-12">
       <div className={`inline-flex items-center gap-2 text-xs font-mono mb-5 ${isLight ? 'text-[#73737b]' : 'text-[#91919a]'}`}><BookOpen className="h-4 w-4" /> NEXTCHINA / DOCS</div>
       <h1 className={`text-4xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.045em] leading-[1.05] ${isLight ? 'text-[#17171b]' : 'text-[#f1f1f5]'}`}>理解正在发生的 AI。</h1>
-      <p className={`mt-6 text-base sm:text-lg leading-8 max-w-2xl ${isLight ? 'text-[#5d5d65]' : 'text-[#a4a4ad]'}`}>从模型、计算、Agent 到 AI 产品，持续记录能力、原理、价格、基准和微观技术变化。直接阅读文档，或通过知识花园探索宏观领域与微观概念之间的关系。</p>
+      <p className={`mt-6 text-base sm:text-lg leading-8 max-w-2xl ${isLight ? 'text-[#5d5d65]' : 'text-[#a4a4ad]'}`}>从模型、计算、Agent 到 AI 产品，持续记录能力、原理、价格、基准和微观技术变化。直接阅读文档，或进入专题，沿分支探索原理、模型、榜单、费用与实践。</p>
       <div className="mt-8 flex flex-wrap gap-3"><button onClick={() => onEnter(spaces[0].id)} className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold ${isLight ? 'bg-[#1c1c20] text-white' : 'bg-[#eeeef2] text-[#1c1c20]'}`}>进入文档 <ArrowRight className="h-4 w-4" /></button>
-        <button onClick={onExplore} className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold ${isLight ? 'border-[#dfe0e5] text-[#333339]' : 'border-[#41414c] text-[#dfdfe8]'}`}><Compass className="h-4 w-4" />探索知识花园</button></div>
+        <button onClick={onExplore} className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold ${isLight ? 'border-[#dfe0e5] text-[#333339]' : 'border-[#41414c] text-[#dfdfe8]'}`}><Compass className="h-4 w-4" />探索知识花园</button>
+        <a href="?view=garden&scope=hub%3Allm" className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold ${isLight ? 'border-[#dfe0e5] text-[#333339]' : 'border-[#41414c] text-[#dfdfe8]'}`}>LLM 专题 <ArrowRight className="h-4 w-4" /></a></div>
     </div>
     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-16">{spaces.map(space => {
       const count = space.chapterIds.filter(id => chapters.some(chapter => chapter.id === id)).length;
@@ -20,7 +21,7 @@ export const DocsHome: React.FC<Props> = ({ spaces, chapters, isLight, onEnter, 
     <div className={`grid sm:grid-cols-3 gap-6 mt-16 pt-8 border-t text-sm ${isLight ? 'border-[#ececf0] text-[#6c6c74]' : 'border-[#29292e] text-[#898992]'}`}>
       <div className="flex gap-3"><GitBranch className="h-4 w-4 mt-0.5" /><span>GitHub 是内容源与版本历史。</span></div>
       <div className="flex gap-3"><Database className="h-4 w-4 mt-0.5" /><span>Markdown 负责正文，JSON 负责结构与关系。</span></div>
-      <div className="flex gap-3"><Layers3 className="h-4 w-4 mt-0.5" /><span>知识地图展示范围，不将待完善节点冒充已完成文章。</span></div>
+      <div className="flex gap-3"><Layers3 className="h-4 w-4 mt-0.5" /><span>专题聚合相关资料，待完善大纲不冒充已完成文章。</span></div>
     </div></div>
   </main>
 );

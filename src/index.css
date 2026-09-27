@@ -115,11 +115,17 @@ body {
 .markdown-body ul,
 .markdown-body ol {
   margin: 1.05rem 0;
-  padding-inline-start: 1.5rem;
 }
 
-.markdown-body ul { list-style-type: disc; }
-.markdown-body ol { list-style-type: decimal; }
+.markdown-body ul {
+  padding-inline-start: 1.35rem;
+  list-style-type: disc;
+}
+
+.markdown-body ol {
+  padding-inline-start: 1.7rem;
+  list-style-type: decimal;
+}
 
 .markdown-body li {
   margin: 0.42rem 0;
@@ -140,8 +146,13 @@ body {
 .markdown-body li > ul,
 .markdown-body li > ol {
   margin: 0.42rem 0 0.5rem;
-  padding-inline-start: 1.25rem;
 }
+
+.markdown-body li > ul { padding-inline-start: 1.1rem; }
+.markdown-body li > ol { padding-inline-start: 1.45rem; }
+
+.markdown-body li > :first-child { margin-top: 0; }
+.markdown-body li > :last-child { margin-bottom: 0; }
 
 .markdown-body ul ul { list-style-type: circle; }
 .markdown-body ul ul ul { list-style-type: square; }
@@ -316,8 +327,9 @@ body {
   .markdown-body ul,
   .markdown-body ol {
     margin: 0.9rem 0;
-    padding-inline-start: 1.15rem;
   }
+  .markdown-body ul { padding-inline-start: 1.15rem; }
+  .markdown-body ol { padding-inline-start: 1.55rem; }
   .markdown-body li {
     margin: 0.34rem 0;
     padding-inline-start: 0.1rem;
@@ -326,8 +338,9 @@ body {
   .markdown-body li > ul,
   .markdown-body li > ol {
     margin: 0.32rem 0 0.4rem;
-    padding-inline-start: 1rem;
   }
+  .markdown-body li > ul { padding-inline-start: 0.95rem; }
+  .markdown-body li > ol { padding-inline-start: 1.3rem; }
   .markdown-body li.task-list-item {
     padding-inline-start: 1.5rem;
   }
@@ -414,4 +427,10 @@ body {
 .markdown-dark .md-mermaid-error {
   background: #1d1d21;
   border-color: #34343a;
+}
+
+@media (max-width: 1023px) {
+  .docs-sidebar-scroll {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
 }

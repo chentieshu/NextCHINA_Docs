@@ -29,7 +29,7 @@ for (const article of registry.articles) {
 for (const capability of ['remarkGfm', 'remarkMath', 'rehypeKatex', 'MermaidDiagram', 'components={{', 'table:', 'pre:', 'code:', 'img:', 'input:']) {
   assert.ok(renderer.includes(capability), `Markdown renderer missing ${capability}`);
 }
-for (const selector of ['.markdown-body h1', '.markdown-body blockquote', '.markdown-body ul', '.md-codeblock', '.md-table-scroll', '.katex-display', '.md-mermaid', '.markdown-light', '.markdown-dark']) {
+for (const selector of ['.markdown-body h1', '.markdown-body blockquote', '.markdown-body ul', '.md-codeblock', '.md-table-region', '.md-table-scroll', '.katex-display', '.md-mermaid', '.markdown-light', '.markdown-dark']) {
   assert.ok(css.includes(selector), `Markdown CSS missing ${selector}`);
 }
 

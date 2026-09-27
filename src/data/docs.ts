@@ -35,6 +35,10 @@ function productOfficialUrl(product: Product): string {
   if (!source) throw new Error(`Missing official source for product: ${product.id}`);
   return source.url;
 }
+function benchmarkProviderLogo(row: { provider?: string; logo?: string }): string {
+  if (!row.provider) return '';
+  return row.logo ? `![${row.provider}](${row.logo}) ${row.provider}` : row.provider;
+}
 function productLink(product: Product): string {
   return `[${product.name}](${productOfficialUrl(product)})`;
 }
@@ -120,7 +124,7 @@ for (const benchmark of research.benchmarks) {
       ? table(['来源序位', '模型', '实验室', 'Intelligence'], rows.map(row => [
           row.rank,
           row.name,
-          'provider' in row ? (`![${row.provider}](${'logo' in row ? row.logo : ''}) ${row.provider}`) : '',
+          'provider' in row ? benchmarkProviderLogo(row) : '',
           row.score
         ]))
       : benchmark.rankType === 'unranked-excerpt'

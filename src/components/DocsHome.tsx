@@ -5,7 +5,7 @@ import { ArrowRight, BookOpen, Database, GitBranch, Layers3 } from 'lucide-react
 interface Props { spaces: DocSpace[]; chapters: DocChapter[]; isLight: boolean; onEnter: (id: string) => void; }
 
 export const DocsHome: React.FC<Props> = ({ spaces, chapters, isLight, onEnter }) => (
-  <main className="min-h-screen px-5 sm:px-8 lg:px-12 py-16 sm:py-20">
+  <main className="min-h-dvh px-5 sm:px-8 lg:px-12 py-16 sm:py-20">
     <div className="max-w-6xl mx-auto">
       <div className="max-w-3xl pt-8 sm:pt-12">
         <div className={`inline-flex items-center gap-2 text-xs font-mono mb-5 ${isLight ? 'text-[#73737b]' : 'text-[#91919a]'}`}><BookOpen className="h-4 w-4" /> NEXTCHINA / DOCS</div>

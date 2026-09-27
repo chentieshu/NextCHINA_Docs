@@ -27,6 +27,7 @@ export function resourceTarget(scopeId: string, articleId: string): string | nul
 }
 export const resourceMeta = (id: string) => graph.hubResources?.[id];
 export function resourceLabel(resource: ResourceRef) {
+  if (resource.role === 'independent-explanation') return '独立讲解 · 含可运行数值例子';
   if (resource.articleId === 'model-api-prices') return 'API 报价 · 非订阅费用';
   if (resource.articleId === 'terminal-bench') return 'Agent 系统评测 · 非裸模型榜';
   if (/snapshot|evaluation/.test(resource.role)) return '模型评测快照';

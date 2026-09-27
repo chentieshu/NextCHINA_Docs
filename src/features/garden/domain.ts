@@ -5,6 +5,7 @@ export interface ResourceRef { articleId: string; role: string; }
 export interface HubResource {
   articleId: string; datasetId?: string; subjectRole?: string; snapshotDate?: string | null;
   metric?: string | null; sourceId?: string | null; warning?: string | null; rowCount?: number; sourceFile?: string;
+  kind?: 'independent-explanation'; reviewStatus?: string; relatedResourceIds?: string[]; sourceUrls?: string[];
 }
 export interface KnowledgeNode {
   id: string; label: string; kind: NodeKind; parentId: string | null;
@@ -22,8 +23,8 @@ export interface GardenGraph {
   nodes: KnowledgeNode[]; edges: KnowledgeEdge[];
   groups: { id: string; label: string }[];
   learningPaths: { id: string; label: string; status: string; steps: string[] }[];
-  stats: { domains: number; topics: number; concepts: number; nodes: number; articleBindings: number; learningPaths: number; hubs?: number; branches?: number };
+  stats: { domains: number; topics: number; concepts: number; nodes: number; articleBindings: number; learningPaths: number; hubs?: number; branches?: number; independentArticles?: number };
   hubResources?: Record<string, HubResource>;
 }
 export const kindLabel: Record<NodeKind, string> = { root: '全景', domain: '领域', topic: '专题', concept: '概念', hub: '专题中心', branch: '专题分支' };
-export const coverageLabel: Record<string, string> = { overview: '原理总览', catalogue: '产品目录', snapshot: '评测快照', prices: 'API 报价', methodology: '方法教程', orientation: '阅读指南' };
+export const coverageLabel: Record<string, string> = { overview: '原理总览', explanation: '独立知识讲解', catalogue: '产品目录', snapshot: '评测快照', prices: 'API 报价', methodology: '方法教程', orientation: '阅读指南' };

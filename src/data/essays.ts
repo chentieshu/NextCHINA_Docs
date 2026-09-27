@@ -8,6 +8,11 @@ import embeddingMarkdown from '../../content/models/embedding/embedding-models.m
 import audioMarkdown from '../../content/models/audio/audio-models.md?raw';
 import videoMarkdown from '../../content/models/video/video-models.md?raw';
 import worldMarkdown from '../../content/models/world/world-models.md?raw';
+import tokenization from '../../content/models/llm/tokenization.md?raw';
+import softmax from '../../content/models/llm/softmax-temperature.md?raw';
+import attention from '../../content/models/llm/attention-calculation.md?raw';
+import training from '../../content/models/llm/training-loop.md?raw';
+import kvCache from '../../content/models/llm/kv-cache.md?raw';
 
 const contentById: Record<string, string> = {
   'apple-style-premium-product-video': premiumVideoMarkdown,
@@ -17,23 +22,21 @@ const contentById: Record<string, string> = {
   'embedding-models': embeddingMarkdown,
   'audio-models': audioMarkdown,
   'video-models': videoMarkdown,
-  'world-models': worldMarkdown
+  'world-models': worldMarkdown,
+  'llm-tokenization': tokenization,
+  'llm-softmax-temperature': softmax,
+  'llm-attention-calculation': attention,
+  'llm-training-loop': training,
+  'llm-kv-cache': kvCache
 };
 
 export const ESSAY_CHAPTERS: DocChapter[] = articleRegistry.articles.map(article => {
   const content = contentById[article.id];
   if (!content) throw new Error(`Missing Markdown content for article: ${article.id}`);
   return {
-    id: article.id,
-    slug: article.id,
-    title: article.title,
-    subtitle: article.subtitle,
-    category: article.category,
-    categoryName: article.categoryName,
+    id: article.id, slug: article.id, title: article.title, subtitle: article.subtitle,
+    category: article.category, categoryName: article.categoryName,
     readTime: `${Math.max(1, Math.ceil(content.length / 800))} 分钟`,
-    date: article.date,
-    tags: article.tags,
-    excerpt: article.excerpt,
-    content: content.trim()
+    date: article.date, tags: article.tags, excerpt: article.excerpt, content: content.trim()
   };
 });

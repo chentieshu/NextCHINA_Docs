@@ -3,11 +3,14 @@ import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-// Validates the staged plan, not the active viewer and not the truth of research data.
+// This is the frozen architecture plan. New units are validated by test:knowledge,
+// not retroactively inserted into a historical plan marked proposed-not-integrated.
 const root = fileURLToPath(new URL('../', import.meta.url));
 const read = file => JSON.parse(readFileSync(path.join(root, file), 'utf8'));
 const blueprint = read('content/garden/blueprint.json');
-const articleIds = new Set(read('content/spaces.json').spaces.flatMap(space => space.chapterIds));
+const publishedIds = new Set(read('content/spaces.json').spaces.flatMap(space => space.chapterIds));
+const articleIds = new Set(blueprint.articleBindings.map(binding => binding.articleId));
+for (const id of articleIds) assert.ok(publishedIds.has(id), `Original page was lost: ${id}`);
 const canonicalIds = new Set([blueprint.rootId]);
 for (const domain of blueprint.domains) {
   canonicalIds.add(`domain:${domain.id}`);
@@ -18,7 +21,6 @@ for (const domain of blueprint.domains) {
 }
 const slug = value => typeof value === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
 const nonempty = value => typeof value === 'string' && value.trim().length > 0;
-
 function validate(plan) {
   assert.equal(plan.schemaVersion, 1);
   assert.equal(plan.kind, 'topic-hub-architecture-plan');
@@ -50,8 +52,7 @@ function validate(plan) {
     if (reference.recordId !== null) assert.ok(data.some(row => row.id === reference.recordId), `Unknown record: ${reference.recordId}`);
     refs.set(reference.id, reference);
   }
-  let outlineNodes = 0;
-  let maxDepth = 0;
+  let outlineNodes = 0, maxDepth = 0;
   const occurrenceIds = new Set();
   function walk(items, parent, depth) {
     assert.ok(Array.isArray(items) && items.length, `Empty outline: ${parent}`);
@@ -90,7 +91,7 @@ function validate(plan) {
       placements.add(key);
     }
   }
-  assert.deepEqual([...mapped].sort(), [...articleIds].sort(), 'Existing articles must remain mapped');
+  assert.deepEqual([...mapped].sort(), [...articleIds].sort(), 'Original plan articles must remain mapped');
   const terminal = plan.articlePlacements.find(item => item.articleId === 'terminal-bench');
   assert.ok(terminal.placements.some(item => item.hubId === 'hub:llm' && item.role === 'related-system-result-not-model-only'), 'Agent scores must not become model-only scores');
   const apple = plan.articlePlacements.find(item => item.articleId === 'apple-style-premium-product-video');
@@ -108,7 +109,6 @@ function validate(plan) {
   return { hubs: hubs.size, detailedOutlines: Object.keys(plan.hubOutlines).length,
     outlineNodes, maxDepth, mappedArticles: mapped.size, legacyDataReferences: refs.size };
 }
-
 try {
   const plan = read('content/garden/plans/topic-hubs-v2.json');
   const result = validate(plan);

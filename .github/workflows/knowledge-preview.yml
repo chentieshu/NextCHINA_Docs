@@ -1,0 +1,37 @@
+name: Verify independent LLM knowledge
+on:
+  push:
+    branches: [work/llm-knowledge-units]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: llm-knowledge-preview
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: python3 --version
+      - run: npm ci --no-audit --no-fund
+      - run: node scripts/validate-topic-hub-plan.mjs
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Existing pages and independent knowledge tests
+        run: npm run test:browser
+      - name: Production topics, formulas and Worker
+        run: npm run test:production
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: llm-knowledge-verification
+          path: |
+            test-results/
+            test-results-production/
+          retention-days: 7

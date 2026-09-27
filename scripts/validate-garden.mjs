@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
+import { readKnowledgeUnits, addKnowledgeBindings } from './knowledge-units.mjs';
 
 export const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
 const readJSON = (root, file) => JSON.parse(readFileSync(path.join(root, file), 'utf8'));
@@ -67,7 +68,6 @@ export function buildGardenModel(blueprint, publishedArticleIds) {
     relationKeys.add(key);
     edges.push({ ...relation, id: key, assertionStatus: 'editorial' });
   }
-  // Only recommended prerequisites form a DAG. Related knowledge can legitimately cycle.
   const prerequisites = edges.filter(edge => edge.type === 'recommended_before');
   const indegree = new Map(nodes.map(node => [node.id, 0]));
   const next = new Map(nodes.map(node => [node.id, []]));
@@ -90,7 +90,7 @@ export function buildGardenModel(blueprint, publishedArticleIds) {
     assert.ok(publishedArticleIds.has(binding.articleId), `Unknown article: ${binding.articleId}`);
     assert.ok(!boundArticles.has(binding.articleId), `Duplicate article binding: ${binding.articleId}`);
     boundArticles.add(binding.articleId);
-    assert.ok(['orientation', 'overview', 'catalogue', 'snapshot', 'methodology'].includes(binding.coverage));
+    assert.ok(['orientation', 'overview', 'catalogue', 'snapshot', 'methodology', 'explanation'].includes(binding.coverage));
     assert.ok(binding.nodeIds.length && new Set(binding.nodeIds).size === binding.nodeIds.length);
     for (const id of binding.nodeIds) {
       assert.ok(byId.has(id), `Unknown article-bound node: ${id}`);
@@ -130,7 +130,7 @@ export function validateAttentionExample(example, graph, publishedArticleIds) {
     assert.ok(Array.isArray(matrix) && matrix.length === n, 'Invalid matrix rows');
     for (const row of matrix) assert.ok(Array.isArray(row) && row.length === columns && row.every(value => Number.isFinite(value) && Math.abs(value) <= 20), 'Invalid matrix values');
   };
-  checkShape(Q, dK); checkShape(K, dK); checkShape(V, dV);
+  checkShape(Q, dK); checkShape(V, dV); checkShape(K, dK);
   assert.equal(mask, 'causal');
   const stepIds = new Set();
   for (const step of example.steps) {
@@ -162,7 +162,7 @@ export function validateAttentionExample(example, graph, publishedArticleIds) {
 }
 
 export function loadGarden(root = repositoryRoot) {
-  const blueprint = readJSON(root, 'content/garden/blueprint.json');
+  const blueprint = addKnowledgeBindings(readJSON(root, 'content/garden/blueprint.json'), readKnowledgeUnits(root));
   const spaces = readJSON(root, 'content/spaces.json');
   const publishedArticleIds = new Set(spaces.spaces.flatMap(space => space.chapterIds));
   const graph = buildGardenModel(blueprint, publishedArticleIds);
@@ -173,7 +173,6 @@ export function loadGarden(root = repositoryRoot) {
     return example;
   });
   const computed = examples.map(example => validateAttentionExample(example, graph, publishedArticleIds));
-  // Current registry remains the owner of real Markdown paths.
   const registry = readJSON(root, 'content/articles.json');
   for (const article of registry.articles) {
     assert.ok(publishedArticleIds.has(article.id), `Unassigned article: ${article.id}`);
@@ -191,9 +190,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
       assert.ok(args.length === 2 && args[0] === '--emit', 'Usage: node scripts/validate-garden.mjs [--emit output.json]');
       writeFileSync(path.resolve(args[1]), JSON.stringify(graph, null, 2) + '\n');
     }
-    console.log(JSON.stringify({ status: 'pass', ...graph.stats,
-      unmappedArticleIds: graph.unmappedArticleIds, numericExamples: computed.length,
-      uiImplemented: false, factReverification: false }, null, 2));
+    console.log(JSON.stringify({ status: 'pass', scope: 'knowledge-structure-and-numeric-fixtures', ...graph.stats,
+      unmappedArticleIds: graph.unmappedArticleIds, numericExamples: computed.length, factReverification: false }, null, 2));
   } catch (error) {
     console.error(error instanceof Error ? error.message : error);
     process.exitCode = 1;

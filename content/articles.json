@@ -1,159 +1,37 @@
 {
   "articles": [
+    {"id":"apple-style-premium-product-video","file":"content/tutorials/video/apple-style-premium-product-video.md","space":"tutorials","category":"video","categoryName":"视频制作","title":"苹果风格高端产品视频制作框架","subtitle":"从品牌意图、设计、动画、配乐到音效的可复用制作方法","date":"2026-09-27","tags":["教程","创作与影像","产品视频","Apple","Motion Design","品牌"],"excerpt":"从品牌意图、设计、动画、配乐到音效的可复用制作方法"},
+    {"id":"llm-how-it-works","file":"content/models/llm/llm-how-it-works.md","space":"models","category":"foundations","categoryName":"AI 基础原理","title":"LLM 的本质：从数学、训练到推理系统彻底理解大语言模型","subtitle":"从概率、向量、Softmax、Attention、Cross-Entropy 到 MoE、KV Cache、Reasoning 与 Agent","date":"2026-09-27","tags":["LLM","Transformer","数学","Softmax","Cross-Entropy","Attention","MoE","KV Cache","Reasoning","Inference","RLHF","DPO"],"excerpt":"从概率论、线性代数和优化目标出发，一路推到 Transformer、训练、后训练、推理系统与 Reasoning，建立完整的大语言模型心智模型。"},
+    {"id":"vlm-how-it-works","file":"content/models/vlm/vlm-how-it-works.md","space":"models","category":"foundations","categoryName":"AI 基础原理","title":"VLM 的本质：从像素、跨模态数学到视觉推理","subtitle":"从图像张量、Patch、CLIP 对比学习、Cross-Attention 到高分辨率、Grounding 与视频理解","date":"2026-09-27","tags":["VLM","ViT","CLIP","对比学习","Cross-Attention","Visual Token","Grounding","Multimodal"],"excerpt":"从像素张量和视觉 token 出发，用数学理解图文对齐、跨模态计算、视觉推理和视频上下文。"},
+    {"id":"diffusion-dit","file":"content/models/generative/diffusion-dit.md","space":"models","category":"generative","categoryName":"生成模型","title":"Diffusion / DiT 的本质：AI 如何从噪声生成图像","subtitle":"从概率扩散、去噪目标、Latent Diffusion 到 DiT 与 Flow Matching","date":"2026-09-27","tags":["Diffusion","DiT","Flow Matching","Image Generation","Latent"],"excerpt":"从加噪与去噪的数学开始，理解现代图像和视频生成模型。"},
+    {"id":"embedding-models","file":"content/models/embedding/embedding-models.md","space":"models","category":"representation","categoryName":"检索与表示模型","title":"Embedding Model 的本质：语义如何变成向量空间","subtitle":"从向量、Cosine Similarity、Contrastive Learning 到 RAG 与 Hybrid Search","date":"2026-09-27","tags":["Embedding","RAG","Vector Search","Contrastive Learning"],"excerpt":"理解语义向量、相似度、召回、Reranker 与 LLM 之间的关系。"},
+    {"id":"audio-models","file":"content/models/audio/audio-models.md","space":"models","category":"audio-models","categoryName":"音频与语音模型","title":"Audio Model 的本质：AI 如何听、说与生成音乐","subtitle":"从 Waveform、STFT、ASR、TTS 到 Neural Codec 与原生语音模型","date":"2026-09-27","tags":["Audio","Speech","ASR","TTS","Codec","Music"],"excerpt":"从数字波形到离散音频 token，理解语音识别、合成、音乐与实时对话。"},
+    {"id":"video-models","file":"content/models/video/video-models.md","space":"models","category":"generative","categoryName":"生成模型","title":"Video Model 的本质：AI 如何生成时间与运动","subtitle":"从时空 Token、Video Diffusion 到一致性、镜头运动与世界模拟","date":"2026-09-27","tags":["Video","Diffusion","Temporal","World Model","Generation"],"excerpt":"理解视频为何不只是连续图片，以及时空一致性和物理变化为何困难。"},
+    {"id":"world-models","file":"content/models/world/world-models.md","space":"models","category":"world-models","categoryName":"世界模型","title":"World Model 的本质：AI 如何预测世界的下一状态","subtitle":"从 Latent State、Dynamics、Imagined Rollout 到 Planning 与 Agent","date":"2026-09-27","tags":["World Model","Dynamics","Planning","Agent","Latent State"],"excerpt":"理解世界模型如何学习状态、行动和未来，以及它与视频生成和 Agent 的区别。"},
     {
-      "id": "apple-style-premium-product-video",
-      "file": "content/tutorials/video/apple-style-premium-product-video.md",
-      "space": "tutorials",
-      "category": "video",
-      "categoryName": "视频制作",
-      "title": "苹果风格高端产品视频制作框架",
-      "subtitle": "从品牌意图、设计、动画、配乐到音效的可复用制作方法",
-      "date": "2026-09-27",
-      "tags": [
-        "教程",
-        "创作与影像",
-        "产品视频",
-        "Apple",
-        "Motion Design",
-        "品牌"
-      ],
-      "excerpt": "从品牌意图、设计、动画、配乐到音效的可复用制作方法"
+      "id":"llm-tokenization","file":"content/models/llm/tokenization.md","space":"models","category":"llm-math","categoryName":"LLM · 表示与数学",
+      "title":"Token 与分词：从文字、字节到模型输入","subtitle":"固定合并表的 BPE 教学实验、Token ID、Embedding 形状与上下文预算","date":"2026-09-28","tags":["LLM","Token","Tokenizer","BPE","Embedding","数值实验"],"excerpt":"用可运行的极小词表区分字符、字节、Token 与向量，理解分词与模型规格、计费之间的边界。",
+      "knowledgeUnit":{"kind":"independent-explanation","reviewStatus":"needs-independent-review","exampleId":"tokenization","conceptIds":["concept:tokenization","concept:token-embedding"],"placements":[{"hubId":"hub:llm","path":"math/tokenization"}],"sourceUrls":["https://aclanthology.org/P16-1162/","https://aclanthology.org/D18-2012/","https://github.com/google/sentencepiece"],"relatedResourceIds":["model-api-prices"]}
     },
     {
-      "id": "llm-how-it-works",
-      "file": "content/models/llm/llm-how-it-works.md",
-      "space": "models",
-      "category": "foundations",
-      "categoryName": "AI 基础原理",
-      "title": "LLM 的本质：从数学、训练到推理系统彻底理解大语言模型",
-      "subtitle": "从概率、向量、Softmax、Attention、Cross-Entropy 到 MoE、KV Cache、Reasoning 与 Agent",
-      "date": "2026-09-27",
-      "tags": [
-        "LLM",
-        "Transformer",
-        "数学",
-        "Softmax",
-        "Cross-Entropy",
-        "Attention",
-        "MoE",
-        "KV Cache",
-        "Reasoning",
-        "Inference",
-        "RLHF",
-        "DPO"
-      ],
-      "excerpt": "从概率论、线性代数和优化目标出发，一路推到 Transformer、训练、后训练、推理系统与 Reasoning，建立完整的大语言模型心智模型。"
+      "id":"llm-softmax-temperature","file":"content/models/llm/softmax-temperature.md","space":"models","category":"llm-math","categoryName":"LLM · 表示与数学",
+      "title":"Softmax 与温度：从分数到概率，再到梯度","subtitle":"四候选手算、稳定归一化、采样边界与交叉熵有限差分验证","date":"2026-09-28","tags":["LLM","Softmax","Temperature","Logits","交叉熵","数值稳定性"],"excerpt":"亲自计算概率与温度变化，验证 p-y 梯度，并分清 Token 概率、注意力权重与事实可信度。",
+      "knowledgeUnit":{"kind":"independent-explanation","reviewStatus":"needs-independent-review","exampleId":"softmax","conceptIds":["concept:softmax","concept:logits","concept:numerical-stability"],"placements":[{"hubId":"hub:llm","path":"math/softmax"}],"sourceUrls":["https://arxiv.org/abs/1909.03469","https://arxiv.org/html/1706.03762v7","https://docs.pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html"],"relatedResourceIds":["arena-text","aa-intelligence"]}
     },
     {
-      "id": "vlm-how-it-works",
-      "file": "content/models/vlm/vlm-how-it-works.md",
-      "space": "models",
-      "category": "foundations",
-      "categoryName": "AI 基础原理",
-      "title": "VLM 的本质：从像素、跨模态数学到视觉推理",
-      "subtitle": "从图像张量、Patch、CLIP 对比学习、Cross-Attention 到高分辨率、Grounding 与视频理解",
-      "date": "2026-09-27",
-      "tags": [
-        "VLM",
-        "ViT",
-        "CLIP",
-        "对比学习",
-        "Cross-Attention",
-        "Visual Token",
-        "Grounding",
-        "Multimodal"
-      ],
-      "excerpt": "从像素张量和视觉 token 出发，用数学理解图文对齐、跨模态计算、视觉推理和视频上下文。"
+      "id":"llm-attention-calculation","file":"content/models/llm/attention-calculation.md","space":"models","category":"llm-mechanisms","categoryName":"LLM · 内部计算",
+      "title":"Attention 逐步计算：QKV、掩码与加权输出","subtitle":"一个三位置、二维单头实例，检查张量形状与不能读取未来的约束","date":"2026-09-28","tags":["LLM","Attention","QKV","Mask","矩阵乘法","数值实验"],"excerpt":"逐步计算 QK 转置、缩放、因果掩码、Softmax 与 AV，附标准库实现及前缀不变性测试。",
+      "knowledgeUnit":{"kind":"independent-explanation","reviewStatus":"needs-independent-review","exampleId":"attention","conceptIds":["concept:self-attention","concept:qkv","concept:causal-mask"],"placements":[{"hubId":"hub:llm","path":"mechanisms/attention"}],"sourceUrls":["https://arxiv.org/html/1706.03762v7","https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html","https://arxiv.org/abs/2205.14135"],"relatedResourceIds":["aa-intelligence"]}
     },
     {
-      "id": "diffusion-dit",
-      "file": "content/models/generative/diffusion-dit.md",
-      "space": "models",
-      "category": "generative",
-      "categoryName": "生成模型",
-      "title": "Diffusion / DiT 的本质：AI 如何从噪声生成图像",
-      "subtitle": "从概率扩散、去噪目标、Latent Diffusion 到 DiT 与 Flow Matching",
-      "date": "2026-09-27",
-      "tags": [
-        "Diffusion",
-        "DiT",
-        "Flow Matching",
-        "Image Generation",
-        "Latent"
-      ],
-      "excerpt": "从加噪与去噪的数学开始，理解现代图像和视频生成模型。"
+      "id":"llm-training-loop","file":"content/models/llm/training-loop.md","space":"models","category":"llm-training","categoryName":"LLM · 训练过程",
+      "title":"一次训练更新：从目标、损失到参数变化","subtitle":"标签移位、交叉熵、链式法则、两参数 SGD 实验与后训练的边界","date":"2026-09-28","tags":["LLM","训练","Loss","Gradient","SGD","SFT","RLHF","DPO"],"excerpt":"通过一次可手算更新连起前向、损失、梯度与优化器，区分训练效果、泛化与评测表现。",
+      "knowledgeUnit":{"kind":"independent-explanation","reviewStatus":"needs-independent-review","exampleId":"training","conceptIds":["concept:loss-objective","concept:backpropagation","concept:gradient"],"placements":[{"hubId":"hub:llm","path":"training/loop"}],"sourceUrls":["https://huggingface.co/docs/transformers/en/tasks/language_modeling","https://docs.pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html","https://arxiv.org/abs/2203.02155","https://arxiv.org/abs/2305.18290"],"relatedResourceIds":["arena-text","aa-intelligence"]}
     },
     {
-      "id": "embedding-models",
-      "file": "content/models/embedding/embedding-models.md",
-      "space": "models",
-      "category": "representation",
-      "categoryName": "检索与表示模型",
-      "title": "Embedding Model 的本质：语义如何变成向量空间",
-      "subtitle": "从向量、Cosine Similarity、Contrastive Learning 到 RAG 与 Hybrid Search",
-      "date": "2026-09-27",
-      "tags": [
-        "Embedding",
-        "RAG",
-        "Vector Search",
-        "Contrastive Learning"
-      ],
-      "excerpt": "理解语义向量、相似度、召回、Reranker 与 LLM 之间的关系。"
-    },
-    {
-      "id": "audio-models",
-      "file": "content/models/audio/audio-models.md",
-      "space": "models",
-      "category": "audio-models",
-      "categoryName": "音频与语音模型",
-      "title": "Audio Model 的本质：AI 如何听、说与生成音乐",
-      "subtitle": "从 Waveform、STFT、ASR、TTS 到 Neural Codec 与原生语音模型",
-      "date": "2026-09-27",
-      "tags": [
-        "Audio",
-        "Speech",
-        "ASR",
-        "TTS",
-        "Codec",
-        "Music"
-      ],
-      "excerpt": "从数字波形到离散音频 token，理解语音识别、合成、音乐与实时对话。"
-    },
-    {
-      "id": "video-models",
-      "file": "content/models/video/video-models.md",
-      "space": "models",
-      "category": "generative",
-      "categoryName": "生成模型",
-      "title": "Video Model 的本质：AI 如何生成时间与运动",
-      "subtitle": "从时空 Token、Video Diffusion 到一致性、镜头运动与世界模拟",
-      "date": "2026-09-27",
-      "tags": [
-        "Video",
-        "Diffusion",
-        "Temporal",
-        "World Model",
-        "Generation"
-      ],
-      "excerpt": "理解视频为何不只是连续图片，以及时空一致性和物理变化为何困难。"
-    },
-    {
-      "id": "world-models",
-      "file": "content/models/world/world-models.md",
-      "space": "models",
-      "category": "world-models",
-      "categoryName": "世界模型",
-      "title": "World Model 的本质：AI 如何预测世界的下一状态",
-      "subtitle": "从 Latent State、Dynamics、Imagined Rollout 到 Planning 与 Agent",
-      "date": "2026-09-27",
-      "tags": [
-        "World Model",
-        "Dynamics",
-        "Planning",
-        "Agent",
-        "Latent State"
-      ],
-      "excerpt": "理解世界模型如何学习状态、行动和未来，以及它与视频生成和 Agent 的区别。"
+      "id":"llm-kv-cache","file":"content/models/llm/kv-cache.md","space":"models","category":"llm-inference","categoryName":"LLM · 推理与部署",
+      "title":"KV Cache：缓存读写、显存计算与失效条件","subtitle":"从因果前缀不变性推导复用过程，区分 KV 头、序列长度、运行成本与 API 计价","date":"2026-09-28","tags":["LLM","KV Cache","Prefill","Decode","GQA","显存","部署"],"excerpt":"推导缓存容量公式并计算 1 GiB 示例，说明它没有包含哪些开销，以及何时不能复用缓存。",
+      "knowledgeUnit":{"kind":"independent-explanation","reviewStatus":"needs-independent-review","exampleId":"kv-cache","conceptIds":["concept:kv-cache","concept:prefill","concept:decode","concept:mqa-gqa"],"placements":[{"hubId":"hub:llm","path":"inference/kv-cache"}],"sourceUrls":["https://huggingface.co/docs/transformers/en/cache_explanation","https://aclanthology.org/2023.emnlp-main.298/","https://arxiv.org/abs/2309.06180","https://arxiv.org/abs/2205.14135"],"relatedResourceIds":["model-api-prices"]}
     }
   ]
 }

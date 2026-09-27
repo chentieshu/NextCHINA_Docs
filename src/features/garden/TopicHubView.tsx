@@ -15,26 +15,34 @@ export function TopicHubView({ node, chapters, isLight, onOpen, onConcept, onRea
   const resources = resourcesUnder(node.id);
   const article = chapters.find(item => item.id === node.embeddedArticleId);
   const meta = article ? resourceMeta(article.id) : undefined;
+  const independent = meta?.kind === 'independent-explanation';
   const concepts = (node.conceptRefs ?? []).map(id => byId.get(id)).filter((n): n is KnowledgeNode => Boolean(n));
   const relatedHubs = (node.hubRefs ?? []).map(id => byId.get(id)).filter((n): n is KnowledgeNode => Boolean(n));
   useEffect(() => { scroll.current?.scrollTo({ top: 0, behavior: 'instant' }); }, [node.id]);
   return <div ref={scroll} className="hub-content" data-hub={hub.id} data-branch={node.outlinePath ?? ''} role="region" aria-label="专题内容">
     <div className="hub-reading-column">
-      <div className="hub-status"><span><GitBranch />{node.kind === 'hub' ? `${children.length} 个分支` : '专题知识大纲'}</span><span>{resources.length} 个已有资源</span><span>导航已接入 · 正文逐步完善</span></div>
+      <div className="hub-status"><span><GitBranch />{node.kind === 'hub' ? `${children.length} 个分支` : independent ? '独立知识讲解' : '专题知识大纲'}</span><span>{resources.length} 个已有资源</span><span>{independent ? '含来源与数值例子 · 待独立复核' : '导航已接入 · 正文逐步完善'}</span></div>
       {node.kind === 'hub' && hub.id === 'hub:llm' && <nav className="hub-shortcuts" aria-label="按目标进入 LLM"><span>我想</span>{[['mechanisms','理解内部计算'],['rankings','比较模型能力'],['pricing','查看费用'],['applications','选择产品']].map(([key,label]) => <button key={key} onClick={() => onOpen(`branch:llm:${key}`)}>{label}<ArrowUpRight /></button>)}</nav>}
       {children.length > 0 && <section aria-label="下级知识分支"><h3>继续深入 <span>{children.length}</span></h3><div className="hub-branch-grid">{children.map((child, index) => {
         const count = resourcesUnder(child.id).length;
+        const hasExplanation = child.resourceRefs?.some(resource => resource.role === 'independent-explanation');
         return <button key={child.id} className="hub-branch-card" data-branch-id={child.id} aria-label={`进入分支 ${child.label}`} onClick={() => onOpen(child.id)}>
           <div><span className="hub-number">{String(index + 1).padStart(2,'0')}</span><ArrowUpRight /></div><strong>{child.label}</strong>
-          {child.summary && <p>{child.summary}</p>}<small>{childrenById.get(child.id)?.length ? `${childrenById.get(child.id)!.length} 个下级问题` : '具体问题'} · {count ? `${count} 个资料入口` : '独立正文待完善'}</small>
+          {child.summary && <p>{child.summary}</p>}<small>{childrenById.get(child.id)?.length ? `${childrenById.get(child.id)!.length} 个下级问题` : '具体问题'} · {hasExplanation ? '已有独立讲解' : count ? `${count} 个资料入口` : '独立正文待完善'}</small>
         </button>;
       })}</div></section>}
-      {article && <section className="hub-resource-reader" aria-label="专题内数据资源" data-resource-id={article.id}>
-        <div className="hub-resource-heading"><BookOpen /><div><h3>{article.title}</h3><p>{meta?.metric ? `${meta.metric} · ` : ''}{meta?.snapshotDate ? `来源快照 ${meta.snapshotDate}` : `页面标注日期 ${article.date}；具体条目以正文为准`}</p></div></div>
-        <div className="hub-evidence-note">沿用现有资料及原始日期，本次只调整专题组织，未重新核验模型、分数或价格。{article.id === 'terminal-bench' && '这是 Agent 系统任务成绩，不是裸模型能力排名。'}</div>
+      {article && <section className="hub-resource-reader" aria-label={independent ? '专题内独立讲解' : '专题内数据资源'} data-resource-id={article.id} data-resource-kind={independent ? 'explanation' : 'reference'}>
+        <div className="hub-resource-heading"><BookOpen /><div><h3>{article.title}</h3><p>{independent ? `撰写日期 ${article.date} · 教学机制与算例` : `${meta?.metric ? `${meta.metric} · ` : ''}${meta?.snapshotDate ? `来源快照 ${meta.snapshotDate}` : `页面标注日期 ${article.date}；具体条目以正文为准`}`}</p></div></div>
+        <div className="hub-evidence-note">{independent ? '本页为独立机制讲解，标注一手来源、计算假设和标准库实验；程序验证不等于专家复核，也不代表商业模型或硬件实测。' : '沿用现有资料及原始日期，本次只调整专题组织，未重新核验模型、分数或价格。'}{article.id === 'terminal-bench' && '这是 Agent 系统任务成绩，不是裸模型能力排名。'}</div>
         {meta?.warning && <p className="hub-source-warning">{meta.warning}</p>}
         <button className="garden-secondary" onClick={() => onRead(article.id)}>在文档阅读器中打开</button>
         <div className="hub-markdown"><MarkdownRenderer content={article.content} isLight={isLight} /></div>
+        {!!meta?.relatedResourceIds?.length && <section aria-label="关联评测与价格"><h3>把机制与真实选择关联起来</h3><p className="hub-note">下列资料保留原有来源与日期；机制介绍不证明某个模型的得分或价格。</p><div className="hub-reference-links">{meta.relatedResourceIds.map(id => {
+          const related = chapters.find(chapter => chapter.id === id);
+          if (!related) return null;
+          const target = resourceTarget(hub.id, id);
+          return <button key={id} data-related-resource={id} onClick={() => target ? onOpen(target) : onRead(id)}>{related.title}<ArrowUpRight /></button>;
+        })}</div></section>}
       </section>}
       {!article && resources.length > 0 && <section aria-label="本分支资源"><h3><BookOpen />已有资料 <span>{resources.length}</span></h3><div className="hub-resource-grid">{resources.map(resource => {
         const chapter = chapters.find(item => item.id === resource.articleId);
@@ -43,7 +51,7 @@ export function TopicHubView({ node, chapters, isLight, onOpen, onConcept, onRea
         const source = resourceMeta(chapter.id);
         return <button className="hub-resource-card" key={chapter.id} data-resource-link={chapter.id} onClick={() => target ? onOpen(target) : onRead(chapter.id)}>
           <small>{resourceLabel(resource)}</small><strong>{chapter.title}</strong>
-          {source?.snapshotDate ? <span>快照：{source.snapshotDate} · {source.metric}</span> : <span>页面日期：{chapter.date}，具体来源日期见正文</span>}
+          {source?.snapshotDate ? <span>快照：{source.snapshotDate} · {source.metric}</span> : <span>{source?.kind === 'independent-explanation' ? '撰写日期' : '页面日期'}：{chapter.date}，具体来源日期见正文</span>}
           {source?.rowCount !== undefined && <span>{source.rowCount} 条来源记录 · 不声称完整实时榜</span>}
           <em>{target ? '在专题中查看' : '阅读已有资料'} →</em>
         </button>;

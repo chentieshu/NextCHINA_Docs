@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
+import { readKnowledgeUnits, addKnowledgePlacements } from './knowledge-units.mjs';
 
 const read = (root, file) => JSON.parse(readFileSync(path.join(root, file), 'utf8'));
 const slug = value => typeof value === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
@@ -32,7 +33,7 @@ export function buildTopicHubs(base, plan, config, publishedIds, datasets) {
   const bind = (node, articleId, role) => {
     assert.ok(publishedIds.has(articleId), `Unknown resource article ${articleId}`);
     if (!node.resourceRefs.some(ref => ref.articleId === articleId)) node.resourceRefs.push({ articleId, role });
-    const coverage = articleId === 'model-api-prices' ? 'prices' : /snapshot/.test(role) ? 'snapshot' : /catalogue|products/.test(role) ? 'catalogue' : /methodology/.test(role) ? 'methodology' : 'overview';
+    const coverage = role === 'independent-explanation' ? 'explanation' : articleId === 'model-api-prices' ? 'prices' : /snapshot/.test(role) ? 'snapshot' : /catalogue|products/.test(role) ? 'catalogue' : /methodology/.test(role) ? 'methodology' : 'overview';
     if (!node.articleBindings.some(ref => ref.articleId === articleId)) node.articleBindings.push({ articleId, coverage });
     resources[articleId] ??= { articleId };
   };
@@ -86,7 +87,6 @@ export function buildTopicHubs(base, plan, config, publishedIds, datasets) {
     const outline = plan.hubOutlines[seed.id];
     if (outline) visit(seed.id, outline, seed.id);
     else {
-      // Only existing content groups appear. Templates never create dozens of blank branches.
       const sections = [...new Set(plan.articlePlacements.flatMap(record => record.placements.filter(p => p.hubId === seed.id).map(p => p.section)))];
       visit(seed.id, sections.map(id => ({ id, label: config.sectionLabels[id] ?? id })), seed.id);
     }
@@ -100,12 +100,12 @@ export function buildTopicHubs(base, plan, config, publishedIds, datasets) {
   for (const placement of config.resourcePlacements) {
     const node = byId.get(branchId(placement.hubId, placement.path));
     assert.ok(node, `Unknown resource branch ${placement.path}`);
+    assert.ok(!node.embeddedArticleId || node.embeddedArticleId === placement.articleId, `Competing embedded readers at ${node.id}`);
     bind(node, placement.articleId, placement.role);
     node.embeddedArticleId = placement.articleId;
   }
   for (const seed of seeds) pendingRefs.push({ source: seed.id, target: seed.about, reason: '专题的规范知识对象；专题导航与概念本身保留不同 ID。' });
   for (const ref of pendingRefs) edges.push({ ...ref, id: `hub-ref:${ref.source}>${ref.target}`, type: 'related', assertionStatus: 'editorial' });
-  // No score, price, model-version join or fact date is changed here.
   for (const node of nodes) node.hubEntries = entryHubs[node.id] ?? [];
   return { ...base, nodes, edges, hubResources: resources,
     hubIntegration: { stage: config.stage, detailedHubs: Object.keys(plan.hubOutlines).filter(id => enabled.has(id)), contentMigrated: false, factReverification: false },
@@ -113,7 +113,8 @@ export function buildTopicHubs(base, plan, config, publishedIds, datasets) {
 }
 
 export function attachTopicHubs(base, root, publishedIds) {
-  const config = read(root, 'content/garden/hub-integration.json');
+  const units = readKnowledgeUnits(root);
+  const config = addKnowledgePlacements(read(root, 'content/garden/hub-integration.json'), units);
   assert.equal(config.outlineSource, 'content/garden/plans/topic-hubs-v2.json');
   const plan = read(root, config.outlineSource);
   const datasets = {};
@@ -121,5 +122,13 @@ export function attachTopicHubs(base, root, publishedIds) {
     assert.ok(ref.file.startsWith('content/data/') && !ref.file.split('/').includes('..') && ref.file.endsWith('.json'), 'Invalid dataset file');
     datasets[ref.file] ??= read(root, ref.file);
   }
-  return buildTopicHubs(base, plan, config, publishedIds, datasets);
+  const result = buildTopicHubs(base, plan, config, publishedIds, datasets);
+  for (const article of units) {
+    const unit = article.knowledgeUnit;
+    for (const id of unit.relatedResourceIds) assert.ok(publishedIds.has(id), `Unknown related resource ${id}`);
+    result.hubResources[article.id] = { ...result.hubResources[article.id], kind: unit.kind,
+      reviewStatus: unit.reviewStatus, relatedResourceIds: unit.relatedResourceIds, sourceUrls: unit.sourceUrls };
+  }
+  result.stats.independentArticles = units.length;
+  return result;
 }

@@ -6,8 +6,11 @@ coverage/
 *.log
 .env*
 !.env.example
-
-# Cloudflare Wrangler local state
 .wrangler/
 .dev.vars*
 !.dev.vars.example
+# Deterministic, build-time derivative of content/garden (not a second source).
+src/generated/
+test-results/
+playwright-report/
+.markdown-render-test-*/

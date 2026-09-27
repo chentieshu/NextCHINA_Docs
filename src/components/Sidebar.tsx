@@ -126,8 +126,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 360, damping: 38, mass: 0.8 }}
         style={{ pointerEvents: (isDesktop ? isSidebarOpen : isOpenMobile) ? 'auto' : 'none' }}
         className={`
-          fixed bottom-0 left-0 w-72 md:w-80 lg:w-[clamp(272px,24vw,304px)] flex flex-col font-sans select-none
-          ${isOpenMobile ? 'top-0 z-50 shadow-2xl h-full' : 'lg:top-11 z-30 lg:h-[calc(100vh-44px)] top-0 h-full'}
+          docs-sidebar fixed left-0 flex flex-col font-sans select-none
+          ${isOpenMobile ? 'top-0 bottom-0 z-50 shadow-2xl' : 'top-0 bottom-0 lg:top-11 z-30'}
           ${isLight 
             ? 'bg-[#fafafc] text-[#2c2c30]' 
             : 'bg-[#151518] text-[#cfcfd5]'}

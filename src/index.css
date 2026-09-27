@@ -69,6 +69,7 @@ body {
 
 body {
   margin: 0;
+  min-height: 100dvh;
   touch-action: pan-x pan-y;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
@@ -112,14 +113,40 @@ body {
 .markdown-body del { text-decoration: line-through; opacity: 0.72; }
 
 .markdown-body ul,
-.markdown-body ol { margin: 1rem 0; padding-left: 1.5rem; }
-.markdown-body ul { list-style: disc; }
-.markdown-body ol { list-style: decimal; }
-.markdown-body li { margin: 0.35rem 0; padding-left: 0.15rem; }
-.markdown-body li > p { margin: 0.35rem 0; }
+.markdown-body ol {
+  margin: 1.05rem 0;
+  padding-inline-start: 1.5rem;
+}
+
+.markdown-body ul { list-style-type: disc; }
+.markdown-body ol { list-style-type: decimal; }
+
+.markdown-body li {
+  margin: 0.42rem 0;
+  padding-inline-start: 0.18rem;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+
+.markdown-body li::marker {
+  font-size: 0.9em;
+  font-variant-numeric: tabular-nums;
+}
+
+.markdown-body li > p {
+  margin: 0.3rem 0;
+}
+
 .markdown-body li > ul,
-.markdown-body li > ol { margin: 0.35rem 0; }
-.markdown-body li::marker { opacity: 0.7; }
+.markdown-body li > ol {
+  margin: 0.42rem 0 0.5rem;
+  padding-inline-start: 1.25rem;
+}
+
+.markdown-body ul ul { list-style-type: circle; }
+.markdown-body ul ul ul { list-style-type: square; }
+.markdown-body ol ol { list-style-type: lower-alpha; }
+.markdown-body ol ol ol { list-style-type: lower-roman; }
 
 .markdown-body blockquote {
   margin: 1.5rem 0;
@@ -222,14 +249,31 @@ body {
 .markdown-body td > :last-child { margin-bottom: 0; }
 .markdown-body tr:last-child td { border-bottom: 0; }
 
-.markdown-body input[type="checkbox"] {
+.markdown-body ul.contains-task-list {
+  padding-inline-start: 0;
+  list-style: none;
+}
+
+.markdown-body li.task-list-item {
+  position: relative;
+  list-style: none;
+  padding-inline-start: 1.65rem;
+}
+
+.markdown-body li.task-list-item > input[type="checkbox"] {
+  position: absolute;
+  inset-inline-start: 0.1rem;
+  top: 0.42em;
   width: 1rem;
   height: 1rem;
-  margin: 0 0.45rem 0 0;
-  vertical-align: -0.15rem;
+  margin: 0;
+  opacity: 1;
 }
-.markdown-body li.task-list-item { list-style: none; }
-.markdown-body ul.contains-task-list { padding-left: 0.25rem; list-style: none; }
+
+.markdown-body li.task-list-item > ul,
+.markdown-body li.task-list-item > ol {
+  margin-top: 0.45rem;
+}
 
 /* Theme */
 .markdown-light { color: #38383e; }
@@ -237,6 +281,7 @@ body {
 .markdown-light h3, .markdown-light h4, .markdown-light h5, .markdown-light h6 { color: #29292e; }
 .markdown-light a { color: #303038; text-decoration-color: #aaaab2; }
 .markdown-light strong { color: #1a1a1d; }
+.markdown-light li::marker { color: #7a7a82; }
 .markdown-light blockquote { color: #45454c; background: #f5f5f8; border-color: #c7c7ce; }
 .markdown-light hr, .markdown-light .md-table-scroll, .markdown-light th, .markdown-light td { border-color: #e3e3e8; }
 .markdown-light .md-inline-code { color: #2c2c30; background: #f0f0f4; }
@@ -250,6 +295,7 @@ body {
 .markdown-dark h3, .markdown-dark h4, .markdown-dark h5, .markdown-dark h6 { color: #d4d4dc; }
 .markdown-dark a { color: #d0d0dc; text-decoration-color: #5f5f6a; }
 .markdown-dark strong { color: #ededf4; }
+.markdown-dark li::marker { color: #868690; }
 .markdown-dark blockquote { color: #c5c5cd; background: #222226; border-color: #55555f; }
 .markdown-dark hr, .markdown-dark .md-table-scroll, .markdown-dark th, .markdown-dark td { border-color: #34343a; }
 .markdown-dark .md-inline-code { color: #d6d6de; background: #26262b; }
@@ -260,12 +306,31 @@ body {
 
 @media (max-width: 639px) {
   body { font-size: 16px; }
-  #nextchina-docs-root { padding-bottom: env(safe-area-inset-bottom); }
+  .docs-article-main {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
   .markdown-body { line-height: 1.78; }
   .markdown-body h1 { margin-top: 2rem; font-size: 1.65rem; }
   .markdown-body h2 { margin-top: 2.1rem; font-size: 1.3rem; }
   .markdown-body h3 { margin-top: 1.65rem; font-size: 1.125rem; }
-  .markdown-body ul, .markdown-body ol { padding-left: 1.25rem; }
+  .markdown-body ul,
+  .markdown-body ol {
+    margin: 0.9rem 0;
+    padding-inline-start: 1.15rem;
+  }
+  .markdown-body li {
+    margin: 0.34rem 0;
+    padding-inline-start: 0.1rem;
+    line-height: 1.72;
+  }
+  .markdown-body li > ul,
+  .markdown-body li > ol {
+    margin: 0.32rem 0 0.4rem;
+    padding-inline-start: 1rem;
+  }
+  .markdown-body li.task-list-item {
+    padding-inline-start: 1.5rem;
+  }
   .markdown-body blockquote { margin: 1.25rem 0; padding: 0.8rem 0.9rem; }
   .markdown-body table { font-size: 0.75rem; }
   .markdown-body th, .markdown-body td { padding: 0.6rem 0.7rem; min-width: 7rem; }

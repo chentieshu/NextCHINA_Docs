@@ -73,16 +73,25 @@ export async function testMarkdownRendering(articles = []) {
     assert.match(render(fixture, false), /markdown-dark/);
     const headings = input => [...input.matchAll(/<h[1-6][^>]*\bid="([^"]+)"/g)].map(match => match[1]);
     assert.deepEqual(headings(html), headings(render(fixture, false)), 'Heading IDs must survive theme changes');
-    const { DOC_CHAPTERS } = await import(pathToFileURL(path.join(outputRoot, 'src/data/docs.js')).href);
+    const { DOC_CHAPTERS, escapeResearchCurrency } = await import(pathToFileURL(path.join(outputRoot, 'src/data/docs.js')).href);
+    const prices = '$0.05/秒；另一个套餐 $20/月。';
+    const escapedPrices = escapeResearchCurrency(prices);
+    assert.equal(escapeResearchCurrency(escapedPrices), escapedPrices, 'Currency escaping must be idempotent');
+    const priceHtml = render(escapedPrices);
+    assert.ok(priceHtml.includes(prices), 'Prices must remain visible as written');
+    assert.ok(!priceHtml.includes('class="katex'), 'Dollar prices must not become TeX');
+    const generatedIds = new Set(DOC_CHAPTERS.map(chapter => chapter.id));
     const documents = [...articles, ...DOC_CHAPTERS];
     for (const { id, content } of documents) {
       const result = render(content);
       assert.ok(result.includes('markdown-body'), `${id}: render failed`);
       assert.ok(!result.includes('node="[object Object]"'), `${id}: leaked AST props`);
+      if (generatedIds.has(id)) assert.ok(!result.includes('class="katex'), `${id}: plain research text unexpectedly parsed as math`);
     }
     if (process.env.MARKDOWN_PREVIEW_PATH) writeFileSync(process.env.MARKDOWN_PREVIEW_PATH, html);
     console.log(JSON.stringify({ status: 'pass', test: 'actual-react-markdown-render',
-      fixtureColumns: [2, 3, 4, 7], codeBlocks: 3, mermaidBlocks: 2, articlesRendered: articles.length, generatedDocumentsRendered: DOC_CHAPTERS.length }));
+      fixtureColumns: [2, 3, 4, 7], codeBlocks: 3, mermaidBlocks: 2, currencyEscaping: true,
+      articlesRendered: articles.length, generatedDocumentsRendered: DOC_CHAPTERS.length }));
   } finally {
     rmSync(temp, { recursive: true, force: true });
   }

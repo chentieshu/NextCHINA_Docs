@@ -215,7 +215,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Category folders and document files */}
-        <div className="flex-1 overflow-y-auto px-2 py-1 space-y-1 scrollbar-thin pb-4">
+        <div className="docs-sidebar-scroll flex-1 overflow-y-auto px-2 pt-1 space-y-1 scrollbar-thin pb-4">
           {categories.map(([catKey, cat]) => {
             const isFolderOpen = expandedFolders[catKey] ?? true;
 

@@ -1,0 +1,35 @@
+name: Validate topic hub architecture plan
+on:
+  push:
+    paths:
+      - 'content/garden/**'
+      - 'content/spaces.json'
+      - 'content/data/benchmarks.json'
+      - 'content/data/model-api-prices.json'
+      - 'docs/ai-topic-hubs-v2.md'
+      - 'scripts/validate-topic-hub-plan.mjs'
+      - '.github/workflows/validate-topic-hub-plan.yml'
+  pull_request:
+    paths:
+      - 'content/garden/**'
+      - 'content/spaces.json'
+      - 'content/data/benchmarks.json'
+      - 'content/data/model-api-prices.json'
+      - 'docs/ai-topic-hubs-v2.md'
+      - 'scripts/validate-topic-hub-plan.mjs'
+      - '.github/workflows/validate-topic-hub-plan.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Check references, recursive outline and migration invariants
+        run: node scripts/validate-topic-hub-plan.mjs

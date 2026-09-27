@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "kind": "topic-hub-architecture-plan",
+  "status": "proposed-not-integrated",
+  "uiIntegrated": false,
+  "contentMigrated": false,
+  "factReverification": false,
+  "baselineCommit": "3fff0fc77c29c3a640d1604bff4b4f6fed103eff",
+  "designDocument": "docs/ai-topic-hubs-v2.md",
+  "principle": "专题是入口，分支组织问题，文章/数据/实验回答问题；同一事实只存一次。",
+  "profiles": {
+    "model-family": ["orientation", "math", "mechanisms", "training", "inference", "rankings", "models", "pricing", "applications", "tutorials", "safety", "research"],
+    "system": ["orientation", "architecture", "components", "operations", "rankings", "products", "pricing", "tutorials", "safety", "research"],
+    "mechanism": ["orientation", "math", "mechanisms", "implementations", "experiments", "limitations", "research"],
+    "product-collection": ["orientation", "products", "models", "rankings", "pricing", "tutorials", "limitations"],
+    "practice": ["orientation", "workflow", "materials", "tools", "experiments", "evaluation", "pricing", "rights"],
+    "orientation": ["orientation", "learning-paths", "references", "limitations"],
+    "evidence": ["orientation", "sources", "methods", "reviews", "changes"]
+  },
+  "hubSeeds": [
+    {"id":"hub:ai-overview","label":"AI 全景与入门","domainId":"domain:overview","about":"concept:artificial-intelligence","profile":"orientation"},
+    {"id":"hub:llm","label":"LLM · 大语言模型","domainId":"domain:modalities","about":"concept:llm","profile":"model-family"},
+    {"id":"hub:vlm","label":"VLM · 视觉语言模型","domainId":"domain:modalities","about":"concept:vlm","profile":"model-family"},
+    {"id":"hub:embedding","label":"Embedding 与检索表示","domainId":"domain:systems","about":"concept:embedding-model","profile":"model-family"},
+    {"id":"hub:image-generation","label":"图像生成与编辑","domainId":"domain:modalities","about":"topic:image-generation","profile":"model-family"},
+    {"id":"hub:video","label":"视频理解与生成","domainId":"domain:modalities","about":"concept:video-model","profile":"model-family"},
+    {"id":"hub:audio","label":"音频与语音","domainId":"domain:modalities","about":"concept:audio-model","profile":"model-family"},
+    {"id":"hub:music","label":"音乐 AI","domainId":"domain:modalities","about":"concept:music-generation","profile":"model-family"},
+    {"id":"hub:spatial","label":"3D 与空间 AI","domainId":"domain:modalities","about":"topic:video-space","profile":"model-family"},
+    {"id":"hub:world-models","label":"世界模型","domainId":"domain:embodied","about":"concept:world-model","profile":"model-family"},
+    {"id":"hub:rag","label":"RAG · 检索增强系统","domainId":"domain:systems","about":"concept:rag","profile":"system"},
+    {"id":"hub:agents","label":"Agent · 智能体系统","domainId":"domain:systems","about":"concept:agent","profile":"system"},
+    {"id":"hub:coding","label":"代码模型与编程应用","domainId":"domain:products","about":"topic:developer-tools","profile":"product-collection"},
+    {"id":"hub:assistants","label":"通用助手与办公应用","domainId":"domain:products","about":"concept:assistant-products","profile":"product-collection"},
+    {"id":"hub:platforms","label":"AI 平台与基础设施","domainId":"domain:products","about":"topic:platform-tools","profile":"product-collection"},
+    {"id":"hub:video-production","label":"视频制作实践","domainId":"domain:tutorials","about":"concept:video-production","profile":"practice"},
+    {"id":"hub:evidence","label":"来源、核验与更新","domainId":"domain:research","about":"topic:evidence-maintenance","profile":"evidence"},
+    {"id":"hub:transformer","label":"Transformer 机制","domainId":"domain:algorithms","about":"concept:transformer","profile":"mechanism"}
+  ],
+  "seedScope": "以上种子优先承接现有内容，不是全 AI 专题清单；完整宏观覆盖仍以十四领域及设计文档为准。模板分支是可用能力，不是所有专题必须展示的空目录。",
+  "hubOutlines": {
+    "hub:llm": [
+      {"id":"orientation","label":"基础与认识","children":[
+        {"id":"definition","label":"LLM、语言建模与模型边界","conceptRefs":["concept:llm","concept:model-vs-product"]},
+        {"id":"paradigms","label":"AI、学习、生成、检索与行动的关系"},
+        {"id":"training-inference","label":"训练与推理、参数与运行状态"},
+        {"id":"learning-map","label":"普通读者、开发者和研究者的阅读路径"}
+      ]},
+      {"id":"math","label":"表示与数学","children":[
+        {"id":"tokenization","label":"Token、分词、字节与特殊符号","conceptRefs":["concept:tokenization"]},
+        {"id":"representations","label":"Token Embedding、隐藏状态与上下文","conceptRefs":["concept:token-embedding"]},
+        {"id":"tensor-shapes","label":"向量、张量形状、矩阵乘法与批次","conceptRefs":["concept:matrix-tensor","concept:matrix-multiplication"]},
+        {"id":"probability","label":"条件概率、自回归分解与最大似然","conceptRefs":["concept:conditional-probability","concept:autoregression"]},
+        {"id":"softmax","label":"Logits、Softmax、温度与数值稳定性","conceptRefs":["concept:logits","concept:softmax","concept:numerical-stability"]},
+        {"id":"objectives","label":"负对数似然、交叉熵、困惑度与可比条件","conceptRefs":["concept:cross-entropy"]},
+        {"id":"derivatives","label":"梯度、链式法则与自动微分","conceptRefs":["concept:gradient","concept:chain-rule","concept:autodiff"]}
+      ]},
+      {"id":"mechanisms","label":"架构与内部计算","children":[
+        {"id":"architectures","label":"Encoder、Decoder、Transformer、SSM 与混合结构","conceptRefs":["concept:transformer","concept:ssm"]},
+        {"id":"attention","label":"Attention 的逐步计算","conceptRefs":["concept:self-attention"],"children":[
+          {"id":"qkv","label":"输入 X 与投影 Q/K/V","conceptRefs":["concept:qkv"]},
+          {"id":"scores","label":"Q 与 K 转置相乘","conceptRefs":["concept:matrix-multiplication"]},
+          {"id":"scaling","label":"缩放与方差假设","conceptRefs":["concept:dot-product"]},
+          {"id":"mask","label":"因果与其他可见性掩码","conceptRefs":["concept:causal-mask"]},
+          {"id":"normalization","label":"逐行 Softmax 与权重","conceptRefs":["concept:softmax"]},
+          {"id":"weighted-values","label":"权重乘 V 与输出投影"},
+          {"id":"heads","label":"多头、MQA/GQA 与交叉注意力","conceptRefs":["concept:multi-head","concept:mqa-gqa","concept:cross-attention"]}
+        ]},
+        {"id":"position","label":"位置编码、RoPE 与长上下文","conceptRefs":["concept:rope","concept:context-window"]},
+        {"id":"feedforward","label":"MLP、门控、残差与归一化","conceptRefs":["concept:mlp","concept:residual-normalization"]},
+        {"id":"experts","label":"Dense、MoE、路由与激活参数","conceptRefs":["concept:moe"]},
+        {"id":"output","label":"LM Head、Logits 与生成概率","conceptRefs":["concept:logits"]}
+      ]},
+      {"id":"training","label":"数据、训练与后训练","children":[
+        {"id":"data","label":"来源、许可、清洗、配比、合成与版本","conceptRefs":["concept:data-collection","concept:data-versioning"]},
+        {"id":"samples","label":"划分、标签移位、样本打包与污染","conceptRefs":["concept:train-validation-test","concept:data-contamination"]},
+        {"id":"loop","label":"前向、损失、反向、梯度与更新","conceptRefs":["concept:backpropagation","concept:loss-objective"]},
+        {"id":"budget","label":"预算、规模、泛化、精度与恢复","conceptRefs":["concept:overfitting","concept:checkpoint"]},
+        {"id":"alignment","label":"SFT、奖励、RLHF、DPO 与可验证反馈","conceptRefs":["concept:sft","concept:rlhf","concept:dpo"]},
+        {"id":"adaptation","label":"LoRA、全量微调、持续预训练与蒸馏","conceptRefs":["concept:lora","concept:distillation"]},
+        {"id":"not-training","label":"上下文学习、检索与更新参数的区别","conceptRefs":["concept:in-context-learning","concept:rag"]}
+      ]},
+      {"id":"inference","label":"推理、部署与优化","children":[
+        {"id":"request","label":"请求模板、上下文预算与输入处理"},
+        {"id":"generation-loop","label":"Prefill、Decode、采样与停止","conceptRefs":["concept:prefill","concept:decode","concept:decoding"]},
+        {"id":"kv-cache","label":"KV Cache 的过程、形状与资源","conceptRefs":["concept:kv-cache"],"children":[
+          {"id":"read-write","label":"一个 Token 的缓存读写"},
+          {"id":"memory","label":"层数、KV头、维度、精度与显存计算"},
+          {"id":"prefix","label":"前缀复用、批处理与服务条件"}
+        ]},
+        {"id":"serving","label":"批处理、内存、调度、并发与可观测性","conceptRefs":["concept:continuous-batching","concept:observability"]},
+        {"id":"optimization","label":"量化、内核与投机解码","conceptRefs":["concept:quantization","concept:flash-attention","concept:speculative-decoding"]},
+        {"id":"reasoning-runtime","label":"推理时计算、搜索与验证","conceptRefs":["concept:test-time-compute"]},
+        {"id":"deployment","label":"本地、云端、端侧、回滚与迁移","conceptRefs":["concept:edge-ai"]}
+      ]},
+      {"id":"rankings","label":"能力、评测与榜单","children":[
+        {"id":"capabilities","label":"写作、知识、数学、代码、指令、多语言与长文"},
+        {"id":"methodology","label":"任务、配置、判分、置信区间与污染","conceptRefs":["concept:benchmark-protocol","concept:confidence-interval"]},
+        {"id":"text-preference","label":"文本人类偏好快照","legacyDataRef":"data:arena-text"},
+        {"id":"composite","label":"综合指标及组成条件","legacyDataRef":"data:aa-intelligence"},
+        {"id":"specialized","label":"专项模型能力榜：待逐项核验与接入"},
+        {"id":"efficiency","label":"时延、速度、吞吐与费用条件","conceptRefs":["concept:ttft","concept:tps","concept:throughput"]},
+        {"id":"system-results","label":"相关 Agent 系统评测，不与模型能力混排","legacyDataRef":"data:terminal-bench"}
+      ]},
+      {"id":"models","label":"模型、版本与演化","children":[
+        {"id":"families","label":"家族、版本、配置、供应商与别名"},
+        {"id":"specifications","label":"已披露能力、模态、架构与上下文"},
+        {"id":"openness","label":"开放权重、代码、数据与使用许可"},
+        {"id":"model-detail","label":"具体版本：模型卡、评测、报价、产品、部署与教程"},
+        {"id":"evolution","label":"发布时间线、下线与替代"}
+      ]},
+      {"id":"pricing","label":"API、价格与成本","children":[
+        {"id":"api","label":"端点、模型ID、流式、工具、限流与错误"},
+        {"id":"offers","label":"API报价与计价条件","legacyDataRef":"data:model-api-prices"},
+        {"id":"task-cost","label":"输入输出、缓存、工具、重试和人工的任务总成本","conceptRefs":["concept:task-total-cost"]},
+        {"id":"self-hosting","label":"自托管设备、利用率、能耗与运维"},
+        {"id":"subscription","label":"产品订阅与 API 分账"}
+      ]},
+      {"id":"applications","label":"应用、产品与系统","children":[
+        {"id":"assistants","label":"聊天、写作、办公与研究助手","hubRefs":["hub:assistants"]},
+        {"id":"coding","label":"编程产品与任务","hubRefs":["hub:coding"]},
+        {"id":"rag","label":"LLM 在检索增强系统中的角色","hubRefs":["hub:rag"]},
+        {"id":"agents","label":"LLM 在智能体中的角色","hubRefs":["hub:agents"]},
+        {"id":"integration","label":"平台、接口与工作流","hubRefs":["hub:platforms"]},
+        {"id":"industries","label":"行业基线、价值、失败与人的参与"}
+      ]},
+      {"id":"tutorials","label":"教程、实验与案例","children":[
+        {"id":"first-steps","label":"首次使用、提示、核验与 API"},
+        {"id":"token-lab","label":"分词、概率与采样实验"},
+        {"id":"attention-lab","label":"一次完整注意力计算","microscopeId":"attention-3x2"},
+        {"id":"training-lab","label":"损失、梯度、小模型训练与微调"},
+        {"id":"system-lab","label":"RAG、Agent 和结构化输出实验"},
+        {"id":"evaluation-lab","label":"比较模型、时延、成本与失败案例"}
+      ]},
+      {"id":"safety","label":"边界、安全与治理","children":[
+        {"id":"failure","label":"幻觉、遗漏、校准、偏差与语言边界"},
+        {"id":"attacks","label":"提示注入、泄露、越权与防御"},
+        {"id":"rights","label":"数据、权重与输出的隐私和许可"},
+        {"id":"operations","label":"人的确认、审计和事件响应"},
+        {"id":"scope","label":"法域、时效、产品与部署场景"}
+      ]},
+      {"id":"research","label":"论文、证据与研究进展","children":[
+        {"id":"papers","label":"论文、机制、假设与复现"},
+        {"id":"claims","label":"厂商声明、实验结果与编辑推断"},
+        {"id":"frontiers","label":"架构、数据、训练、推理与解释性的研究方向"},
+        {"id":"unknowns","label":"争议、未知、消融与负结果"},
+        {"id":"updates","label":"证据维护与变更记录","hubRefs":["hub:evidence"]}
+      ]}
+    ]
+  },
+  "legacyDataRefs": [
+    {"id":"data:arena-text","file":"content/data/benchmarks.json","collection":"benchmarks","recordId":"arena-text","subjectRole":"text-preference-evaluation","resolution":"existing-reference-only"},
+    {"id":"data:aa-intelligence","file":"content/data/benchmarks.json","collection":"benchmarks","recordId":"aa-intelligence","subjectRole":"composite-evaluation","resolution":"existing-reference-only"},
+    {"id":"data:terminal-bench","file":"content/data/benchmarks.json","collection":"benchmarks","recordId":"terminal-bench","subjectRole":"agent-system-evaluation","resolution":"existing-reference-only"},
+    {"id":"data:model-api-prices","file":"content/data/model-api-prices.json","collection":"modelApiPrices","recordId":null,"subjectRole":"model-api-offer-reference","resolution":"existing-reference-only"}
+  ],
+  "articlePlacements": [
+    {"articleId":"overview","placements":[{"hubId":"hub:ai-overview","section":"orientation","role":"existing-orientation"}]},
+    {"articleId":"llm-how-it-works","placements":[{"hubId":"hub:llm","section":"orientation","role":"legacy-overview-not-split-pages"}]},
+    {"articleId":"vlm-how-it-works","placements":[{"hubId":"hub:vlm","section":"orientation","role":"legacy-overview-not-split-pages"}]},
+    {"articleId":"embedding-models","placements":[{"hubId":"hub:embedding","section":"orientation","role":"legacy-overview-not-split-pages"}]},
+    {"articleId":"diffusion-dit","placements":[{"hubId":"hub:image-generation","section":"mechanisms","role":"existing-mechanism-overview"}]},
+    {"articleId":"audio-models","placements":[{"hubId":"hub:audio","section":"orientation","role":"existing-overview"},{"hubId":"hub:music","section":"orientation","role":"related-audio-overview"}]},
+    {"articleId":"video-models","placements":[{"hubId":"hub:video","section":"orientation","role":"existing-overview"}]},
+    {"articleId":"world-models","placements":[{"hubId":"hub:world-models","section":"orientation","role":"existing-overview"}]},
+    {"articleId":"catalog-audio","placements":[{"hubId":"hub:audio","section":"applications","role":"existing-product-catalogue"}]},
+    {"articleId":"catalog-video","placements":[{"hubId":"hub:video","section":"applications","role":"existing-product-catalogue"}]},
+    {"articleId":"catalog-image","placements":[{"hubId":"hub:image-generation","section":"applications","role":"existing-product-catalogue"}]},
+    {"articleId":"catalog-3d","placements":[{"hubId":"hub:spatial","section":"applications","role":"existing-product-catalogue"}]},
+    {"articleId":"catalog-music","placements":[{"hubId":"hub:music","section":"applications","role":"existing-product-catalogue"}]},
+    {"articleId":"catalog-code","placements":[{"hubId":"hub:coding","section":"products","role":"existing-product-catalogue"},{"hubId":"hub:llm","section":"applications","role":"related-task-catalogue-not-model-binding"}]},
+    {"articleId":"catalog-platform","placements":[{"hubId":"hub:platforms","section":"products","role":"existing-product-catalogue"}]},
+    {"articleId":"catalog-text","placements":[{"hubId":"hub:assistants","section":"products","role":"existing-product-catalogue"},{"hubId":"hub:llm","section":"applications","role":"related-task-catalogue-not-model-binding"}]},
+    {"articleId":"arena-text","placements":[{"hubId":"hub:llm","section":"rankings","role":"text-preference-snapshot"}]},
+    {"articleId":"aa-intelligence","placements":[{"hubId":"hub:llm","section":"rankings","role":"composite-snapshot-with-protocol"}]},
+    {"articleId":"terminal-bench","placements":[{"hubId":"hub:agents","section":"rankings","role":"agent-system-snapshot"},{"hubId":"hub:llm","section":"rankings","role":"related-system-result-not-model-only"}]},
+    {"articleId":"model-api-prices","placements":[{"hubId":"hub:llm","section":"pricing","role":"existing-offer-reference-unresolved-versions"}]},
+    {"articleId":"agent-products","placements":[{"hubId":"hub:agents","section":"products","role":"existing-products-and-frameworks"}]},
+    {"articleId":"sources-and-gaps","placements":[{"hubId":"hub:evidence","section":"sources","role":"existing-maintenance-reference"}]},
+    {"articleId":"apple-style-premium-product-video","placements":[{"hubId":"hub:video-production","section":"workflow","role":"existing-creative-methodology"},{"hubId":"hub:video","section":"tutorials","role":"related-methodology-not-tested-ai-tutorial"}]}
+  ],
+  "migrationRules": {
+    "preserveConceptIds":true,
+    "preserveArticleIdsAndOldUrls":true,
+    "hubIdentityIsNotConceptIdentity":true,
+    "sharedConceptsUseReferences":true,
+    "recursiveNavigationRequired":true,
+    "unknownModelVersionsStayUnresolved":true,
+    "rankingsMustRetainProtocolAndSourceRank":true,
+    "pricesAndScoresAreNotCopiedIntoThisPlan":true,
+    "overviewDoesNotCountAsEverySubarticle":true,
+    "articleSplittingRequiresEditorialReview":true,
+    "doNotRefreshFactDatesOnNavigationChanges":true
+  }
+}

@@ -18,10 +18,13 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isLight, setIsLight] = useState(true);
+  const [isLight, setIsLight] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return window.localStorage.getItem('nextchina-theme') !== 'dark';
+  });
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
   const reduceMotion = useReducedMotion();
-  const desktopSidebarWidth = 'clamp(272px, 24vw, 304px)';
+  const desktopSidebarWidth = 'clamp(288px, 22vw, 304px)';
 
   const activeSpaceId = view.kind === 'home' ? DOC_SPACES[0].id : view.spaceId;
   const activeSpace = DOC_SPACES.find(space => space.id === activeSpaceId);
@@ -43,6 +46,16 @@ export default function App() {
   }, [view.kind]);
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [view]);
+
+  useEffect(() => {
+    const theme = isLight ? 'light' : 'dark';
+    document.documentElement.dataset.theme = theme;
+    document.body.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+    window.localStorage.setItem('nextchina-theme', theme);
+    const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    themeColor?.setAttribute('content', isLight ? '#ffffff' : '#18181b');
+  }, [isLight]);
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 1024px)');
@@ -92,14 +105,14 @@ export default function App() {
     : 'bg-[#18181b] text-[#cfcfd5] selection:bg-[#34343a] selection:text-[#ececf0]';
 
   if (view.kind === 'home') {
-    return <div id="nextchina-docs-root" className={`min-h-dvh ${themeClasses}`}>
+    return <div id="nextchina-docs-root" data-theme={isLight ? 'light' : 'dark'} className={`min-h-dvh ${themeClasses}`}>
       <DocsHome spaces={DOC_SPACES} chapters={ALL_CHAPTERS} isLight={isLight} onEnter={enterDocs} />
     </div>;
   }
 
   if (!activeSpace) return null;
 
-  return <div id="nextchina-docs-root" className={`min-h-dvh ${themeClasses} transition-colors duration-200`}>
+  return <div id="nextchina-docs-root" data-theme={isLight ? 'light' : 'dark'} className={`min-h-dvh ${themeClasses} transition-colors duration-200`}>
     {activeChapter && <DocHeader currentChapter={activeChapter} isLight={isLight} onToggleTheme={() => setIsLight(value => !value)}
       isSidebarOpen={isSidebarOpen} onToggleSidebar={() => setIsSidebarOpen(value => !value)}
       onOpenMobileMenu={() => setIsMobileMenuOpen(true)} onOpenSearch={() => setIsSearchOpen(true)} />}

@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "title": "NextCHINA AI 知识花园",
+  "status": "design-scaffold",
+  "updatedAt": "2026-09-28",
+  "baselineCommit": "623361377cc12c84c083ba38caa97763b06ac97a",
+  "rootId": "root:ai",
+  "scopeNote": "这是可扩展的覆盖框架，不是已经完成的 AI 百科。所有概念默认是 outline；关联现有文章只证明存在阅读入口，不代表已逐项核验。导航包含主题与编辑入口，不宣称是一棵互斥的学术分类树。",
+  "rendererDecision": {"viewer": "@xyflow/react", "layout": "elkjs", "installed": false, "alternativeLargeNetwork": "sigma + graphology", "defaultMode": "atlas"},
+  "defaults": {"contentStatus": "outline", "evidenceStatus": "not-reviewed", "relationshipStatus": "editorial"},
+  "groups": [
+    {"id": "understand", "label": "理解 AI"},
+    {"id": "build", "label": "构建 AI"},
+    {"id": "use", "label": "使用与评价 AI"},
+    {"id": "connect", "label": "AI 与世界"}
+  ],
+  "domains": [
+    {"id": "overview", "label": "AI 全景与入门", "group": "understand", "kind": "knowledge-domain", "question": "AI 有哪些任务、路线和边界？", "topics": [
+      {"id": "landscape", "label": "概念地图", "concepts": {"artificial-intelligence": "人工智能", "machine-learning": "机器学习", "deep-learning": "深度学习", "generative-ai": "生成式 AI"}},
+      {"id": "task-landscape", "label": "任务与能力", "concepts": {"classification-task": "分类", "prediction-task": "预测", "retrieval-task": "检索", "generation-task": "生成", "decision-control-task": "决策与控制"}},
+      {"id": "history", "label": "历史与路线", "concepts": {"symbolic-era": "符号路线", "statistical-era": "统计学习路线", "neural-era": "神经网络路线", "foundation-model-era": "基础模型路线"}},
+      {"id": "boundaries", "label": "边界与人的理解", "concepts": {"model-vs-product": "模型与产品的区别", "capability-vs-reliability": "能力与可靠性的区别", "anthropomorphism": "拟人化误解", "human-ai-interaction": "人机交互", "accessibility": "无障碍与可理解性"}}
+    ]},
+    {"id": "mathematics", "label": "数学与计算基础", "group": "understand", "kind": "knowledge-domain", "question": "每一步运算到底改变了什么？", "topics": [
+      {"id": "linear-algebra", "label": "线性代数", "concepts": {"vector": "向量", "matrix-tensor": "矩阵与张量", "dot-product": "点积", "matrix-multiplication": "矩阵乘法", "eigen-svd": "特征分解与 SVD", "norm-distance": "范数与距离"}},
+      {"id": "probability-statistics", "label": "概率与统计", "concepts": {"random-variable": "随机变量", "conditional-probability": "条件概率", "bayes-rule": "贝叶斯规则", "expectation-variance": "期望与方差", "statistical-inference": "统计推断"}},
+      {"id": "calculus", "label": "微积分与求导", "concepts": {"derivative": "导数", "gradient": "梯度", "chain-rule": "链式法则", "autodiff": "自动微分", "numerical-stability": "数值稳定性"}},
+      {"id": "information-theory", "label": "信息论", "concepts": {"entropy": "熵", "cross-entropy": "交叉熵", "kl-divergence": "KL 散度", "mutual-information": "互信息", "compression": "压缩与表示"}},
+      {"id": "optimization", "label": "优化与计算代价", "concepts": {"sgd": "随机梯度下降", "adamw": "AdamW", "regularization": "正则化", "constrained-optimization": "约束优化", "big-o": "算法复杂度", "floating-point": "浮点数与舍入误差"}}
+    ]},
+    {"id": "data-learning", "label": "数据与学习", "group": "understand", "kind": "knowledge-domain", "question": "数据怎样转化为可泛化的能力？", "topics": [
+      {"id": "data-lifecycle", "label": "数据生命周期", "concepts": {"data-collection": "采集与授权", "labeling": "标注", "data-cleaning": "清洗与去重", "data-versioning": "数据版本", "synthetic-data": "合成数据"}},
+      {"id": "generalization", "label": "划分与泛化", "concepts": {"train-validation-test": "训练、验证与测试集", "overfitting": "过拟合与欠拟合", "data-leakage": "数据泄漏", "data-contamination": "测试污染", "distribution-shift": "分布变化"}},
+      {"id": "learning-paradigms", "label": "学习范式", "concepts": {"supervised-learning": "监督学习", "unsupervised-learning": "无监督学习", "self-supervised-learning": "自监督学习", "contrastive-learning": "对比学习"}},
+      {"id": "training-loop", "label": "训练过程", "concepts": {"loss-objective": "目标函数", "backpropagation": "反向传播", "batch-epoch": "批次与训练轮次", "learning-rate": "学习率", "checkpoint": "检查点与恢复"}},
+      {"id": "post-training", "label": "后训练与适配", "concepts": {"sft": "监督微调", "preference-learning": "偏好学习", "rlhf": "人类反馈强化学习", "dpo": "直接偏好优化", "distillation": "知识蒸馏", "lora": "低秩适配"}},
+      {"id": "reinforcement-learning", "label": "强化学习", "concepts": {"mdp": "马尔可夫决策过程", "bellman-equation": "Bellman 方程", "value-function": "价值函数", "policy-gradient": "策略梯度", "actor-critic": "Actor-Critic", "exploration": "探索与利用"}},
+      {"id": "transfer-continuity", "label": "迁移与持续学习", "concepts": {"transfer-learning": "迁移学习", "few-shot": "少样本学习", "in-context-learning": "上下文学习", "continual-learning": "持续学习", "meta-learning": "元学习", "federated-learning": "联邦学习"}}
+    ]},
+    {"id": "algorithms", "label": "模型与算法", "group": "understand", "kind": "knowledge-domain", "question": "有哪些解决问题的计算结构？", "topics": [
+      {"id": "classical-ml", "label": "经典机器学习", "concepts": {"linear-models": "线性与逻辑回归", "decision-tree": "决策树", "random-forest": "随机森林", "gradient-boosting": "梯度提升", "svm": "支持向量机", "clustering": "聚类"}},
+      {"id": "symbolic-reasoning", "label": "符号与知识推理", "concepts": {"formal-logic": "命题与一阶逻辑", "knowledge-representation": "知识表示", "sat-csp": "SAT 与约束求解", "theorem-proving": "自动定理证明", "neuro-symbolic": "神经符号方法"}},
+      {"id": "search-planning", "label": "搜索、规划与优化", "concepts": {"heuristic-search": "启发式搜索", "astar": "A* 搜索", "mcts": "蒙特卡洛树搜索", "classical-planning": "经典规划", "evolutionary-algorithms": "演化算法", "swarm-intelligence": "群体智能"}},
+      {"id": "probabilistic-causal", "label": "概率与因果模型", "concepts": {"graphical-models": "概率图模型", "bayesian-network": "贝叶斯网络", "hmm-kalman": "HMM 与 Kalman 滤波", "causal-model": "结构因果模型", "counterfactual": "干预与反事实"}},
+      {"id": "neural-architectures", "label": "神经网络结构", "concepts": {"activation": "神经元与激活函数", "mlp": "多层感知机", "cnn": "卷积网络", "rnn-lstm": "循环网络", "transformer": "Transformer", "ssm": "状态空间模型", "gnn": "图神经网络", "moe": "混合专家"}},
+      {"id": "transformer-mechanisms", "label": "Transformer 内部机制", "concepts": {"self-attention": "自注意力", "cross-attention": "交叉注意力", "qkv": "Query、Key、Value", "causal-mask": "因果掩码", "multi-head": "多头注意力", "rope": "旋转位置编码", "residual-normalization": "残差与归一化"}},
+      {"id": "specialized-modeling", "label": "结构化与专门任务", "concepts": {"recommender-system": "推荐系统", "time-series": "时序预测", "anomaly-detection": "异常检测", "graph-learning": "图学习", "tabular-learning": "表格数据建模"}}
+    ]},
+    {"id": "modalities", "label": "多模态与内容生成", "group": "understand", "kind": "knowledge-domain", "question": "不同信息如何表示、理解和生成？", "topics": [
+      {"id": "language-modeling", "label": "语言与代码模型", "concepts": {"llm": "大语言模型", "tokenization": "分词与 Token", "token-embedding": "Token 嵌入", "autoregression": "自回归", "logits": "Logits", "softmax": "Softmax", "decoding": "采样与解码", "context-window": "上下文窗口"}},
+      {"id": "computer-vision", "label": "计算机视觉", "concepts": {"vision-encoder": "视觉编码器", "vit-patch": "ViT 与 Patch", "image-classification": "图像分类", "object-detection": "目标检测", "segmentation": "图像分割", "ocr": "文字识别"}},
+      {"id": "vision-language", "label": "图文理解", "concepts": {"vlm": "视觉语言模型", "clip-alignment": "CLIP 图文对齐", "visual-connector": "视觉连接器", "spatial-grounding": "空间定位与 Grounding", "visual-reasoning": "视觉推理"}},
+      {"id": "image-generation", "label": "图像生成", "concepts": {"diffusion": "扩散模型", "denoising": "去噪目标", "latent-vae": "VAE 与潜在空间", "dit": "Diffusion Transformer", "flow-matching": "Flow Matching", "cfg": "Classifier-Free Guidance", "generation-control": "条件控制与编辑"}},
+      {"id": "audio-speech", "label": "音频、语音与音乐", "concepts": {"audio-model": "音频模型", "waveform-stft": "波形、STFT 与频谱", "asr": "语音识别", "tts": "语音合成", "neural-codec": "神经音频编码", "music-generation": "音乐生成", "full-duplex": "流式与全双工"}},
+      {"id": "video-space", "label": "视频、三维与时空", "concepts": {"video-model": "视频模型", "spatiotemporal-attention": "时空注意力", "identity-consistency": "身份与时序一致性", "nerf": "NeRF", "gaussian-splatting": "3D Gaussian Splatting", "mesh-generation": "网格生成", "dynamic-scene": "动态三维场景"}},
+      {"id": "native-multimodal", "label": "统一多模态", "concepts": {"joint-representation": "联合表示", "interleaved-modalities": "交错模态序列", "modality-fusion": "模态融合", "understanding-generation": "理解与生成的统一"}}
+    ]},
+    {"id": "systems", "label": "检索、Agent 与系统", "group": "build", "kind": "knowledge-domain", "question": "怎样从一个模型走向可靠任务系统？", "topics": [
+      {"id": "search-retrieval", "label": "检索与重排", "concepts": {"embedding-model": "Embedding 模型", "bm25": "BM25", "vector-index": "向量索引", "hybrid-search": "混合检索", "reranker": "重排模型"}},
+      {"id": "retrieval-augmentation", "label": "检索增强系统", "concepts": {"rag": "RAG", "chunking": "文档分块", "query-rewriting": "查询改写", "context-assembly": "上下文组装", "evidence-attribution": "证据归因"}},
+      {"id": "agent-systems", "label": "智能体系统", "concepts": {"agent": "Agent", "agent-loop": "行动与观察循环", "tool-calling": "工具调用", "planning-memory": "规划与记忆", "multi-agent": "多智能体", "workflow-vs-agent": "工作流与自主性"}},
+      {"id": "interfaces", "label": "协议与接口", "concepts": {"structured-output": "结构化输出", "streaming-protocol": "流式接口", "mcp": "MCP", "a2a": "A2A", "api-contract": "API 契约"}},
+      {"id": "system-reliability", "label": "可靠执行", "concepts": {"sandbox": "执行沙箱", "least-privilege": "最小权限", "human-approval": "人工确认", "idempotency": "幂等", "retry-budget": "重试与预算", "observability": "可观测性"}}
+    ]},
+    {"id": "embodied", "label": "具身智能与世界模型", "group": "build", "kind": "knowledge-domain", "question": "AI 怎样感知、预测并作用于世界？", "topics": [
+      {"id": "state-control", "label": "状态与控制", "concepts": {"state-observation": "状态与观测", "pomdp": "部分可观测决策", "kinematics": "运动学", "mpc": "模型预测控制", "feedback-control": "反馈控制"}},
+      {"id": "physical-perception", "label": "物理感知", "concepts": {"slam": "SLAM", "sensor-fusion": "传感器融合", "depth-pose": "深度与位姿", "scene-tracking": "场景跟踪"}},
+      {"id": "robot-learning", "label": "动作学习", "concepts": {"imitation-learning": "模仿学习", "behavior-cloning": "行为克隆", "offline-rl": "离线强化学习", "vla": "视觉语言动作模型", "action-token": "动作表示", "diffusion-policy": "扩散策略"}},
+      {"id": "world-modeling", "label": "环境预测", "concepts": {"world-model": "世界模型", "latent-dynamics": "潜在动力学", "imagined-rollout": "想象轨迹", "action-conditioning": "动作条件预测", "predictive-representation": "预测式表示学习"}},
+      {"id": "simulation-transfer", "label": "仿真到现实", "concepts": {"simulation": "仿真环境", "domain-randomization": "域随机化", "sim-to-real": "Sim-to-Real", "physical-safety": "物理安全约束"}}
+    ]},
+    {"id": "engineering", "label": "算力与工程部署", "group": "build", "kind": "knowledge-domain", "question": "AI 的速度、内存、成本由什么决定？", "topics": [
+      {"id": "hardware", "label": "硬件与资源", "concepts": {"gpu": "GPU", "npu": "NPU", "memory-bandwidth": "显存与带宽", "interconnect": "设备互联", "compute-memory-bound": "计算与访存瓶颈"}},
+      {"id": "distributed-training", "label": "分布式训练", "concepts": {"data-parallel": "数据并行", "tensor-parallel": "张量并行", "pipeline-parallel": "流水线并行", "expert-parallel": "专家并行", "zero-fsdp": "状态分片"}},
+      {"id": "inference-serving", "label": "推理服务", "concepts": {"prefill": "Prefill", "decode": "Decode", "kv-cache": "KV Cache", "continuous-batching": "连续批处理", "paged-attention": "分页注意力"}},
+      {"id": "inference-efficiency", "label": "推理优化", "concepts": {"quantization": "量化", "flash-attention": "FlashAttention", "mqa-gqa": "MQA 与 GQA", "speculative-decoding": "投机解码", "pruning": "剪枝"}},
+      {"id": "stack-operations", "label": "软件栈与运维", "concepts": {"training-framework": "训练框架", "compiler-kernel": "编译器与算子", "model-registry": "模型注册", "mlops-release": "MLOps 与发布", "drift-monitoring": "漂移监测"}},
+      {"id": "edge-cost", "label": "端侧与经济性", "concepts": {"edge-ai": "端侧 AI", "local-privacy": "本地运行边界", "capacity-planning": "容量规划", "task-total-cost": "任务总成本", "energy-accounting": "能耗核算"}}
+    ]},
+    {"id": "evaluation", "label": "评测、榜单与选型", "group": "use", "kind": "knowledge-domain", "question": "如何在一致口径下判断效果？", "topics": [
+      {"id": "task-metrics", "label": "任务质量", "concepts": {"accuracy-f1": "准确率与 F1", "precision-recall": "精确率与召回率", "ranking-metrics": "MRR 与 NDCG", "multimodal-metrics": "多模态质量指标"}},
+      {"id": "trust-metrics", "label": "可靠与可信评价", "concepts": {"calibration": "校准", "robustness": "鲁棒性", "fairness-evaluation": "公平性评价", "safety-evaluation": "安全评价", "human-evaluation": "人工评价"}},
+      {"id": "evaluation-protocols", "label": "评测方法", "concepts": {"benchmark-protocol": "评测协议", "evaluation-dataset": "评价数据集", "contamination-audit": "污染审计", "confidence-interval": "置信区间", "judge-bias": "评审模型偏差"}},
+      {"id": "efficiency-metrics", "label": "效率与预算", "concepts": {"ttft": "首 Token 时延", "tps": "生成速度", "throughput": "吞吐", "tail-latency": "尾部时延", "quality-cost-frontier": "质量成本边界"}},
+      {"id": "ranking-references", "label": "榜单与价格参考", "concepts": {"human-preference-board": "人类偏好榜", "aa-index": "Artificial Analysis 指数", "terminal-bench": "终端任务基准", "api-pricing": "API 计价"}}
+    ]},
+    {"id": "products", "label": "产品、工具与生态", "group": "use", "kind": "editorial-entry", "question": "什么产品适合什么任务？", "topics": [
+      {"id": "assistant-tools", "label": "助手与办公", "concepts": {"assistant-products": "通用助手", "research-search-tools": "研究与搜索产品", "office-ai": "办公工具"}},
+      {"id": "developer-tools", "label": "开发工具", "concepts": {"code-assistants": "编程助手", "coding-agents": "软件智能体产品", "lowcode-platforms": "低代码平台"}},
+      {"id": "creative-tools", "label": "创作工具", "concepts": {"image-tools": "图像工具", "video-tools": "视频工具", "audio-tools": "语音工具", "music-tools": "音乐工具", "3d-tools": "三维工具"}},
+      {"id": "platform-tools", "label": "平台与基础设施", "concepts": {"api-providers": "API 服务商", "model-hubs": "模型社区", "workflow-platforms": "工作流平台", "managed-inference": "托管推理"}},
+      {"id": "product-lifecycle", "label": "产品与版本关系", "concepts": {"model-version": "模型版本", "product-version": "产品版本", "license-rights": "开放与商业许可", "regional-availability": "地区可用性", "retirement": "下线与替代"}}
+    ]},
+    {"id": "tutorials", "label": "教程与实验", "group": "use", "kind": "editorial-entry", "question": "怎样做出可验证的结果？", "topics": [
+      {"id": "first-steps", "label": "零基础实践", "concepts": {"prompt-practice": "提示实践", "fact-check-practice": "事实核验练习", "table-analysis-practice": "表格分析练习"}},
+      {"id": "developer-practice", "label": "开发实践", "concepts": {"api-first-request": "第一次 API 请求", "local-model-lab": "本地模型实验", "rag-lab": "RAG 实验", "agent-lab": "Agent 实验", "finetuning-lab": "微调实验"}},
+      {"id": "mathematical-practice", "label": "计算实验", "concepts": {"attention-lab": "手算注意力", "linear-regression-lab": "训练小型回归模型", "rl-lab": "强化学习环境实验"}},
+      {"id": "creative-practice", "label": "创作实践", "concepts": {"video-production": "视频制作", "storyboarding": "故事板", "asset-consistency": "素材一致性", "motion-design": "交互动效", "sound-editing": "声音制作"}},
+      {"id": "shipping-practice", "label": "交付验收", "concepts": {"evaluation-lab": "评测实验", "deployment-lab": "部署实验", "monitoring-lab": "监测实验"}}
+    ]},
+    {"id": "applications", "label": "行业应用与案例", "group": "connect", "kind": "editorial-entry", "question": "AI 在现实中改变了什么？", "topics": [
+      {"id": "science-health", "label": "科学与健康", "concepts": {"scientific-ai": "科学计算与发现", "biology-ai": "生物与蛋白质", "medical-ai": "医疗", "materials-ai": "材料"}},
+      {"id": "knowledge-work", "label": "知识行业", "concepts": {"education-ai": "教育", "legal-ai": "法律", "finance-ai": "金融"}},
+      {"id": "industry-environment", "label": "工业与环境", "concepts": {"manufacturing-ai": "制造", "energy-ai": "能源", "agriculture-ai": "农业", "climate-ai": "气候"}},
+      {"id": "commerce-transport", "label": "商业与交通", "concepts": {"commerce-ai": "零售", "logistics-ai": "物流", "transport-ai": "交通与自动驾驶"}},
+      {"id": "culture-design", "label": "文化与设计", "concepts": {"game-ai": "游戏", "design-ai": "设计", "media-ai": "传媒", "art-ai": "艺术"}},
+      {"id": "case-method", "label": "案例证据", "concepts": {"usecase-baseline": "非 AI 基线", "roi-study": "成本与收益验证", "domain-validation": "领域验收", "human-in-loop": "人的参与"}}
+    ]},
+    {"id": "governance", "label": "安全、伦理与社会", "group": "connect", "kind": "knowledge-domain", "question": "哪些风险需要技术与治理共同处理？", "topics": [
+      {"id": "risk-mechanisms", "label": "失效与攻击", "concepts": {"hallucination": "幻觉", "prompt-injection": "提示注入", "adversarial-input": "对抗输入", "deepfake": "深度伪造", "misuse": "滥用"}},
+      {"id": "data-rights", "label": "数据与权利", "concepts": {"privacy": "隐私", "consent": "知情与授权", "copyright": "版权", "provenance": "内容来源", "training-license": "训练数据许可"}},
+      {"id": "operational-governance", "label": "运行治理", "concepts": {"model-risk-assessment": "模型风险评估", "auditability": "可审计性", "incident-response": "事件响应", "access-controls": "访问控制"}},
+      {"id": "human-society", "label": "社会影响", "concepts": {"bias-harm": "偏差与伤害", "labour-impact": "劳动变化", "digital-divide": "数字鸿沟", "environmental-impact": "环境影响"}},
+      {"id": "policy-standards", "label": "政策与标准", "concepts": {"legal-jurisdiction": "法域", "regulatory-scope": "监管适用范围", "standards-framework": "标准与风险框架", "documentation-compliance": "记录与合规"}}
+    ]},
+    {"id": "research", "label": "研究、产业与未来", "group": "connect", "kind": "editorial-entry", "question": "怎样理解新研究及其证据强度？", "topics": [
+      {"id": "scientific-method", "label": "研究方法", "concepts": {"paper-reading": "论文阅读", "ablation": "消融实验", "reproduction": "复现", "statistical-power": "统计功效", "negative-results": "负结果"}},
+      {"id": "mechanistic-understanding", "label": "机制解释", "concepts": {"interpretability": "可解释性", "features-circuits": "特征与电路", "probing": "表征探测", "circuit-intervention": "电路干预"}},
+      {"id": "frontiers", "label": "前沿问题", "concepts": {"test-time-compute": "推理时计算", "long-term-memory": "长期记忆", "reasoning-verification": "推理与验证", "causal-generalization": "因果泛化", "neuromorphic": "类脑计算", "quantum-ml": "量子机器学习"}},
+      {"id": "industry-ecosystem", "label": "产业生态", "concepts": {"provider-organization": "公司与机构", "research-team": "研究团队", "compute-supply": "算力供应链", "open-ecosystem": "开源生态", "business-model": "商业模式"}},
+      {"id": "evidence-maintenance", "label": "证据维护", "concepts": {"source-tracking": "来源追踪", "release-timeline": "技术时间线", "claim-review": "事实审核", "update-log": "变更记录", "disputed-claims": "争议与未知"}}
+    ]}
+  ],
+  "relationPolicy": {
+    "browse_parent": "由 domain/topic/概念归属派生，仅用于导航；不是 is-a，不证明因果或科学包含关系。",
+    "related": "编辑建议的跨主题阅读关联；对称，数据只记录一次。",
+    "recommended_before": "编辑建议的学习先后；有向且必须无环，不等于严格的逻辑必要条件。",
+    "semanticFutureTypes": ["is_a", "part_of", "uses", "trained_with", "evaluated_by", "mitigates", "contrasts_with"],
+    "semanticFutureRequirement": "正式语义边必须有类型约束、适用范围与证据。mitigates 不得解释为 eliminates。论文超链接与自动提及不得自动升级为科学关系。"
+  },
+  "relations": [
+    {"source": "concept:matrix-multiplication", "target": "concept:self-attention", "type": "recommended_before", "reason": "先理解矩阵形状和乘法，再阅读注意力的数值例子。"},
+    {"source": "concept:conditional-probability", "target": "concept:autoregression", "type": "recommended_before", "reason": "帮助理解条件生成。"},
+    {"source": "concept:gradient", "target": "concept:backpropagation", "type": "recommended_before", "reason": "学习顺序建议。"},
+    {"source": "concept:chain-rule", "target": "concept:backpropagation", "type": "recommended_before", "reason": "学习顺序建议。"},
+    {"source": "concept:entropy", "target": "concept:cross-entropy", "type": "recommended_before", "reason": "学习顺序建议。"},
+    {"source": "concept:softmax", "target": "concept:self-attention", "type": "recommended_before", "reason": "先看归一化权重。"},
+    {"source": "concept:self-attention", "target": "concept:transformer", "type": "recommended_before", "reason": "先部件后整体的一条阅读路线，并非唯一顺序。"},
+    {"source": "concept:embedding-model", "target": "concept:rag", "type": "recommended_before", "reason": "适用于以向量检索为示例的 RAG 路线，不声称所有 RAG 必须用嵌入。"},
+    {"source": "concept:state-observation", "target": "concept:world-model", "type": "recommended_before", "reason": "先定义预测对象。"},
+    {"source": "concept:mdp", "target": "concept:policy-gradient", "type": "recommended_before", "reason": "学习顺序建议。"},
+    {"source": "concept:self-attention", "target": "concept:vlm", "type": "related", "reason": "从语言模型机制探索视觉融合。"},
+    {"source": "concept:transformer", "target": "concept:dit", "type": "related", "reason": "对比相似骨架与不同训练目标。"},
+    {"source": "concept:contrastive-learning", "target": "concept:clip-alignment", "type": "related", "reason": "图文对齐专题。"},
+    {"source": "concept:contrastive-learning", "target": "concept:embedding-model", "type": "related", "reason": "表示学习专题。"},
+    {"source": "concept:cross-attention", "target": "concept:visual-connector", "type": "related", "reason": "对比不同连接与融合结构，不能视为同义词。"},
+    {"source": "concept:kv-cache", "target": "concept:memory-bandwidth", "type": "related", "reason": "推理资源专题。"},
+    {"source": "concept:context-window", "target": "concept:kv-cache", "type": "related", "reason": "长上下文工程专题。"},
+    {"source": "concept:mqa-gqa", "target": "concept:kv-cache", "type": "related", "reason": "KV 头数和缓存专题。"},
+    {"source": "concept:quantization", "target": "concept:edge-ai", "type": "related", "reason": "端侧部署取舍。"},
+    {"source": "concept:prefill", "target": "concept:ttft", "type": "related", "reason": "首响应延迟的系统分析。"},
+    {"source": "concept:decode", "target": "concept:tps", "type": "related", "reason": "持续生成性能分析。"},
+    {"source": "concept:rag", "target": "concept:hallucination", "type": "related", "reason": "比较检索证据与事实错误；关联不代表保证消除幻觉。"},
+    {"source": "concept:rag", "target": "concept:prompt-injection", "type": "related", "reason": "外部文档信任边界。"},
+    {"source": "concept:tool-calling", "target": "concept:least-privilege", "type": "related", "reason": "执行权限专题。"},
+    {"source": "concept:agent", "target": "concept:human-approval", "type": "related", "reason": "人的监督专题。"},
+    {"source": "concept:agent", "target": "concept:classical-planning", "type": "related", "reason": "现代智能体与传统规划的比较入口。"},
+    {"source": "concept:world-model", "target": "concept:mpc", "type": "related", "reason": "预测与控制专题。"},
+    {"source": "concept:world-model", "target": "concept:video-model", "type": "related", "reason": "比较视频生成与动作条件动力学，避免直接等同。"},
+    {"source": "concept:vla", "target": "concept:vlm", "type": "related", "reason": "从感知语言到动作的比较入口。"},
+    {"source": "concept:data-contamination", "target": "concept:benchmark-protocol", "type": "related", "reason": "评测证据质量。"},
+    {"source": "concept:synthetic-data", "target": "concept:data-versioning", "type": "related", "reason": "来源与版本管理。"},
+    {"source": "concept:api-pricing", "target": "concept:task-total-cost", "type": "related", "reason": "单价不等于任务成本。"},
+    {"source": "concept:video-production", "target": "concept:video-tools", "type": "related", "reason": "教程与工具目录的双向入口。"},
+    {"source": "concept:video-production", "target": "concept:video-model", "type": "related", "reason": "从实际创作返回模型原理。"},
+    {"source": "concept:video-production", "target": "concept:copyright", "type": "related", "reason": "素材使用与交付权利。"},
+    {"source": "concept:medical-ai", "target": "concept:domain-validation", "type": "related", "reason": "行业验收；不提供医疗结论。"},
+    {"source": "concept:gnn", "target": "concept:biology-ai", "type": "related", "reason": "图结构与生物任务的延伸阅读。"},
+    {"source": "concept:energy-accounting", "target": "concept:environmental-impact", "type": "related", "reason": "工程资源与社会影响。"},
+    {"source": "concept:interpretability", "target": "concept:claim-review", "type": "related", "reason": "机制证据与推断边界。"},
+    {"source": "concept:test-time-compute", "target": "concept:quality-cost-frontier", "type": "related", "reason": "比较相同预算下的效果。"}
+  ],
+  "articleBindings": [
+    {"articleId": "overview", "nodeIds": ["topic:landscape", "concept:model-vs-product"], "coverage": "orientation"},
+    {"articleId": "llm-how-it-works", "nodeIds": ["concept:llm", "concept:self-attention", "concept:kv-cache", "concept:moe"], "coverage": "overview"},
+    {"articleId": "vlm-how-it-works", "nodeIds": ["concept:vlm", "concept:clip-alignment", "concept:visual-connector"], "coverage": "overview"},
+    {"articleId": "embedding-models", "nodeIds": ["concept:embedding-model", "concept:hybrid-search"], "coverage": "overview"},
+    {"articleId": "diffusion-dit", "nodeIds": ["concept:diffusion", "concept:dit"], "coverage": "overview"},
+    {"articleId": "audio-models", "nodeIds": ["concept:audio-model", "concept:asr", "concept:tts"], "coverage": "overview"},
+    {"articleId": "video-models", "nodeIds": ["concept:video-model", "concept:identity-consistency"], "coverage": "overview"},
+    {"articleId": "world-models", "nodeIds": ["concept:world-model", "concept:latent-dynamics"], "coverage": "overview"},
+    {"articleId": "catalog-audio", "nodeIds": ["concept:audio-tools"], "coverage": "catalogue"},
+    {"articleId": "catalog-video", "nodeIds": ["concept:video-tools"], "coverage": "catalogue"},
+    {"articleId": "catalog-image", "nodeIds": ["concept:image-tools"], "coverage": "catalogue"},
+    {"articleId": "catalog-3d", "nodeIds": ["concept:3d-tools"], "coverage": "catalogue"},
+    {"articleId": "catalog-music", "nodeIds": ["concept:music-tools"], "coverage": "catalogue"},
+    {"articleId": "catalog-code", "nodeIds": ["concept:code-assistants", "concept:coding-agents"], "coverage": "catalogue"},
+    {"articleId": "catalog-platform", "nodeIds": ["topic:platform-tools"], "coverage": "catalogue"},
+    {"articleId": "catalog-text", "nodeIds": ["concept:assistant-products"], "coverage": "catalogue"},
+    {"articleId": "arena-text", "nodeIds": ["concept:human-preference-board"], "coverage": "snapshot"},
+    {"articleId": "aa-intelligence", "nodeIds": ["concept:aa-index"], "coverage": "snapshot"},
+    {"articleId": "terminal-bench", "nodeIds": ["concept:terminal-bench"], "coverage": "snapshot"},
+    {"articleId": "model-api-prices", "nodeIds": ["concept:api-pricing"], "coverage": "snapshot"},
+    {"articleId": "agent-products", "nodeIds": ["concept:workflow-platforms", "concept:coding-agents"], "coverage": "catalogue"},
+    {"articleId": "sources-and-gaps", "nodeIds": ["topic:evidence-maintenance"], "coverage": "orientation"},
+    {"articleId": "apple-style-premium-product-video", "nodeIds": ["concept:video-production", "concept:storyboarding", "concept:motion-design"], "coverage": "methodology"}
+  ],
+  "learningPaths": [
+    {"id": "beginner", "label": "普通读者：看懂并选择", "status": "planned-route", "steps": ["topic:landscape", "concept:model-vs-product", "concept:assistant-products", "concept:human-preference-board", "concept:prompt-practice", "concept:fact-check-practice", "concept:privacy"]},
+    {"id": "llm-microscope", "label": "从文字到一次 Attention 运算", "status": "planned-route", "steps": ["concept:tokenization", "concept:token-embedding", "concept:matrix-multiplication", "concept:qkv", "concept:causal-mask", "concept:softmax", "concept:self-attention", "concept:attention-lab", "concept:cross-entropy"]},
+    {"id": "rag-builder", "label": "开发者：构建有证据的问答", "status": "planned-route", "steps": ["concept:api-first-request", "concept:embedding-model", "concept:chunking", "concept:vector-index", "concept:reranker", "concept:rag", "concept:evidence-attribution", "concept:prompt-injection", "concept:rag-lab"]},
+    {"id": "agent-builder", "label": "开发者：可靠智能体", "status": "planned-route", "steps": ["concept:agent", "concept:tool-calling", "concept:structured-output", "concept:least-privilege", "concept:sandbox", "concept:human-approval", "concept:observability", "concept:agent-lab"]},
+    {"id": "creative-video", "label": "创作者：产品视频", "status": "planned-route", "steps": ["concept:video-production", "concept:storyboarding", "concept:video-tools", "concept:video-model", "concept:asset-consistency", "concept:motion-design", "concept:sound-editing", "concept:copyright"]},
+    {"id": "deployment", "label": "工程师：性能与成本", "status": "planned-route", "steps": ["concept:gpu", "concept:memory-bandwidth", "concept:prefill", "concept:decode", "concept:kv-cache", "concept:quantization", "concept:ttft", "concept:throughput", "concept:task-total-cost"]},
+    {"id": "robotics", "label": "具身智能：从观测到行动", "status": "planned-route", "steps": ["concept:state-observation", "concept:mdp", "concept:pomdp", "concept:world-model", "concept:mpc", "concept:imitation-learning", "concept:vla", "concept:physical-safety"]},
+    {"id": "evidence-reader", "label": "研究者：判断论文与榜单", "status": "planned-route", "steps": ["concept:paper-reading", "concept:benchmark-protocol", "concept:data-contamination", "concept:ablation", "concept:confidence-interval", "concept:reproduction", "concept:claim-review"]}
+  ],
+  "microscopes": ["attention-3x2"],
+  "viewPolicy": {"initialDomainCount": 14, "defaultLocalDepth": 1, "maximumLocalDepth": 2, "desktopVisibleNodeBudget": 150, "mobileVisibleNodeBudget": 50, "edgeBudgetPerNode": 3, "budgetsAreDesignTargetsNotBenchmarks": true, "showOutlinedNodesInMap": true, "showOutlinedNodesAsPublishedArticles": false, "defaultReaderMode": "read-only", "persistLayoutInKnowledgeData": false}
+}

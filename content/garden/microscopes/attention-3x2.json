@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "attention-3x2",
+  "title": "单头因果注意力：3 个位置、2 个维度",
+  "status": "numeric-fixture-not-interactive-ui",
+  "conceptId": "concept:self-attention",
+  "articleId": "llm-how-it-works",
+  "source": "https://arxiv.org/abs/1706.03762",
+  "assumptions": ["人为构造的教学数值，不是任何商业模型权重或真实词嵌入。", "单层、单头，省略位置编码、残差、归一化和 MLP。", "输入是已经投影完成的 Q/K/V；不是完整 Transformer 训练。", "softmax 沿每行的 key 位置计算，未来位置先屏蔽。"],
+  "input": {"n": 3, "dK": 2, "dV": 2, "Q": [[1,0],[0,1],[1,1]], "K": [[1,0],[0,1],[1,1]], "V": [[1,2],[3,4],[5,6]], "mask": "causal"},
+  "steps": [
+    {"id": "input", "conceptId": "concept:qkv", "label": "Q/K/V", "inputShape": "[3,2]", "outputShape": "three [3,2] matrices"},
+    {"id": "scores", "conceptId": "concept:matrix-multiplication", "label": "Q × transpose(K)", "inputShape": "[3,2] × [2,3]", "outputShape": "[3,3]"},
+    {"id": "scale", "conceptId": "concept:dot-product", "label": "除以 sqrt(dK)", "inputShape": "[3,3]", "outputShape": "[3,3]"},
+    {"id": "mask", "conceptId": "concept:causal-mask", "label": "屏蔽未来位置", "inputShape": "[3,3]", "outputShape": "[3,3]"},
+    {"id": "weights", "conceptId": "concept:softmax", "label": "逐行 Softmax", "inputShape": "[3,3]", "outputShape": "[3,3]"},
+    {"id": "output", "conceptId": "concept:self-attention", "label": "A × V", "inputShape": "[3,3] × [3,2]", "outputShape": "[3,2]"}
+  ],
+  "expected": {"scores": [[1,0,1],[0,1,1],[1,1,2]], "firstAttentionRow": [1,0,0], "firstOutputRow": [1,2], "attentionRowSum": 1, "futureWeights": 0, "outputShape": [3,2]},
+  "plannedControls": ["逐步执行", "查看张量形状", "切换因果掩码并解释差异", "调整一个 Q/K 值", "比较权重分布", "恢复教学默认值"],
+  "inputLimits": {"maxTokens": 8, "maxDimension": 8, "maxAbsoluteValue": 20},
+  "acceptance": ["每行注意力权重和在浮点容差内等于 1", "因果掩码下未来位置权重为 0", "softmax 先减去行最大值以避免指数溢出", "数值与公式显示来自同一次计算，不维护两份假输出", "全部计算在浏览器本地；不接受任意 eval 或远程代码"]
+}

@@ -1,0 +1,43 @@
+name: Validate AI garden framework
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/garden/**'
+      - 'content/articles.json'
+      - 'content/spaces.json'
+      - 'content/models/**'
+      - 'content/tutorials/**'
+      - 'scripts/validate-garden.mjs'
+      - 'scripts/test-garden.mjs'
+      - '.github/workflows/validate-garden.yml'
+  pull_request:
+    paths:
+      - 'content/garden/**'
+      - 'content/articles.json'
+      - 'content/spaces.json'
+      - 'content/models/**'
+      - 'content/tutorials/**'
+      - 'scripts/validate-garden.mjs'
+      - 'scripts/test-garden.mjs'
+      - '.github/workflows/validate-garden.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Validate knowledge structure and numeric fixture
+        run: node scripts/validate-garden.mjs
+      - name: Test references, cycles, states and numeric errors
+        run: node scripts/test-garden.mjs

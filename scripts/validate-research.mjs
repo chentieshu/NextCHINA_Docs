@@ -32,6 +32,7 @@ for (const key of ['products', 'sources', 'categories', 'benchmarks', 'modelApiP
   uniqueIds(data[key], key);
 }
 const sourceIds = new Set(data.sources.map(source => source.id));
+const sourceById = new Map(data.sources.map(source => [source.id, source]));
 assert.ok(data.products.length > 0, 'Products dataset is empty');
 const productIds = data.products.map(product => product.id);
 assert.equal(new Set(productIds).size, productIds.length, 'Product facts must exist in exactly one domain file');
@@ -41,7 +42,7 @@ const kinds = new Set(['saas', 'agent', 'api', 'framework', 'model-service']);
 for (const source of data.sources) {
   assert.equal(new URL(source.url).protocol, 'https:', `${source.id}: invalid source URL`);
   assert.ok(['read', 'partial', 'snapshot', 'unavailable'].includes(source.access));
-  assert.ok(isDate(source.checkedAt) && source.checkedAt <= data.checkedAt);
+  assert.ok(isDate(source.checkedAt), `${source.id}: invalid checkedAt`);
   if (source.sourceDate !== null) assert.ok(isDate(source.sourceDate) && source.sourceDate <= source.checkedAt);
   assert.ok(source.note, `${source.id}: missing verification scope`);
 }
@@ -73,7 +74,11 @@ for (const benchmark of data.benchmarks) {
   assert.ok(benchmark.metric && benchmark.unit && benchmark.warning);
   assert.ok(['model', 'agent'].includes(benchmark.scope));
   assert.ok(['source-order', 'unranked-excerpt'].includes(benchmark.rankType));
-  if (benchmark.snapshotDate !== null) assert.ok(isDate(benchmark.snapshotDate) && benchmark.snapshotDate <= data.checkedAt);
+  const benchmarkSource = sourceById.get(benchmark.sourceId);
+  if (benchmark.snapshotDate !== null) {
+    assert.ok(isDate(benchmark.snapshotDate), `${benchmark.id}: invalid snapshotDate`);
+    assert.ok(!benchmarkSource || benchmark.snapshotDate <= benchmarkSource.checkedAt, `${benchmark.id}: snapshot is newer than source verification`);
+  }
   uniqueIds(benchmark.rows, benchmark.id);
   let lastRank = 0;
   for (const row of benchmark.rows) {
@@ -86,7 +91,7 @@ for (const benchmark of data.benchmarks) {
     }
     if ('uncertainty' in row) assert.ok(Number.isFinite(row.uncertainty) && row.uncertainty >= 0);
     if ('votes' in row) assert.ok(Number.isInteger(row.votes) && row.votes > 0);
-    if ('submittedAt' in row) assert.ok(isDate(row.submittedAt) && row.submittedAt <= data.checkedAt);
+    if ('submittedAt' in row) assert.ok(isDate(row.submittedAt), `${row.id}: invalid submittedAt`);
     if (benchmark.scope === 'agent') assert.ok(row.model && row.submittedAt, 'Agent score requires model and date');
   }
 }
@@ -95,9 +100,19 @@ for (const price of data.modelApiPrices) {
   assert.equal(price.currency, 'USD');
   assert.equal(price.unit, 'per-million-tokens');
   assert.ok(price.conditions && price.provider && price.name);
-  assert.ok(isDate(price.checkedAt) && price.checkedAt <= data.checkedAt);
+  assert.ok(isDate(price.checkedAt), `${price.id}: invalid checkedAt`);
+  const priceSource = sourceById.get(price.sourceId);
+  assert.ok(!priceSource || price.checkedAt <= priceSource.checkedAt, `${price.id}: price verification is newer than its source verification`);
   for (const field of ['input', 'output', 'cacheRead']) assert.ok(Number.isFinite(price[field]) && price[field] >= 0);
 }
+const verificationDates = [
+  ...data.sources.map(source => source.checkedAt),
+  ...data.modelApiPrices.map(price => price.checkedAt),
+  ...data.benchmarks.map(benchmark => benchmark.snapshotDate).filter(Boolean)
+];
+const latestCheckedAt = verificationDates.sort().at(-1);
+assert.equal(data.checkedAt, latestCheckedAt, `research-meta.checkedAt must equal latest verified date: ${latestCheckedAt}`);
+
 console.log(JSON.stringify({
   status: 'pass',
   checkedAt: data.checkedAt,

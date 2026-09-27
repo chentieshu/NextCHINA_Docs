@@ -14,7 +14,8 @@ type FlowNode = Node<{ item: KnowledgeNode; inspect: (id: string) => void; expan
 const KnowledgeCard = memo(function KnowledgeCard({ data, selected }: NodeProps<FlowNode>) {
   const { item, inspect, expand, isScope } = data;
   const count = childrenById.get(item.id)?.length ?? 0;
-  return <div className="garden-node" data-active={selected} data-scope={isScope} data-kind={item.kind}>
+  // Read-only RF nodes disable wrapper pointer events. Our semantic controls remain interactive.
+  return <div className="garden-node nopan" style={{ pointerEvents: 'auto' }} data-active={selected} data-scope={isScope} data-kind={item.kind}>
     <Handle type="target" position={Position.Left} isConnectable={false} />
     <button type="button" className="garden-node-main nodrag" onClick={() => inspect(item.id)} aria-label={`查看 ${item.label}`}>
       <span className="garden-node-kicker">{kindLabel[item.kind]} <span>{item.articleBindings.length ? '有阅读入口' : '待完善'}</span></span>

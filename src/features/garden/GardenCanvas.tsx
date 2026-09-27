@@ -14,7 +14,7 @@ type FlowNode = Node<{ item: KnowledgeNode; inspect: (id: string) => void; expan
 const KnowledgeCard = memo(function KnowledgeCard({ data, selected }: NodeProps<FlowNode>) {
   const { item, inspect, expand, isScope } = data;
   const count = childrenById.get(item.id)?.length ?? 0;
-  // Read-only RF nodes disable wrapper pointer events. Our semantic controls remain interactive.
+  // Read-only RF wrappers need explicit pointer events on their semantic controls.
   return <div className="garden-node nopan" style={{ pointerEvents: 'auto' }} data-active={selected} data-scope={isScope} data-kind={item.kind}>
     <Handle type="target" position={Position.Left} isConnectable={false} />
     <button type="button" className="garden-node-main nodrag" onClick={() => inspect(item.id)} aria-label={`查看 ${item.label}`}>
@@ -38,6 +38,7 @@ export default function GardenCanvas({ projection, selectedId, scopeId, isLight,
   const [attempt, setAttempt] = useState(0);
   const [api, setApi] = useState<ReactFlowInstance<FlowNode> | null>(null);
   const reduced = useMedia('(prefers-reduced-motion: reduce)');
+  const narrow = useMedia('(max-width: 639px)');
   const [initialViewport] = useState(() => savedViewport(projection.key));
   useEffect(() => {
     const controller = new AbortController();
@@ -60,6 +61,11 @@ export default function GardenCanvas({ projection, selectedId, scopeId, isLight,
     markerEnd: edge.type === 'related' ? undefined : { type: MarkerType.ArrowClosed, color: 'var(--garden-edge)' },
     style: { stroke: 'var(--garden-edge)', strokeWidth: 1.3, strokeDasharray: edge.type === 'related' ? '5 5' : undefined },
     labelStyle: { fill: 'var(--ui-muted)', fontSize: 11 }, labelBgStyle: { fill: 'var(--ui-panel)' } })), [projection]);
+  // A tall topic must not force every card into tiny text. Start at a readable
+  // neighborhood; the explicit fit button is the user's whole-subgraph overview.
+  const scope = projection.nodes.find(node => node.id === scopeId);
+  const firstFocus = selectedId ?? (scope?.kind === 'concept' ? scopeId : projection.nodes.find(node => node.id !== scopeId)?.id ?? scopeId);
+  const initialFitNodes = projection.atlas ? undefined : narrow ? [{ id: firstFocus }] : projection.nodes.slice(0, 4).map(node => ({ id: node.id }));
   const fit = () => void api?.fitView({ padding: .14, minZoom: .25, maxZoom: 1, duration: reduced ? 0 : 160 });
   if (error) return <div className="garden-state" role="alert"><h2>图谱布局暂不可用</h2><p>{error}</p><div><button onClick={() => setAttempt(value => value + 1)}>重试布局</button><button onClick={onList}>用列表继续阅读</button></div></div>;
   if (!positions) return <div className="garden-state" role="status">正在整理知识关系…</div>;
@@ -77,18 +83,19 @@ export default function GardenCanvas({ projection, selectedId, scopeId, isLight,
       nodesDraggable={false} nodesConnectable={false} nodesFocusable={false} edgesFocusable={false}
       elementsSelectable={false} deleteKeyCode={null} selectionKeyCode={null}
       zoomOnDoubleClick={false} minZoom={.25} maxZoom={1.75} zoomOnPinch panOnDrag
-      defaultViewport={initialViewport} fitView={!initialViewport} fitViewOptions={{ padding: .14, minZoom: .25, maxZoom: 1 }}
+      defaultViewport={initialViewport} fitView={!initialViewport}
+      fitViewOptions={{ nodes: initialFitNodes, padding: .14, minZoom: projection.atlas ? .25 : .9, maxZoom: 1 }}
       onMoveEnd={(_, viewport) => rememberViewport(projection.key, viewport)}
       colorMode={isLight ? 'light' : 'dark'} onlyRenderVisibleElements
       ariaLabelConfig={{ 'controls.zoomIn.ariaLabel': '放大图谱', 'controls.zoomOut.ariaLabel': '缩小图谱', 'controls.fitView.ariaLabel': '居中图谱' }}>
       <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="var(--garden-grid)" />
     </ReactFlow>
     <div className="garden-canvas-tools" role="group" aria-label="图谱视口控制">
-      <button type="button" aria-label="放大图谱" onClick={() => void api?.zoomIn({ duration: reduced ? 0 : 120 })}><Plus /></button>
-      <button type="button" aria-label="缩小图谱" onClick={() => void api?.zoomOut({ duration: reduced ? 0 : 120 })}><Minus /></button>
-      <button type="button" aria-label="居中图谱" onClick={fit}><Maximize /></button>
-      <button type="button" aria-label="恢复原始缩放" onClick={() => void api?.zoomTo(1)}><RotateCcw /></button>
+      <button type="button" disabled={!api} aria-label="放大图谱" onClick={() => void api?.zoomIn({ duration: reduced ? 0 : 120 })}><Plus /></button>
+      <button type="button" disabled={!api} aria-label="缩小图谱" onClick={() => void api?.zoomOut({ duration: reduced ? 0 : 120 })}><Minus /></button>
+      <button type="button" disabled={!api} aria-label="居中图谱" onClick={fit}><Maximize /></button>
+      <button type="button" disabled={!api} aria-label="恢复原始缩放" onClick={() => void api?.zoomTo(1)}><RotateCcw /></button>
     </div>
-    <div className="garden-canvas-legend">{projection.atlas ? '全景入口 · 点击卡片查看，点击展开继续' : '实线：导航 / 先学建议 · 虚线：编辑关联'}</div>
+    <div className="garden-canvas-legend">{projection.atlas ? '全景入口 · 点击卡片查看，点击展开继续' : '拖动空白处探索 · 居中按钮查看全图 · 虚线为编辑关联'}</div>
   </div>;
 }

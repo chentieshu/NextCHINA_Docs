@@ -1,0 +1,169 @@
+/* One owner for Markdown typography. No generic SVG rule: KaTeX, Mermaid and
+   toolbar icons each have their own geometry. Theme is local to the reader. */
+.markdown-body {
+  --md-text: #36363e;
+  --md-heading: #202028;
+  --md-muted: #656571;
+  --md-link: #245cab;
+  --md-link-line: #b7c8df;
+  --md-surface: #ffffff;
+  --md-soft: #f6f7f9;
+  --md-head: #f0f1f4;
+  --md-stripe: #fafbfc;
+  --md-hover: #f1f4f8;
+  --md-border: #e2e4e9;
+  --md-marker: #777987;
+  --md-focus: #3974ca;
+  --md-radius: 12px;
+  --md-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --md-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  container: markdown / inline-size;
+  display: flow-root;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  color-scheme: light;
+}
+.markdown-dark {
+  --md-text: #c5c5d0;
+  --md-heading: #ededf3;
+  --md-muted: #a2a4b2;
+  --md-link: #9cc7ff;
+  --md-link-line: #536781;
+  --md-surface: #1b1b20;
+  --md-soft: #222229;
+  --md-head: #2a2a33;
+  --md-stripe: #202027;
+  --md-hover: #2a2f3a;
+  --md-border: #393a45;
+  --md-marker: #9799aa;
+  --md-focus: #a4c9ff;
+  color-scheme: dark;
+}
+.markdown-light { color-scheme: light; }
+.markdown-prose {
+  color: var(--md-text);
+  font-family: var(--md-sans);
+  font-size: 1rem;
+  font-size: clamp(.9375rem, calc(.875rem + .25cqi), 1rem);
+  line-height: 1.82;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.markdown-prose > :first-child { margin-top: 0; }
+.markdown-prose > :last-child { margin-bottom: 0; }
+.markdown-body h1:not(.sr-only), .markdown-body h2:not(.sr-only),
+.markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 {
+  color: var(--md-heading);
+  font-weight: 650;
+  line-height: 1.4;
+  letter-spacing: -.02em;
+  scroll-margin-top: 5rem;
+  text-wrap: balance;
+}
+.markdown-body h1:not(.sr-only) { font-size: clamp(1.65rem, calc(1.25rem + 1.4cqi), 2rem); margin: 1.9em 0 .7em; }
+.markdown-body h2:not(.sr-only) { font-size: clamp(1.3rem, calc(1.1rem + .9cqi), 1.625rem); margin: 2em 0 .8em; padding-bottom: .45em; border-bottom: 1px solid var(--md-border); }
+.markdown-body h3 { font-size: clamp(1.125rem, calc(1rem + .5cqi), 1.25rem); margin: 1.7em 0 .65em; }
+.markdown-body h4 { font-size: 1.0625em; margin: 1.6em 0 .6em; }
+.markdown-body h5, .markdown-body h6 { font-size: 1em; margin: 1.5em 0 .5em; }
+.markdown-prose p { margin: 1em 0; }
+.markdown-prose strong { color: var(--md-heading); font-weight: 650; }
+.markdown-prose em { font-style: italic; }
+.markdown-prose del { text-decoration: line-through; color: var(--md-muted); }
+.markdown-prose a { color: var(--md-link); text-decoration: underline; text-decoration-color: var(--md-link-line); text-underline-offset: .2em; text-decoration-thickness: 1px; overflow-wrap: anywhere; }
+.markdown-prose a:hover { text-decoration-color: currentColor; }
+.markdown-prose :where(a, button, summary, [tabindex]):focus-visible { outline: 2px solid var(--md-focus); outline-offset: 3px; border-radius: 4px; }
+.markdown-prose hr { border: 0; border-top: 1px solid var(--md-border); margin: 2em 0; }
+
+/* Native list semantics, including ordered start and mixed task/normal lists. */
+.markdown-body ul, .markdown-body ol { margin: 1em 0; padding-inline-start: 1.65em; }
+.markdown-body ul { list-style-type: disc; }
+.markdown-body ol { list-style-type: decimal; }
+.markdown-prose li { position: relative; margin: .35em 0; padding-inline-start: .2em; }
+.markdown-prose li::marker { color: var(--md-marker); font-variant-numeric: tabular-nums; }
+.markdown-prose li > p { margin: .55em 0; }
+.markdown-prose li > :first-child { margin-top: 0; }
+.markdown-prose li > :last-child { margin-bottom: 0; }
+.markdown-prose li > :where(ul, ol) { margin: .45em 0; padding-inline-start: 1.35em; }
+.markdown-prose ul ul { list-style-type: circle; }
+.markdown-prose ul ul ul { list-style-type: square; }
+.markdown-prose li.task-list-item { list-style: none; }
+.markdown-prose .task-list-item > input[type="checkbox"],
+.markdown-prose .task-list-item > p:first-child > input[type="checkbox"] {
+  position: absolute; inset-inline-start: -1.25em; top: .4em;
+  width: 1em; height: 1em; margin: 0; opacity: 1; accent-color: var(--md-link);
+}
+.markdown-body blockquote { margin: 1.5em 0; padding: .9em 1.1em; border-inline-start: 3px solid var(--md-marker); border-radius: 0 var(--md-radius) var(--md-radius) 0; background: var(--md-soft); }
+.markdown-prose blockquote > :first-child { margin-top: 0; }
+.markdown-prose blockquote > :last-child { margin-bottom: 0; }
+.markdown-prose blockquote blockquote { margin: .8em 0; }
+
+/* Images only. Never turn a math SVG or Lucide icon into a block image. */
+.markdown-prose .md-image { display: block; max-width: 100%; height: auto; margin: 1.25em auto; border-radius: var(--md-radius); }
+.markdown-prose .md-provider-logo { display: inline-block; width: 1.15em; height: 1.15em; margin: 0 .3em 0 0; border-radius: 0; vertical-align: -.18em; object-fit: contain; }
+.markdown-dark .md-provider-logo { filter: brightness(0) invert(1); }
+.markdown-prose .md-control-icon { display: inline-block; width: 1rem; height: 1rem; flex: none; margin: 0; vertical-align: middle; }
+
+.md-inline-code { font-family: var(--md-mono); font-size: .88em; padding: .15em .35em; border: 1px solid var(--md-border); border-radius: 5px; background: var(--md-soft); color: var(--md-heading); box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.md-codeblock, .md-table-region, .md-diagram { width: 100%; min-width: 0; max-width: 100%; margin: 1.5em 0; border: 1px solid var(--md-border); border-radius: var(--md-radius); background: var(--md-surface); overflow: hidden; }
+.md-codebar, .md-table-tools, .md-diagram > figcaption { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; padding: .45rem .8rem; background: var(--md-soft); color: var(--md-muted); font: 500 .75rem/1.5 var(--md-sans); border-bottom: 1px solid var(--md-border); }
+.md-code-language { font-family: var(--md-mono); min-width: 0; overflow-wrap: anywhere; }
+.md-code-actions, .md-table-tools > div { display: flex; flex: none; gap: .25rem; }
+.md-code-actions button, .md-table-tools button { display: inline-flex; align-items: center; justify-content: center; gap: .35rem; min-height: 32px; min-width: 32px; padding: .25rem .5rem; border: 1px solid transparent; border-radius: 6px; color: var(--md-muted); background: transparent; cursor: pointer; font: inherit; }
+.md-code-actions button:hover, .md-code-actions button[aria-pressed="true"], .md-table-tools button:hover:not(:disabled) { background: var(--md-head); color: var(--md-heading); }
+.md-table-tools button:disabled { opacity: .4; cursor: default; }
+.md-codeblock pre, .md-plain-pre, .md-diagram-source pre { max-width: 100%; margin: 0; padding: 1rem; overflow: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; font: .875rem/1.7 var(--md-mono); font-size: clamp(.8125rem, calc(.77rem + .18cqi), .9rem); tab-size: 2; color: var(--md-text); }
+.md-codeblock pre code, .md-plain-pre code, .md-diagram-source pre code { display: block; padding: 0; margin: 0; border: 0; background: transparent; font: inherit; white-space: pre; overflow-wrap: normal; word-break: normal; }
+.md-codeblock[data-wrap="true"] pre code { white-space: pre-wrap; overflow-wrap: anywhere; }
+.md-plain-pre { margin: 1.5em 0; background: var(--md-soft); border-radius: var(--md-radius); }
+
+/* Fixed column proportions with a content-derived minimum keep long prose from
+   expanding the whole table. Short 1–2 column tables always fit the reader. */
+.md-table-scroll { width: 100%; max-width: 100%; min-width: 0; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+.md-table-scroll:focus-visible { outline-offset: -2px; }
+.md-table-region table { table-layout: fixed; border-collapse: separate; border-spacing: 0; width: 100%; min-width: var(--md-table-min, 0rem); font-size: .875rem; font-size: clamp(.8125rem, calc(.78rem + .18cqi), .9rem); line-height: 1.65; font-variant-numeric: tabular-nums; }
+.md-table-region :where(th, td) { padding: .8em 1em; border-bottom: 1px solid var(--md-border); text-align: start; vertical-align: top; overflow-wrap: anywhere; word-break: normal; white-space: normal; }
+.md-table-region th { background: var(--md-head); color: var(--md-heading); font-weight: 650; }
+.md-table-region :where(th, td) + :where(th, td) { border-inline-start: 1px solid var(--md-border); }
+.md-table-region :where(th, td)[align="right"] { text-align: right; }
+.md-table-region :where(th, td)[align="center"] { text-align: center; }
+.md-table-region :where(th, td)[align="left"] { text-align: left; }
+.md-table-region tr:last-child td { border-bottom: 0; }
+.md-table-region tbody tr:nth-child(even) { background: var(--md-stripe); }
+.md-table-region td > :first-child { margin-top: 0; }
+.md-table-region td > :last-child { margin-bottom: 0; }
+.md-table-region .md-image:not(.md-provider-logo) { max-width: min(100%, 12rem); }
+.md-table-tools { border-top: 1px solid var(--md-border); border-bottom: 0; }
+@media (hover: hover) { .md-table-region tbody tr:hover { background: var(--md-hover); } }
+
+/* KaTeX controls its own inline metrics, fractions, roots and stretchy SVG. */
+.markdown-body .katex { font-size: 1.04em; overflow-wrap: normal; word-break: normal; }
+.markdown-body .katex-display { display: block; width: 100%; max-width: 100%; margin: 1.4em 0; padding: .75em .25em; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+.markdown-body .katex-display > .katex { white-space: nowrap; }
+.markdown-prose :not(.katex-display) > .katex { display: inline-block; max-width: 100%; overflow-x: auto; overflow-y: hidden; vertical-align: middle; padding: .15em .02em .3em; }
+.md-codeblock pre:focus-visible, .md-mermaid:focus-visible { outline-offset: -2px; }
+.markdown-body .katex-error { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--md-text); }
+.md-diagram { margin: 1.5em 0; }
+.md-diagram > figcaption span { font-weight: 400; }
+.md-mermaid { max-width: 100%; padding: 1rem; overflow-x: auto; overscroll-behavior-x: contain; text-align: center; -webkit-overflow-scrolling: touch; }
+.md-mermaid > svg { display: block; height: auto; margin: 0 auto; border-radius: 0; }
+.md-diagram-status, .markdown-prose .md-mermaid-error { margin: 0; padding: 1.25rem; font-size: .875em; color: var(--md-muted); }
+.md-diagram-source { border-top: 1px solid var(--md-border); }
+.md-diagram-source summary { padding: .55rem .8rem; font-size: .75rem; color: var(--md-muted); cursor: pointer; }
+.md-diagram-source pre { background: var(--md-soft); }
+.markdown-prose [data-footnotes] { margin-top: 2.5em; padding-top: 1em; border-top: 1px solid var(--md-border); color: var(--md-muted); font-size: .875em; }
+.markdown-prose a[data-footnote-ref] { font-variant-numeric: tabular-nums; text-decoration: none; }
+.markdown-prose [data-footnote-backref] { padding: .1em .3em; }
+
+/* Container queries respond to the reading column, including sidebar changes. */
+@container markdown (max-width: 440px) {
+  .markdown-body h2:not(.sr-only) { margin-top: 1.7em; }
+  .markdown-prose li > :where(ul, ol) { padding-inline-start: 1.15em; }
+  .markdown-body blockquote { padding: .75em .85em; }
+  .md-codeblock, .md-table-region, .md-diagram { border-radius: 10px; }
+  .md-codebar, .md-table-tools { padding-inline: .6rem; }
+  .md-codeblock pre, .md-plain-pre, .md-diagram-source pre, .md-mermaid { padding: .8rem; }
+  .md-table-region :where(th, td) { padding: .7em .8em; }
+}
+@media (pointer: coarse) { .md-code-actions button, .md-table-tools button { min-height: 40px; min-width: 40px; } }
+@media (prefers-reduced-motion: reduce) { .markdown-body * { scroll-behavior: auto !important; } }

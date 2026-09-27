@@ -1,6 +1,6 @@
 import type { DocChapter } from '../types';
 import articleRegistry from '../../content/articles.json';
-import premiumVideoMarkdown from '../../content/craft/video/apple-style-premium-product-video.md?raw';
+import premiumVideoMarkdown from '../../content/tutorials/video/apple-style-premium-product-video.md?raw';
 import llmMarkdown from '../../content/models/llm/llm-how-it-works.md?raw';
 import vlmMarkdown from '../../content/models/vlm/vlm-how-it-works.md?raw';
 import diffusionMarkdown from '../../content/models/generative/diffusion-dit.md?raw';

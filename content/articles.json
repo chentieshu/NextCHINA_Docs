@@ -2,14 +2,15 @@
   "articles": [
     {
       "id": "apple-style-premium-product-video",
-      "file": "content/craft/video/apple-style-premium-product-video.md",
-      "space": "craft",
-      "category": "craft",
-      "categoryName": "创作与影像",
+      "file": "content/tutorials/video/apple-style-premium-product-video.md",
+      "space": "tutorials",
+      "category": "video",
+      "categoryName": "视频制作",
       "title": "苹果风格高端产品视频制作框架",
       "subtitle": "从品牌意图、设计、动画、配乐到音效的可复用制作方法",
       "date": "2026-09-27",
       "tags": [
+        "教程",
         "创作与影像",
         "产品视频",
         "Apple",

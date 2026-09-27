@@ -55,10 +55,10 @@
       ]
     },
     {
-      "id": "craft",
-      "name": "Craft",
-      "shortName": "C",
-      "description": "AI 时代的产品表达、视觉、Motion 与创作方法。",
+      "id": "tutorials",
+      "name": "教程",
+      "shortName": "T",
+      "description": "面向实践的操作教程、实验与创作方法；当前收录视频制作方法论。",
       "chapterIds": [
         "apple-style-premium-product-video"
       ]

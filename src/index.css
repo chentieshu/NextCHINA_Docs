@@ -331,13 +331,32 @@ body {
   min-width: 0;
   max-width: 22rem;
   padding: 0.7rem 0.8rem;
-  text-align: left;
   vertical-align: top;
   border-inline-end: 1px solid var(--table-border);
   border-bottom: 1px solid var(--table-border);
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: normal;
+}
+
+.markdown-body th:not([align]),
+.markdown-body td:not([align]) {
+  text-align: left;
+}
+
+.markdown-body th[align="center"],
+.markdown-body td[align="center"] {
+  text-align: center;
+}
+
+.markdown-body th[align="right"],
+.markdown-body td[align="right"] {
+  text-align: right;
+}
+
+.markdown-body th[align="left"],
+.markdown-body td[align="left"] {
+  text-align: left;
 }
 
 .markdown-body th {

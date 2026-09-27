@@ -18,11 +18,12 @@ $$
 
 方向越接近，相似度越高。
 
-~~~text
-Query → Embedding ─┐
-                   ├→ Vector Similarity → Nearest Documents
-Docs  → Embeddings ┘
-~~~
+```mermaid
+flowchart TD
+  Q["Query"] --> E["Query Embedding"] --> S["Vector Similarity"]
+  D["Docs"] --> V["Document Embeddings"] --> S
+  S --> N["Nearest Documents"]
+```
 
 ## 3. 模型怎样学到语义空间？
 
@@ -38,9 +39,11 @@ Embedding Model 因此是在学习一个**可检索的几何空间**。
 
 ## 4. RAG 为什么常用 Embedding？
 
-~~~text
-Question → Embedding → Vector Search → Relevant Chunks → LLM
-~~~
+```mermaid
+flowchart TD
+  Q["Question"] --> E["Embedding"] --> S["Vector Search"]
+  S --> C["Relevant Chunks"] --> L["LLM"]
+```
 
 Embedding 负责召回，LLM 负责阅读和生成。
 

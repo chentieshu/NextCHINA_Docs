@@ -30,9 +30,11 @@ $$
 L=\mathbb E\left[\|\epsilon-\epsilon_\theta(x_t,t)\|^2\right]
 $$
 
-~~~text
-Image → Add Noise → x_t → Network → Predicted Noise → Loss
-~~~
+```mermaid
+flowchart TD
+  I["Image"] --> A["Add Noise"] --> X["x_t"] --> N["Network"]
+  N --> P["Predicted Noise"] --> L["Loss"]
+```
 
 训练后从随机噪声开始执行反向过程，就可以逐步形成数据。
 
@@ -48,11 +50,12 @@ Cross-Attention 等机制让去噪网络读取文本条件。
 
 因此 text-to-image 更接近：
 
-~~~text
-Prompt → Text Representation
-                    ↓
-Noise → Iterative Generative Dynamics → Image
-~~~
+```mermaid
+flowchart TD
+  P["Prompt"] --> T["Text Representation"] --> G["Iterative Generative Dynamics"]
+  N["Noise"] --> G
+  G --> I["Image"]
+```
 
 ## 5. Latent Diffusion
 
@@ -76,9 +79,11 @@ $$
 
 DiT 把 diffusion backbone 改成 Transformer。[3]
 
-~~~text
-Noisy Latent → Patchify → Tokens → Transformer → Noise / Velocity Prediction
-~~~
+```mermaid
+flowchart TD
+  N["Noisy Latent"] --> P["Patchify"] --> T["Tokens"]
+  T --> B["Transformer"] --> O["Noise / Velocity Prediction"]
+```
 
 这说明 Transformer 已经不只是语言模型骨架，也是现代视觉生成的重要通用计算结构。
 
@@ -96,21 +101,27 @@ $$
 
 现代生成模型不都严格使用原始 DDPM。Flow Matching / Rectified Flow 学习从简单分布到数据分布的连续 vector field。
 
-~~~text
-Generative Modeling
-├─ Autoregressive
-├─ Diffusion
-├─ Score-based
-├─ Flow Matching / Rectified Flow
-└─ Hybrid
-~~~
+```mermaid
+mindmap
+  root((Generative Modeling))
+    Autoregressive
+    Diffusion
+    Score-based
+    Flow Matching / Rectified Flow
+    Hybrid
+```
 
 ## 9. 与 VLM 的区别
 
-~~~text
-VLM: Pixels → Representation → Understanding → Language
-DiT: Noise + Condition → Generative Dynamics → Pixels
-~~~
+```mermaid
+flowchart TD
+  subgraph vlm["VLM"]
+    P["Pixels"] --> R["Representation"] --> U["Understanding"] --> L["Language"]
+  end
+  subgraph dit["DiT"]
+    N["Noise + Condition"] --> G["Generative Dynamics"] --> I["Pixels"]
+  end
+```
 
 理解模型与生成模型可以被同一个产品组合，但优化目标并不相同。
 

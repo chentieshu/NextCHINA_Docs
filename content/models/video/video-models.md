@@ -24,17 +24,12 @@ $$
 
 一种 latent diffusion 路线：
 
-~~~text
-Video → Video VAE → Latent Video → Add Noise
-                         ↓
-               Spatiotemporal Model
-                         ↓
-              Noise / Velocity Prediction
-                         ↓
-                   Reverse Process
-                         ↓
-                       Video
-~~~
+```mermaid
+flowchart TD
+  V["Video"] --> E["Video VAE"] --> L["Latent Video"] --> N["Add Noise"]
+  N --> M["Spatiotemporal Model"] --> P["Noise / Velocity Prediction"]
+  P --> R["Reverse Process"] --> O["Video"]
+```
 
 ## 3. 时空 Attention
 
@@ -42,9 +37,10 @@ Video → Video VAE → Latent Video → Add Noise
 
 Full spatiotemporal attention 成本高，一些架构会 factorize：
 
-~~~text
-Spatial Attention → Temporal Attention
-~~~
+```mermaid
+flowchart LR
+  S["Spatial Attention"] --> T["Temporal Attention"]
+```
 
 ## 4. 为什么人物会变脸？
 
@@ -68,17 +64,15 @@ Pan、tilt、dolly、zoom 会改变整个场景的投影。
 
 模型需要同时学习：
 
-~~~text
-Object Motion
-+
-Camera Motion
-+
-Scene Geometry
-+
-Lighting
-+
-Temporal Causality
-~~~
+```mermaid
+mindmap
+  root((时空建模))
+    Object Motion
+    Camera Motion
+    Scene Geometry
+    Lighting
+    Temporal Causality
+```
 
 ## 6. 为什么长视频特别难？
 

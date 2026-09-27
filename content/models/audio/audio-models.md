@@ -22,17 +22,21 @@ $$
 
 ## 3. ASR：声音怎样变文字？
 
-~~~text
-Waveform → Audio Encoder → Acoustic Representation → Decoder / CTC → Text
-~~~
+```mermaid
+flowchart TD
+  W["Waveform"] --> E["Audio Encoder"] --> R["Acoustic Representation"]
+  R --> D["Decoder / CTC"] --> T["Text"]
+```
 
 Whisper 是大规模弱监督语音识别的重要代表。[1]
 
 ## 4. TTS：文字怎样变声音？
 
-~~~text
-Text → Semantic / Phonetic Representation → Acoustic Representation → Vocoder → Waveform
-~~~
+```mermaid
+flowchart TD
+  T["Text"] --> S["Semantic / Phonetic Representation"] --> A["Acoustic Representation"]
+  A --> V["Vocoder"] --> W["Waveform"]
+```
 
 TTS 还要建模 speaker、prosody、emotion、timing，而不只是“读对文字”。
 
@@ -40,9 +44,10 @@ TTS 还要建模 speaker、prosody、emotion、timing，而不只是“读对文
 
 EnCodec 等神经 codec 可以把连续波形压缩成离散 acoustic tokens。[2]
 
-~~~text
-Audio → Codec Encoder → Discrete Tokens → Transformer
-~~~
+```mermaid
+flowchart TD
+  A["Audio"] --> C["Codec Encoder"] --> D["Discrete Tokens"] --> T["Transformer"]
+```
 
 这使音频也能进入 token-based generative modeling。
 
@@ -56,15 +61,18 @@ MusicGen 展示了基于压缩离散音乐表示与 Transformer 的生成路线�
 
 传统语音助手：
 
-~~~text
-Speech → ASR → Text LLM → Text → TTS
-~~~
+```mermaid
+flowchart TD
+  S["Speech"] --> A["ASR"] --> L["Text LLM"] --> T["Text"] --> V["TTS"]
+```
 
 更统一的 speech model：
 
-~~~text
-Speech Tokens ↔ Multimodal Model ↔ Speech Tokens
-~~~
+```mermaid
+flowchart TD
+  I["Speech Tokens：输入"] <--> M["Multimodal Model"]
+  M <--> O["Speech Tokens：输出"]
+```
 
 可以减少文字中间层丢失的语气、停顿、情绪，并降低多阶段延迟。
 

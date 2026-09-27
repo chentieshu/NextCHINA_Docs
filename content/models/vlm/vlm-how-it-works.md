@@ -4,17 +4,13 @@
 
 传统视觉模型往往解决分类、检测、OCR、分割等特定任务；LLM 擅长语言生成、问答、解释和指令执行。VLM 把两者连接起来。
 
-~~~text
-Image / Video
-     ↓
-Visual Representation
-     ↓
-Multimodal Alignment / Fusion
-     ↕
-Language Representation
-     ↓
-Understanding / Reasoning / Generation
-~~~
+```mermaid
+flowchart TD
+  I["Image / Video"] --> V["Visual Representation"]
+  V --> F["Multimodal Alignment / Fusion"]
+  F <--> L["Language Representation"]
+  L --> O["Understanding / Reasoning / Generation"]
+```
 
 因此它可以完成图片描述、视觉问答、文档理解、图表分析、OCR 后推理和视频理解等任务。
 
@@ -24,9 +20,11 @@ Understanding / Reasoning / Generation
 
 Vision Transformer（ViT）给出了影响深远的方案：把图片切成 patch，把 patch 变成序列表示，再交给 Transformer。[1]
 
-~~~text
-Image → Patches → Patch Embeddings → Vision Transformer → Visual Features
-~~~
+```mermaid
+flowchart TD
+  I["Image"] --> P["Patches"] --> E["Patch Embeddings"]
+  E --> V["Vision Transformer"] --> F["Visual Features"]
+```
 
 所以“看图”的第一步，本质上仍然是**表示学习**。
 
@@ -84,13 +82,11 @@ $$
 
 但 visual token 不是统一行业单位。不同模型可以使用不同分辨率、patch 大小、动态切图、压缩器、resampler 或 token reduction。
 
-~~~text
-大量像素
-   ↓ 压缩与编码
-视觉表示 / Visual Tokens
-   ↓
-跨模态计算
-~~~
+```mermaid
+flowchart TD
+  P["大量像素"] -->|"压缩与编码"| V["视觉表示 / Visual Tokens"]
+  V --> M["跨模态计算"]
+```
 
 压缩越强，计算通常越省，但细粒度视觉信息也可能损失。这是 VLM 的核心工程 trade-off 之一。
 
@@ -116,11 +112,11 @@ CLIP 是理解现代 VLM 的关键节点。
 
 它用大规模图像-文本配对数据，让图像编码器和文本编码器学习匹配关系：正确图文组合在表示空间中更接近，不匹配组合更远。[2]
 
-~~~text
-Image → Image Encoder ─┐
-                       ├→ Alignment
-Text  → Text Encoder ──┘
-~~~
+```mermaid
+flowchart LR
+  I["Image"] --> V["Image Encoder"] --> A["Alignment"]
+  T["Text"] --> L["Text Encoder"] --> A
+```
 
 CLIP 使用 4 亿图文对训练，并展示了自然语言作为视觉监督信号的可扩展性。[2]
 
@@ -165,10 +161,11 @@ $$
 
 直觉：
 
-~~~text
-正确图文 → 拉近
-错误图文 → 推远
-~~~
+```mermaid
+flowchart LR
+  P["正确图文"] --> N["表示拉近"]
+  X["错误图文"] --> F["表示推远"]
+```
 
 这就是“视觉和语言进入可比较语义空间”的数学基础之一。[2]
 
@@ -182,9 +179,11 @@ CLIP 类模型分别编码图像和文本，重点学习两种表示之间的匹
 
 ### Vision Encoder + Connector + LLM
 
-~~~text
-Image → Vision Encoder → Projector / Q-Former → LLM → Text
-~~~
+```mermaid
+flowchart TD
+  I["Image"] --> V["Vision Encoder"] --> P["Projector / Q-Former"]
+  P --> L["LLM"] --> T["Text"]
+```
 
 BLIP-2 使用冻结视觉编码器和冻结 LLM，并用轻量 Q-Former 跨越模态差距。[4]
 
@@ -232,9 +231,10 @@ $$
 
 因此很多架构需要一座桥：
 
-~~~text
-Vision Feature Space → Connector → Language-compatible Space
-~~~
+```mermaid
+flowchart TD
+  V["Vision Feature Space"] --> C["Connector"] --> L["Language-compatible Space"]
+```
 
 Connector 可能是 linear projector、MLP、Q-Former、resampler、cross-attention 或更统一的 joint transformer。
 
@@ -254,25 +254,14 @@ BLIP-2 的 Q-Former 就是在冻结视觉编码器和冻结 LLM 之间建立信�
 
 以常见架构为例：
 
-~~~text
-Image
- ↓
-Resize / Tile / Normalize
- ↓
-Vision Encoder
- ↓
-Visual Features
- ↓
-Projector / Connector
- ↓
-Visual Tokens
- ↓
-与文本 Prompt 组成多模态上下文
- ↓
-Transformer
- ↓
-Text Answer
-~~~
+```mermaid
+flowchart TD
+  I["Image"] --> R["Resize / Tile / Normalize"] --> V["Vision Encoder"]
+  V --> F["Visual Features"] --> P["Projector / Connector"] --> T["Visual Tokens"]
+  T --> C["多模态上下文"]
+  Q["文本 Prompt"] --> C
+  C --> M["Transformer"] --> A["Text Answer"]
+```
 
 这并不意味着所有系统都是“先完整识图，再把识别结果写成一句话交给 LLM”。现代端到端 VLM 可以直接在隐藏表示层进行视觉-语言交互。
 
@@ -322,13 +311,10 @@ Caption 只要求模型生成总体描述；grounding 还要求语言概念对�
 
 例如：
 
-~~~text
-“红色杯子”
-   ↓
-语言概念
-   ↓
-必须对应 image 中某个区域
-~~~
+```mermaid
+flowchart TD
+  T["红色杯子"] --> L["语言概念"] --> R["对应 image 中的具体区域"]
+```
 
 这需要模型保留更细的空间结构。
 
@@ -344,16 +330,13 @@ Caption 只要求模型生成总体描述；grounding 还要求语言概念对�
 
 视频增加了时间轴。
 
-~~~text
-Frame t1
-Frame t2
-Frame t3
-...
-   ↓
-Spatial + Temporal Representation
-   ↓
-Multimodal Reasoning
-~~~
+```mermaid
+flowchart TD
+  F1["Frame t1"] --> S["Spatial + Temporal Representation"]
+  F2["Frame t2"] --> S
+  F3["Frame t3 …"] --> S
+  S --> M["Multimodal Reasoning"]
+```
 
 模型不仅要识别画面，还要理解事件先后、对象持续存在、动作、因果变化和长视频关键片段。
 
@@ -381,12 +364,15 @@ $$
 
 不是。
 
-~~~text
-VLM: Image → Understanding → Language
-
-Image Generator:
-Text / Image Condition → Generative Model → Pixels
-~~~
+```mermaid
+flowchart TD
+  subgraph understanding["VLM"]
+    I["Image"] --> U["Understanding"] --> L["Language"]
+  end
+  subgraph generation["Image Generator"]
+    C["Text / Image Condition"] --> G["Generative Model"] --> P["Pixels"]
+  end
+```
 
 一个产品可以同时集成理解模型和生成模型，但概念上仍应区分 Vision Understanding、Vision-Language Reasoning 和 Image Generation。
 
@@ -400,15 +386,17 @@ Text / Image Condition → Generative Model → Pixels
 
 但这不是所有 VLM 的唯一结构定义。
 
-~~~text
-LLM
-Text → Tokens → Transformer → Text
-
-VLM
-Image → Visual Representation ─┐
-                               ├→ Multimodal Model → Text / Action
-Text  → Language Tokens ───────┘
-~~~
+```mermaid
+flowchart TD
+  subgraph language["LLM"]
+    T["Text"] --> K["Tokens"] --> M["Transformer"] --> O["Text"]
+  end
+  subgraph vision["VLM"]
+    I["Image"] --> V["Visual Representation"] --> F["Multimodal Model"]
+    X["Text"] --> L["Language Tokens"] --> F
+    F --> A["Text / Action"]
+  end
+```
 
 VLM 新增的核心问题是：**如何让不同模态变成能够互相交流的表示。**
 
@@ -418,9 +406,11 @@ VLM 新增的核心问题是：**如何让不同模态变成能够互相交流�
 
 视觉证据弱而语言先验强时，模型可能回答“球拍”，即使真实图片不是。
 
-~~~text
-视觉证据弱 + 语言先验强 → 合理但视觉上错误的回答
-~~~
+```mermaid
+flowchart TD
+  V["视觉证据弱"] --> A["合理但视觉上错误的回答"]
+  L["语言先验强"] --> A
+```
 
 因此评估 VLM 必须检查答案是否真正 grounded in image，而不只是语言上合理。
 
@@ -428,13 +418,11 @@ VLM 新增的核心问题是：**如何让不同模态变成能够互相交流�
 
 更高分辨率通常可以保留更多细节，但也会增加视觉编码和多模态计算成本。
 
-~~~text
-Higher Resolution
-      ↓
-More / richer visual representation
-      ↓
-More Compute / Memory
-~~~
+```mermaid
+flowchart TD
+  R["Higher Resolution"] --> V["More / richer visual representation"]
+  V --> C["More Compute / Memory"]
+```
 
 真实系统会通过 patch、tiling、resampling、token compression 等方式控制成本。
 
@@ -461,20 +449,14 @@ More Compute / Memory
 
 ## 18. 从 CLIP 到现代多模态模型发生了什么？
 
-~~~text
-视觉分类
-   ↓
-图文对齐：CLIP
-   ↓
-视觉编码器 + LLM：BLIP-2 / LLaVA
-   ↓
-交错图文上下文：Flamingo 等
-   ↓
-更统一的多模态训练
-Text + Image + Audio + Video
-   ↓
-Multimodal Reasoning + Agent
-~~~
+```mermaid
+flowchart TD
+  C["视觉分类"] --> A["图文对齐：CLIP"]
+  A --> L["视觉编码器 + LLM：BLIP-2 / LLaVA"]
+  L --> F["交错图文上下文：Flamingo 等"]
+  F --> U["更统一的训练：Text / Image / Audio / Video"]
+  U --> R["Multimodal Reasoning + Agent"]
+```
 
 这不是严格的单线历史，也不是所有模型都沿同一技术路线，而是一张理解技术方向的地图。
 
@@ -490,17 +472,12 @@ Multimodal Reasoning + Agent
 
 常见阶段可能包括：
 
-~~~text
-视觉自监督 / 分类预训练
-        ↓
-Image-Text Contrastive Alignment
-        ↓
-Caption / Next-token Training
-        ↓
-Multimodal Instruction Tuning
-        ↓
-Preference / RL / Reasoning Training
-~~~
+```mermaid
+flowchart TD
+  V["视觉自监督 / 分类预训练"] --> A["Image-Text Contrastive Alignment"]
+  A --> C["Caption / Next-token Training"] --> I["Multimodal Instruction Tuning"]
+  I --> R["Preference / RL / Reasoning Training"]
+```
 
 不同模型可能跳过、合并或联合训练这些阶段。
 
@@ -518,23 +495,15 @@ Preference / RL / Reasoning Training
 
 ## 20. 把 VLM 压缩成一张图
 
-~~~text
-真实视觉世界
-     ↓
-Image / Video Pixels
-     ↓
-Vision Encoder / Visual Tokenizer
-     ↓
-Visual Representations
-     ↓
-Connector / Cross-modal Alignment
-     ↓
-Multimodal Transformer
-+ Language Knowledge
-+ Reasoning
-     ↓
-Language / Action / Tool Call
-~~~
+```mermaid
+flowchart TD
+  W["真实视觉世界"] --> P["Image / Video Pixels"]
+  P --> V["Vision Encoder / Visual Tokenizer"] --> R["Visual Representations"]
+  R --> C["Connector / Cross-modal Alignment"] --> M["Multimodal Transformer"]
+  L["Language Knowledge"] --> M
+  T["Reasoning"] --> M
+  M --> O["Language / Action / Tool Call"]
+```
 
 VLM 的本质可以压缩成六件事：
 

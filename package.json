@@ -12,6 +12,7 @@
     "lint": "tsc --noEmit",
     "test:data": "node scripts/validate-research.mjs",
     "test:markdown": "node scripts/validate-markdown.mjs",
+    "test:browser": "playwright test",
     "validate": "npm run test:data && npm run test:markdown && npm run lint",
     "deploy:assets": "wrangler deploy"
   },
@@ -34,12 +35,11 @@
     "@types/node": "22.14.0",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "@playwright/test": "1.55.1",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
     "github-slugger": "2.0.0",
     "wrangler": "4.102.0"
   },
-  "engines": {
-    "node": ">=22 <25"
-  }
+  "engines": { "node": ">=22 <25" }
 }

@@ -38,15 +38,11 @@ $$
 
 Dreamer 在 learned latent dynamics 中进行 imagined rollouts，再学习 policy/value。[1]
 
-~~~text
-Environment → Observation → Encoder → Latent State
-                                      ↓
-                                  World Model
-                                      ↓
-                               Imagined Futures
-                                      ↓
-                                 Policy / Value
-~~~
+```mermaid
+flowchart TD
+  E["Environment"] --> O["Observation"] --> C["Encoder"] --> L["Latent State"]
+  L --> W["World Model"] --> I["Imagined Futures"] --> P["Policy / Value"]
+```
 
 ## 4. Video Model 与 World Model 的区别
 
@@ -82,21 +78,18 @@ World Model 更强调：
 
 没有可靠模型：
 
-~~~text
-Action → 真实环境 → Observation
-~~~
+```mermaid
+flowchart LR
+  A["Action"] --> E["真实环境"] --> O["Observation"]
+```
 
 有 world model：
 
-~~~text
-Candidate Actions
- ↓
-Internal Rollouts
- ↓
-Compare Futures
- ↓
-Choose Action
-~~~
+```mermaid
+flowchart TD
+  A["Candidate Actions"] --> R["Internal Rollouts"]
+  R --> F["Compare Futures"] --> C["Choose Action"]
+```
 
 这会把 Agent 从单纯反应式工具调用推进到 model-based planning。
 

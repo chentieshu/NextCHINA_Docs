@@ -1,0 +1,52 @@
+/* Product-wide flat surfaces. Focus uses outlines, not box-shadow rings. */
+:root {
+  --ui-surface: #fafafc; --ui-panel: #ffffff; --ui-soft: #f0f0f4;
+  --ui-border: #dddfe6; --ui-text: #303036; --ui-muted: #656573; --ui-focus: #3974ca;
+}
+html[data-theme="dark"] {
+  --ui-surface: #151518; --ui-panel: #1d1d23; --ui-soft: #28282e;
+  --ui-border: #3b3b46; --ui-text: #e2e2e9; --ui-muted: #aaaab6; --ui-focus: #a4c9ff;
+}
+*, *::before, *::after { box-shadow: none !important; text-shadow: none !important; }
+button, input, textarea, select { -webkit-appearance: none; appearance: none; }
+button { -webkit-tap-highlight-color: transparent; }
+:where(button, input, textarea, select, [role="listbox"]):focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 2px; }
+input[type="search"]::-webkit-search-cancel-button { display: none; }
+input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
+
+/* Native semantics stay; checkbox paint is owned by the document theme. */
+.markdown-prose input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none; border: 1.5px solid var(--md-marker);
+  border-radius: 3px; background: var(--md-surface); background-position: center; background-repeat: no-repeat;
+  background-size: .8em .8em; color: var(--md-text); opacity: 1;
+}
+.markdown-prose input[type="checkbox"]:checked {
+  background-color: var(--md-link); border-color: var(--md-link);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3 8 3.2 3.2L13 4.5' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.markdown-dark input[type="checkbox"]:checked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3 8 3.2 3.2L13 4.5' fill='none' stroke='%2318181b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.space-selector { position: relative; width: 100%; min-width: 0; }
+.space-selector-trigger { display: flex; align-items: center; justify-content: space-between; gap: .5rem; width: 100%; min-height: 40px; padding: .5rem .65rem; border: 1px solid var(--ui-border); border-radius: 8px; background: var(--ui-soft); color: var(--ui-text); font-size: .8125rem; font-weight: 600; cursor: pointer; }
+.space-selector-trigger span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.space-selector-trigger svg, .space-selector-option svg { flex-shrink: 0; }
+.space-selector-list { position: absolute; inset: calc(100% + 6px) 0 auto; z-index: 5; padding: 4px; border: 1px solid var(--ui-border); border-radius: 10px; background: var(--ui-panel); color: var(--ui-text); max-height: min(19rem, 50dvh); overflow: auto; overscroll-behavior: contain; }
+.space-selector-option { display: flex; align-items: center; justify-content: space-between; gap: .5rem; min-height: 40px; padding: .5rem .6rem; border: 1px solid transparent; border-radius: 6px; font-size: .8125rem; cursor: pointer; }
+.space-selector-option[data-focused="true"] { background: var(--ui-soft); border-color: var(--ui-border); }
+.space-selector-option[aria-selected="true"] { font-weight: 650; }
+.docs-sidebar { border-inline-end: 1px solid var(--ui-border); }
+.docs-sidebar-scroll { min-height: 0; overscroll-behavior: contain; }
+.md-diagram-actions { display: flex; align-items: center; flex-wrap: wrap; gap: .25rem; }
+.md-diagram-actions button, .md-source-toggle, .md-mermaid-error button { display: inline-flex; align-items: center; justify-content: center; gap: .35rem; min-height: 36px; padding: .35rem .5rem; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--md-muted); font: 500 .75rem/1.5 var(--md-sans); cursor: pointer; }
+.md-diagram-actions button:hover:not(:disabled), .md-source-toggle:hover, .md-mermaid-error button:hover { background: var(--md-head); color: var(--md-heading); }
+.md-diagram-actions button:disabled { opacity: .4; cursor: default; }
+.md-source-toggle { width: 100%; justify-content: flex-start; padding: .55rem .8rem; border-radius: 0; }
+.md-source-toggle svg:last-child { margin-inline-start: auto; transition: transform .15s; }
+.md-source-toggle svg[data-expanded="true"] { transform: rotate(180deg); }
+.md-diagram-error-detail { white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--md-mono); font-size: .75rem; }
+/* Mermaid-internal SVG filters must not reintroduce diagram shadows. */
+.md-mermaid svg, .md-mermaid svg * { filter: none !important; }
+@media (pointer: coarse) { .space-selector-trigger, .space-selector-option, .md-source-toggle, .md-diagram-actions button { min-height: 44px; } }
+@media (prefers-reduced-motion: reduce) { .md-source-toggle svg { transition: none; } }

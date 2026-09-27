@@ -4,9 +4,14 @@
 
 最常见的误解，是把 LLM 想成一个极其庞大的知识数据库。数据库更接近“找到记录并返回”；自回归语言模型则是在已有 token 条件下计算下一个 token 的概率。
 
-~~~text
-已有 token → 神经网络 → 下一个 token 的概率 → 选择 token → 放回上下文 → 继续预测
-~~~
+```mermaid
+flowchart TD
+  A["已有 token"] --> B["神经网络"]
+  B --> C["下一个 token 的概率"]
+  C --> D["选择 token"]
+  D --> E["放回上下文"]
+  E --> A
+```
 
 GPT-3 的研究明确采用自回归语言模型，并展示了 zero-shot、one-shot 与 few-shot 的 in-context learning：不更新模型参数，只给任务说明和少量示例，模型也可能适应新任务。[2]
 
@@ -16,9 +21,10 @@ GPT-3 的研究明确采用自回归语言模型，并展示了 zero-shot、one-
 
 Tokenizer 把文本编码成 token，再映射为整数 ID。token 可能是词、词的一部分、汉字、标点或字节组合，取决于具体 tokenizer。
 
-~~~text
-自然语言 → Tokenizer → Token IDs → 神经网络
-~~~
+```mermaid
+flowchart LR
+  A["自然语言"] --> B["Tokenizer"] --> C["Token IDs"] --> D["神经网络"]
+```
 
 Token 同时影响上下文长度、API 计费、不同语言的编码效率以及推理序列长度。因此“10 万字”和“多少 token”不是同一概念。
 
@@ -32,19 +38,19 @@ Token ID 只是编号。Embedding 矩阵把 token 映射成高维向量。进入
 
 2017 年《Attention Is All You Need》提出 Transformer，以 attention 为核心进行序列建模，并显著提高训练并行性。[1]
 
-~~~text
-Tokens
-  ↓
-Embedding + Position
-  ↓
-Transformer Block × N
-  ├─ Self-Attention
-  ├─ MLP / FFN
-  ├─ Residual
-  └─ Normalization
-  ↓
-Hidden States → LM Head → Logits → Decoding → Next Token
-~~~
+```mermaid
+flowchart TD
+  T["Tokens"] --> E["Embedding + Position"]
+  E --> B["Transformer Block × N"]
+  B -.-> S["Self-Attention"]
+  B -.-> F["MLP / FFN"]
+  B -.-> R["Residual"]
+  B -.-> N["Normalization"]
+  B --> H["Hidden States"] --> L["LM Head"]
+  L --> G["Logits"] --> D["Decoding"] --> O["Next Token"]
+```
+
+虚线表示 Block 包含的主要组成部分，并不表示这些部分各自直接生成答案。
 
 现代模型在 attention、MLP、MoE、normalization、位置机制等方面存在大量差异，因此这是一张原理图，不是所有模型完全相同的实现图。
 
@@ -71,13 +77,11 @@ $$
 
 所以：
 
-~~~text
-Hidden State
-    ↓ Linear Projection
-Logits
-    ↓ Softmax
-Probability Distribution
-~~~
+```mermaid
+flowchart TD
+  H["Hidden State"] -->|"Linear Projection"| L["Logits"]
+  L -->|"Softmax"| P["Probability Distribution"]
+```
 
 ### Temperature 在数学上做了什么？
 
@@ -103,13 +107,12 @@ $$
 
 如果序列有 $n$ 个 token，隐藏维度为 $d_{model}$，可以粗略理解：
 
-~~~text
-X: [n × d_model]
-
-W_Q → Q
-W_K → K
-W_V → V
-~~~
+```mermaid
+flowchart LR
+  X["X：n × d_model"] -->|"W_Q"| Q["Q"]
+  X -->|"W_K"| K["K"]
+  X -->|"W_V"| V["V"]
+```
 
 Attention 的经典公式是：
 
@@ -302,21 +305,13 @@ $$
 
 真实训练通常使用 Adam/AdamW 等优化器、学习率调度、混合精度、梯度裁剪和分布式训练，但底层逻辑仍然是：
 
-~~~text
-Forward
- ↓
-Prediction
- ↓
-Loss
- ↓
-Backpropagation
- ↓
-Gradients
- ↓
-Optimizer
- ↓
-New Parameters
-~~~
+```mermaid
+flowchart TD
+  F["Forward"] --> P["Prediction"] --> L["Loss"]
+  L --> B["Backpropagation"] --> G["Gradients"]
+  G --> O["Optimizer"] --> N["New Parameters"]
+  N --> F
+```
 
 参数不是“参数 10001 = 法国、参数 10002 = 巴黎”这样的知识表。知识、语言规律和计算模式以分布式方式存在于大量权重和运行时激活中。
 
@@ -397,9 +392,11 @@ Pretraining 首先教模型预测文本；用户真正需要的是遵循意图�
 
 InstructGPT 展示了 supervised fine-tuning 加人类反馈训练的一条经典路径，并说明模型更大本身不保证更符合人的意图。[6]
 
-~~~text
-Pretraining → Base Model → Instruction / Preference Training → Assistant Model
-~~~
+```mermaid
+flowchart TD
+  P["Pretraining"] --> B["Base Model"]
+  B --> I["Instruction / Preference Training"] --> A["Assistant Model"]
+```
 
 现代厂商采用的后训练方法更加多样，不能把所有模型都描述为完全相同的 RLHF 流程。
 
@@ -413,12 +410,11 @@ $$
 
 直觉：
 
-~~~text
-更符合偏好
-   ↑
-但不要为了刷奖励
-偏离原模型太远
-~~~
+```mermaid
+flowchart TD
+  R["提高偏好奖励"] --> T["优化策略"]
+  K["KL：限制偏离参考模型"] --> T
+```
 
 DPO 则证明在特定建模假设下，可以绕过显式 reward model + PPO 训练流程，直接从 chosen / rejected 偏好对优化 policy。[10]
 
@@ -438,9 +434,13 @@ LoRA 冻结原模型权重，在部分层加入低秩可训练矩阵，从而大
 
 ## 13. 推理时一句话怎样生成？
 
-~~~text
-Prompt → Tokenizer → Token IDs → Embedding → Transformer × N → Logits → Decoding → 新 token → 循环
-~~~
+```mermaid
+flowchart TD
+  P["Prompt"] --> T["Tokenizer"] --> I["Token IDs"]
+  I --> E["Embedding"] --> B["Transformer × N"]
+  B --> L["Logits"] --> D["Decoding"] --> N["新 token"]
+  N -->|"追加到上下文后继续"| I
+```
 
 Logits 是词表候选的未归一化分数。Temperature、top-p 等 decoding 设置会影响最终选择，所以相同 prompt 不必产生完全相同回答。
 
@@ -458,17 +458,17 @@ LLM serving 常被拆成：
 
 之后每次生成一个新 token，并读取历史 KV cache。
 
-~~~text
-Prompt tokens
-   ↓
-PREFILL
-   ↓
-KV Cache
-   ↓
-token 1
-   ↓
-DECODE → token 2 → DECODE → token 3 ...
-~~~
+```mermaid
+flowchart TD
+  P["Prompt tokens"] --> F["Prefill"]
+  F --> C["建立 KV Cache"]
+  F --> T["生成 token 1"]
+  T --> D["Decode"]
+  C -->|"读取缓存"| D
+  D --> N["生成下一个 token"]
+  D -->|"追加 K/V"| C
+  N --> D
+```
 
 Decode 每一步处理的新 token 很少，却需要反复读取大量模型权重与 KV cache，因此经常更受 memory bandwidth 影响。
 
@@ -483,11 +483,13 @@ Decode 每一步处理的新 token 很少，却需要反复读取大量模型权
 
 Attention 中历史 token 的 Key 和 Value 可以缓存，生成新 token 时复用，这就是 KV cache 的基本思想。
 
-~~~text
-历史 token → K / V → Cache
-                       ↑
-新 token → Query ──────┘
-~~~
+```mermaid
+flowchart LR
+  H["历史 token"] --> K["K / V"] --> C["KV Cache"]
+  N["新 token"] --> Q["Query"]
+  C --> A["Attention 读取"]
+  Q --> A
+```
 
 它显著加速生成，但上下文越长，缓存通常也越大，所以 context window 同时是算法和系统工程问题。
 
@@ -562,15 +564,12 @@ $$
 
 Speculative decoding 的核心是让更便宜的 draft model 先提出多个候选 token，再由 target model 并行验证；如果设计正确，可以保持目标模型分布不变，同时减少昂贵模型逐 token 串行等待。
 
-~~~text
-Draft Model
-  ↓ 猜 K 个 tokens
-Target Model
-  ↓ 一次验证
-Accept / Reject
-  ↓
-继续生成
-~~~
+```mermaid
+flowchart TD
+  D["Draft Model"] -->|"提出 K 个候选 tokens"| T["Target Model"]
+  T -->|"并行验证"| A["Accept / Reject"]
+  A --> C["继续生成"]
+```
 
 这说明“模型数学能力”和“用户看到的生成速度”是两层问题：同一组权重可以通过不同 serving 算法得到不同延迟。
 
@@ -614,11 +613,18 @@ Inference / Test-time Compute
 
 ## 17. RAG、工具和 Agent 都不是 LLM 本体
 
-~~~text
-RAG:   Question → Search → Evidence → LLM → Answer
-Tool:  LLM → Tool/API → Result → LLM
-Agent: Goal → Model → Action → Environment → Observation → Model
-~~~
+```mermaid
+flowchart TD
+  subgraph rag["RAG"]
+    Q["Question"] --> S["Search"] --> E["Evidence"] --> L["LLM"] --> A["Answer"]
+  end
+  subgraph tool["Tool"]
+    M["LLM"] --> T["Tool / API"] --> R["Result"] --> M
+  end
+  subgraph agent["Agent"]
+    G["Goal"] --> P["Model"] --> X["Action"] --> V["Environment"] --> O["Observation"] --> P
+  end
+```
 
 RAG 增加外部信息；Tool 增加外部行动能力；Agent 增加循环执行和状态管理。**LLM 是模型层；RAG、Tool、Agent 是系统层。**
 
@@ -726,40 +732,33 @@ Mechanistic interpretability 已经能够发现部分 circuits、heads 与 featu
 
 ## 20. 把 LLM 压缩成一张图
 
-~~~text
-文本 / 代码
-    ↓
-Tokenizer → Tokens → Embedding + Position
-    ↓
-Transformer × N
-Attention + MLP + Residual + Norm
-    ↓
-Hidden Representation → LM Head → Logits
-    ↓
-Decoding → Next Token → 循环
-~~~
+```mermaid
+flowchart TD
+  T["文本 / 代码"] --> K["Tokenizer"] --> I["Tokens"] --> E["Embedding + Position"]
+  E --> B["Transformer × N：Attention / MLP / Residual / Norm"]
+  B --> H["Hidden Representation"] --> M["LM Head"] --> L["Logits"]
+  L --> D["Decoding"] --> N["Next Token"]
+  N -->|"追加到上下文"| I
+```
 
 LLM 的“魔法”最终可以拆回六层：
 
-~~~text
-1. Representation
-   Token / Embedding / Position
-
-2. Computation
-   Attention / MLP / MoE / Residual
-
-3. Learning
-   Cross-Entropy / Backprop / Optimizer / Scaling
-
-4. Alignment
-   SFT / Preference Optimization / RL
-
-5. Inference
-   Prefill / KV Cache / Decode / Sampling / Quantization
-
-6. System
-   RAG / Tool / Agent / Serving / Verification
-~~~
+```mermaid
+mindmap
+  root((LLM))
+    Representation
+      Token / Embedding / Position
+    Computation
+      Attention / MLP / MoE / Residual
+    Learning
+      Cross-Entropy / Backprop / Optimizer / Scaling
+    Alignment
+      SFT / Preference Optimization / RL
+    Inference
+      Prefill / KV Cache / Decode / Sampling / Quantization
+    System
+      RAG / Tool / Agent / Serving / Verification
+```
 
 所以 LLM 既不是“一个概率鹦鹉”这么简单，也不是无法解释的魔法黑箱。
 

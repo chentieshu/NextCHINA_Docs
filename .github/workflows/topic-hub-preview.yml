@@ -1,0 +1,35 @@
+name: Verify topic hub implementation
+on:
+  push:
+    branches: [work/topic-hubs-implementation]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: topic-hub-implementation
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Existing document and topic navigation tests
+        run: npm run test:browser
+      - name: Production bundles and Worker tests
+        run: npm run test:production
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: topic-hub-browser-report
+          path: |
+            test-results/
+            test-results-production/
+          retention-days: 7

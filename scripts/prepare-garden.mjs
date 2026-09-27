@@ -3,22 +3,21 @@ import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { loadGarden, repositoryRoot } from './validate-garden.mjs';
+import { attachTopicHubs } from './build-topic-hubs.mjs';
 
-// Build-time derivatives only. GitHub MD/JSON remains the sole knowledge source.
-const { blueprint, graph } = loadGarden();
-if (graph.unmappedArticleIds.length) throw new Error(`Unmapped reading pages: ${graph.unmappedArticleIds.join(', ')}`);
+// Canonical MD/JSON -> checked graph + topic-navigation overlay, never stored facts twice.
+const { blueprint, graph: base, publishedArticleIds } = loadGarden();
+if (base.unmappedArticleIds.length) throw new Error(`Unmapped reading pages: ${base.unmappedArticleIds.join(', ')}`);
+const graph = attachTopicHubs(base, repositoryRoot, publishedArticleIds);
 const questions = new Map(blueprint.domains.map(domain => [`domain:${domain.id}`, domain.question]));
 const output = { ...graph, groups: blueprint.groups, scopeNote: blueprint.scopeNote,
   viewPolicy: blueprint.viewPolicy,
-  nodes: graph.nodes.map(node => ({ ...node, summary: questions.get(node.id) ?? null })) };
+  nodes: graph.nodes.map(node => ({ ...node, summary: node.summary ?? questions.get(node.id) ?? null })) };
 const destination = path.join(repositoryRoot, 'src/generated');
 mkdirSync(destination, { recursive: true });
 writeFileSync(path.join(destination, 'garden.json'), JSON.stringify(output) + '\n');
 
-// ELK's standalone worker sets up its own message protocol. Importing the combined
-// browser bundle inside another Worker changes its exports (upstream elkjs #141).
-// Copy the installed, pinned official worker unchanged as a same-origin asset;
-// only the small elk-api wrapper runs on the main thread. Hash prevents stale code.
+// Use ELK's unchanged, same-origin standalone Worker and a content-addressed filename.
 const require = createRequire(import.meta.url);
 const bytes = readFileSync(require.resolve('elkjs/lib/elk-worker.min.js'));
 const hash = createHash('sha256').update(bytes).digest('hex').slice(0, 12);

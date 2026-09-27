@@ -18,9 +18,10 @@
     "test:data": "node scripts/validate-research.mjs",
     "test:markdown": "node scripts/validate-markdown.mjs",
     "test:garden": "node scripts/validate-garden.mjs && node scripts/test-garden.mjs",
+    "test:hubs": "node scripts/test-topic-hubs.mjs",
     "test:browser": "playwright test",
     "test:production": "playwright test --config=playwright.production.config.ts",
-    "validate": "npm run test:data && npm run test:garden && npm run test:markdown && npm run lint"
+    "validate": "npm run test:data && npm run test:garden && npm run test:hubs && npm run test:markdown && npm run lint"
   },
   "dependencies": {
     "@tailwindcss/vite": "4.3.3",

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "outlineSource": "content/garden/plans/topic-hubs-v2.json",
+  "stage": "llm-outline-and-resource-navigation",
+  "note": "v2 文件保留为审定大纲；本文件控制实际接入。导航上线不升级知识或事实核验状态。其他专题只接入已有资源分支，不从 profile 生成空目录。",
+  "enabledHubs": ["hub:ai-overview","hub:llm","hub:vlm","hub:embedding","hub:image-generation","hub:video","hub:audio","hub:music","hub:spatial","hub:world-models","hub:rag","hub:agents","hub:coding","hub:assistants","hub:platforms","hub:video-production","hub:evidence","hub:transformer"],
+  "sectionLabels": {
+    "orientation":"基础与认识","math":"表示与数学","mechanisms":"架构与内部计算","training":"数据、训练与后训练","inference":"推理、部署与优化","rankings":"能力、评测与榜单","models":"模型、版本与演化","pricing":"API、价格与成本","applications":"应用、产品与系统","tutorials":"教程、实验与案例","safety":"边界、安全与治理","research":"论文、证据与研究进展","products":"产品与平台","sources":"来源与更新","workflow":"制作流程"
+  },
+  "sectionDescriptions": {
+    "orientation":"先厘清模型、聊天产品、训练和推理的区别，再按目标选择阅读路线。",
+    "math":"从 Token 到向量、概率和梯度。通用概念只有一个规范节点，分支引用它而不复制正文。",
+    "mechanisms":"沿模型结构进入 Attention、QKV、位置机制、MLP 与 MoE，并继续拆到计算步骤。",
+    "training":"组织数据、训练循环、后训练和适配；资料入口与待写问题分别呈现。",
+    "inference":"从请求到 Token 输出，分开讨论生成过程、缓存、调度、优化和部署条件。",
+    "rankings":"人类偏好、综合指标和 Agent 系统评测分组呈现；保留原始快照和条件，不生成混合总榜。",
+    "models":"先保留来源中的名称与记录，精确版本映射待核验。名称相似不意味着是同一模型。",
+    "pricing":"报价来自原有 JSON；API、产品订阅和任务成本分开。目录调整不会刷新价格核验日期。",
+    "applications":"在 LLM 专题内连接助手、编程、RAG、Agent 和平台；产品目录不是模型绑定证明。",
+    "tutorials":"按操作目标组织教程和实验。数值样例与独立教程尚未全部完成。",
+    "safety":"模型输出、数据权利和系统执行的边界分别讨论；未写完的内容不视为已验证指南。",
+    "research":"连接论文、机制、复现与证据维护，区分厂商声明、实验结果和编辑判断。"
+  },
+  "resourcePlacements": [
+    {"hubId":"hub:llm","path":"applications/assistants","articleId":"catalog-text","role":"related-task-catalogue-not-model-binding"},
+    {"hubId":"hub:llm","path":"applications/coding","articleId":"catalog-code","role":"related-task-catalogue-not-model-binding"},
+    {"hubId":"hub:llm","path":"applications/agents","articleId":"agent-products","role":"existing-products-and-frameworks"},
+    {"hubId":"hub:llm","path":"applications/integration","articleId":"catalog-platform","role":"existing-product-catalogue"},
+    {"hubId":"hub:llm","path":"research/updates","articleId":"sources-and-gaps","role":"existing-maintenance-reference"}
+  ]
+}

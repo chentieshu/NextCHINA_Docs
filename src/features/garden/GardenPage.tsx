@@ -21,7 +21,7 @@ export default function GardenPage({ route, chapters, isLight, navigate, onRead,
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const input = useRef<HTMLInputElement>(null);
   const scope = byId.get(route.scopeId);
-  const selected = route.nodeId ? byId.get(route.nodeId) : undefined;
+  const selected = scope && route.nodeId ? byId.get(route.nodeId) : undefined;
   const listMode = route.display === 'list' || (route.display === 'auto' && narrow);
   const projection = useMemo(() => project(route.scopeId, route.mode, listMode ? Number.MAX_SAFE_INTEGER : narrow ? 50 : 150), [route.scopeId, route.mode, listMode, narrow]);
   const matchNodes = useMemo(() => searchNodes(query), [query]);
@@ -50,8 +50,9 @@ export default function GardenPage({ route, chapters, isLight, navigate, onRead,
     timer.current = setTimeout(() => setCopyState(''), 2400);
   };
   const invalid = !scope || (route.nodeId !== null && !selected);
-  return <main className="garden-root" data-theme={isLight ? 'light' : 'dark'} data-inspector={Boolean(selected)} aria-label="AI 知识花园">
-    <div className="garden-workspace" inert={Boolean(selected && modalInspector)}>
+  const showInspector = Boolean(selected && !invalid);
+  return <main className="garden-root" data-theme={isLight ? 'light' : 'dark'} data-inspector={showInspector} aria-label="AI 知识花园">
+    <div className="garden-workspace" inert={showInspector && modalInspector}>
       <header className="garden-header">
         <div className="garden-brand"><Compass /><div><h1>AI 知识花园</h1><span>NEXTCHINA / EXPLORE</span></div></div>
         <div className="garden-search"><Search /><input ref={input} type="search" value={query}

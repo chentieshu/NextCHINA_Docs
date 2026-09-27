@@ -131,9 +131,9 @@ export default function App() {
             <p className="text-sm sm:text-base leading-relaxed opacity-65">{activeChapter.subtitle}</p>
           </div>
           <MarkdownRenderer content={activeChapter.content} isLight={isLight} />
-          <div className="mt-10 sm:mt-12 pt-5 sm:pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
-            {prevChapter ? <button onClick={() => openArticle(prevChapter.id)} className={`w-full sm:w-auto flex items-center gap-3 p-3.5 rounded-xl text-left ${isLight ? 'bg-[#f5f5f8]' : 'bg-[#242428]'}`}><ArrowLeft className="h-4 w-4" /><div><div className="text-[10px] uppercase font-mono opacity-45">上一章</div><div className="text-xs font-medium line-clamp-1">{prevChapter.title}</div></div></button> : <div />}
-            {nextChapter ? <button onClick={() => openArticle(nextChapter.id)} className={`w-full sm:w-auto flex items-center gap-3 p-3.5 rounded-xl text-right ${isLight ? 'bg-[#eeeff2]' : 'bg-[#2a2a30]'}`}><div><div className="text-[10px] uppercase font-mono opacity-45">下一章</div><div className="text-xs font-medium line-clamp-1">{nextChapter.title}</div></div><ArrowRight className="h-4 w-4" /></button> : <div />}
+          <div className={`mt-9 sm:mt-11 pt-5 sm:pt-6 border-t flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 ${isLight ? 'border-[#ececf0]' : 'border-[#2b2b30]'}`}>
+            {prevChapter ? <button onClick={() => openArticle(prevChapter.id)} className={`w-full sm:w-auto sm:max-w-[48%] min-w-0 flex items-center gap-3 p-3.5 rounded-xl text-left ${isLight ? 'bg-[#f5f5f8]' : 'bg-[#242428]'}`}><ArrowLeft className="h-4 w-4 shrink-0" /><div className="min-w-0"><div className="text-[10px] uppercase font-mono opacity-45">上一章</div><div className="text-xs font-medium line-clamp-1">{prevChapter.title}</div></div></button> : <div />}
+            {nextChapter ? <button onClick={() => openArticle(nextChapter.id)} className={`w-full sm:w-auto sm:max-w-[48%] min-w-0 flex items-center gap-3 p-3.5 rounded-xl text-right ${isLight ? 'bg-[#eeeff2]' : 'bg-[#2a2a30]'}`}><div className="min-w-0"><div className="text-[10px] uppercase font-mono opacity-45">下一章</div><div className="text-xs font-medium line-clamp-1">{nextChapter.title}</div></div><ArrowRight className="h-4 w-4 shrink-0" /></button> : <div />}
           </div>
         </div>
       </main> : null}

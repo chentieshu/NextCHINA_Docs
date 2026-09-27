@@ -1,8 +1,10 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync, readdirSync, unlinkSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { loadGarden, repositoryRoot } from './validate-garden.mjs';
 
-// Build-time derivative only. GitHub MD/JSON remains the sole knowledge source.
+// Build-time derivatives only. GitHub MD/JSON remains the sole knowledge source.
 const { blueprint, graph } = loadGarden();
 if (graph.unmappedArticleIds.length) throw new Error(`Unmapped reading pages: ${graph.unmappedArticleIds.join(', ')}`);
 const questions = new Map(blueprint.domains.map(domain => [`domain:${domain.id}`, domain.question]));
@@ -12,4 +14,20 @@ const output = { ...graph, groups: blueprint.groups, scopeNote: blueprint.scopeN
 const destination = path.join(repositoryRoot, 'src/generated');
 mkdirSync(destination, { recursive: true });
 writeFileSync(path.join(destination, 'garden.json'), JSON.stringify(output) + '\n');
-console.log(JSON.stringify({ status: 'pass', generated: 'src/generated/garden.json', ...graph.stats }));
+
+// ELK's standalone worker sets up its own message protocol. Importing the combined
+// browser bundle inside another Worker changes its exports (upstream elkjs #141).
+// Copy the installed, pinned official worker unchanged as a same-origin asset;
+// only the small elk-api wrapper runs on the main thread. Hash prevents stale code.
+const require = createRequire(import.meta.url);
+const bytes = readFileSync(require.resolve('elkjs/lib/elk-worker.min.js'));
+const hash = createHash('sha256').update(bytes).digest('hex').slice(0, 12);
+const assetDirectory = path.join(repositoryRoot, 'public/garden-generated');
+mkdirSync(assetDirectory, { recursive: true });
+const filename = `layout.worker-${hash}.js`;
+for (const file of readdirSync(assetDirectory)) {
+  if (/^layout\.worker-[a-f0-9]+\.js$/.test(file) && file !== filename) unlinkSync(path.join(assetDirectory, file));
+}
+writeFileSync(path.join(assetDirectory, filename), bytes);
+writeFileSync(path.join(destination, 'garden-worker.json'), JSON.stringify({ file: `garden-generated/${filename}`, hash }) + '\n');
+console.log(JSON.stringify({ status: 'pass', generated: 'src/generated/garden.json', worker: filename, ...graph.stats }));

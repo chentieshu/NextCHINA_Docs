@@ -92,14 +92,14 @@ export default function App() {
     : 'bg-[#18181b] text-[#cfcfd5] selection:bg-[#34343a] selection:text-[#ececf0]';
 
   if (view.kind === 'home') {
-    return <div id="nextchina-docs-root" className={`min-h-screen ${themeClasses}`}>
+    return <div id="nextchina-docs-root" className={`min-h-dvh ${themeClasses}`}>
       <DocsHome spaces={DOC_SPACES} chapters={ALL_CHAPTERS} isLight={isLight} onEnter={enterDocs} />
     </div>;
   }
 
   if (!activeSpace) return null;
 
-  return <div id="nextchina-docs-root" className={`min-h-screen ${themeClasses} transition-colors duration-200`}>
+  return <div id="nextchina-docs-root" className={`min-h-dvh ${themeClasses} transition-colors duration-200`}>
     {activeChapter && <DocHeader currentChapter={activeChapter} isLight={isLight} onToggleTheme={() => setIsLight(value => !value)}
       isSidebarOpen={isSidebarOpen} onToggleSidebar={() => setIsSidebarOpen(value => !value)}
       onOpenMobileMenu={() => setIsMobileMenuOpen(true)} onOpenSearch={() => setIsSearchOpen(true)} />}
@@ -112,7 +112,7 @@ export default function App() {
       spaces={DOC_SPACES} activeSpaceId={activeSpace.id} onSelectSpace={enterDocs} isDesktop={isDesktop} />
 
     <motion.div
-      className="min-h-screen pt-11 min-w-0"
+      className="min-h-dvh pt-11 min-w-0"
       initial={false}
       animate={{
         marginLeft: isDesktop && isSidebarOpen ? desktopSidebarWidth : '0px',
@@ -120,7 +120,7 @@ export default function App() {
       }}
       transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 360, damping: 38, mass: 0.8 }}
     >
-      {activeChapter ? <main className="w-full min-w-0 px-4 sm:px-6 lg:px-6 xl:px-8 2xl:px-10 py-6 sm:py-8 lg:py-10 flex justify-center">
+      {activeChapter ? <main className="docs-article-main w-full min-w-0 px-4 sm:px-6 lg:px-6 xl:px-8 2xl:px-10 pt-6 sm:pt-8 lg:pt-10 pb-4 sm:pb-6 lg:pb-8 flex justify-center">
         <div className="w-full min-w-0 max-w-[820px]">
           <div className="pb-5 sm:pb-6 mb-5 sm:mb-7">
             <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -131,7 +131,7 @@ export default function App() {
             <p className="text-sm sm:text-base leading-relaxed opacity-65">{activeChapter.subtitle}</p>
           </div>
           <MarkdownRenderer content={activeChapter.content} isLight={isLight} />
-          <div className="mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="mt-10 sm:mt-12 pt-5 sm:pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
             {prevChapter ? <button onClick={() => openArticle(prevChapter.id)} className={`w-full sm:w-auto flex items-center gap-3 p-3.5 rounded-xl text-left ${isLight ? 'bg-[#f5f5f8]' : 'bg-[#242428]'}`}><ArrowLeft className="h-4 w-4" /><div><div className="text-[10px] uppercase font-mono opacity-45">上一章</div><div className="text-xs font-medium line-clamp-1">{prevChapter.title}</div></div></button> : <div />}
             {nextChapter ? <button onClick={() => openArticle(nextChapter.id)} className={`w-full sm:w-auto flex items-center gap-3 p-3.5 rounded-xl text-right ${isLight ? 'bg-[#eeeff2]' : 'bg-[#2a2a30]'}`}><div><div className="text-[10px] uppercase font-mono opacity-45">下一章</div><div className="text-xs font-medium line-clamp-1">{nextChapter.title}</div></div><ArrowRight className="h-4 w-4" /></button> : <div />}
           </div>

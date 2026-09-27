@@ -46,7 +46,7 @@ reject(p=>p.hubOutlines['hub:llm'].push(structuredClone(p.hubOutlines['hub:llm']
 reject((p,c)=>c.resourcePlacements.push({hubId:'hub:llm',path:'missing',articleId:'overview',role:'test'}));
 reject((p,c)=>c.resourcePlacements.push({hubId:'hub:llm',path:'orientation',articleId:'missing',role:'test'}));
 reject((p,c,d)=>d['content/data/benchmarks.json'].benchmarks=[]);
-const report={status:'pass',suite:'topic-hub-navigation',...result.stats,mappedResources:mapped.size,negativeCases:negatives,canonicalConceptsUnchanged:true,factDatesUnchanged:true,independentArticlesAdded:0};
+const report={status:'pass',suite:'topic-hub-navigation',...result.stats,mappedResources:mapped.size,negativeCases:negatives,canonicalConceptsUnchanged:true,factDatesUnchanged:true};
 mkdirSync(path.join(repositoryRoot,'test-results'),{recursive:true});
 writeFileSync(path.join(repositoryRoot,'test-results/topic-hubs-contract.json'),JSON.stringify(report,null,2));
 console.log(JSON.stringify(report,null,2));

@@ -1,0 +1,20 @@
+name: Verify responsive table redesign
+on:
+  push:
+    branches: [work/table-responsive-redesign]
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - run: git archive --format=zip --output=/tmp/table-responsive-source.zip HEAD
+      - uses: actions/upload-artifact@v4
+        with:
+          name: table-responsive-source
+          path: /tmp/table-responsive-source.zip
+          retention-days: 1

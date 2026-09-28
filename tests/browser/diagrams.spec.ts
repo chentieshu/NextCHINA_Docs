@@ -79,28 +79,16 @@ test('bad diagram recovers after source update; theme rerender remains usable', 
 });
 
 for (const width of [390, 1440]) {
-  test(`application custom controls / ${width}px`, async ({ page }) => {
+  test(`unified workspace custom controls / ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/');
-    await page.getByRole('button', { name: '进入文档' }).click();
-    if (width < 1024) await page.getByRole('button', { name: '切换侧边栏' }).click();
-    const trigger = page.getByRole('button', { name: '切换文档大分类' });
-    await trigger.click();
-    const list = page.getByRole('listbox', { name: '文档大分类' });
-    await expect(list).toBeFocused();
-    await list.press('ArrowDown');
-    await list.press('Escape');
-    await expect(trigger).toBeFocused();
-    await trigger.click();
-    await list.press('End');
-    await list.press('Enter');
+    if (width < 960) await page.getByRole('button', { name: '打开文档侧栏', exact: true }).click();
+    await page.getByRole('button', { name: '全库搜索', exact: true }).click();
+    await page.getByRole('searchbox', { name: '搜索全部文档', exact: true }).fill('苹果风格');
+    await page.locator('.ws-search-results button').first().click();
     await expect(page.getByRole('heading', { level: 1, name: '苹果风格高端产品视频制作框架' })).toBeVisible();
-    await page.getByRole('button', { name: '切换为暗黑模式' }).click();
-    await page.getByRole('button', { name: '搜索文档' }).click();
-    await expect(page.getByRole('dialog', { name: '搜索 NextCHINA AI 调研库' })).toBeVisible();
+    await page.getByRole('button', { name: '切换为暗黑模式', exact: true }).and(page.locator(':visible')).click();
     await checkFlatLayout(page);
-    await page.getByRole('textbox', { name: '搜索关键词' }).press('Escape');
-    await expect(page.getByRole('dialog', { name: '搜索 NextCHINA AI 调研库' })).toHaveCount(0);
   });
 }
 

@@ -4,10 +4,13 @@ on:
     branches: [work/unified-knowledge-workspace]
 permissions:
   contents: read
+concurrency:
+  group: workspace-preview
+  cancel-in-progress: true
 jobs:
-  prepare:
+  verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
         with:
@@ -17,10 +20,19 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --no-audit --no-fund
-      - name: Archive installed build dependencies without credentials
-        run: tar -czf /tmp/nextchina-workspace-deps.tgz node_modules src/generated public/garden-generated
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Verify workspace interactions before full regression
+        run: npx playwright test tests/browser/workspace.spec.ts
+      - name: Verify all Markdown and diagram rendering
+        run: npm run test:browser
+      - name: Verify production workspace and layout worker
+        run: npm run test:production
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: nextchina-workspace-deps
-          path: /tmp/nextchina-workspace-deps.tgz
-          retention-days: 1
+          name: workspace-ux-verification
+          path: |
+            test-results/
+            test-results-production/
+          retention-days: 7

@@ -14,15 +14,14 @@ type FlowNode = Node<{ item: KnowledgeNode; inspect: (id: string) => void; expan
 const KnowledgeCard = memo(function KnowledgeCard({ data, selected }: NodeProps<FlowNode>) {
   const { item, inspect, expand, isScope } = data;
   const count = childrenById.get(item.id)?.length ?? 0;
-  // Read-only RF wrappers need explicit pointer events on their semantic controls.
   return <div className="garden-node nopan" style={{ pointerEvents: 'auto' }} data-active={selected} data-scope={isScope} data-kind={item.kind}>
     <Handle type="target" position={Position.Left} isConnectable={false} />
     <button type="button" className="garden-node-main nodrag" onClick={() => inspect(item.id)} aria-label={`查看 ${item.label}`}>
-      <span className="garden-node-kicker">{kindLabel[item.kind]} <span>{item.articleBindings.length ? '有阅读入口' : '待完善'}</span></span>
+      <span className="garden-node-kicker">{kindLabel[item.kind]} <span>{item.kind === 'document' ? '可阅读' : item.articleBindings.length ? '有资料' : '知识目录'}</span></span>
       <strong>{item.label}</strong>
     </button>
-    <div className="garden-node-bottom"><span>{count ? `${count} 个下级主题` : '知识框架条目'}</span>
-      <button type="button" className="nodrag" onClick={() => expand(item.id)} aria-label={`${count ? '展开' : '探索关联'} ${item.label}`}>{count ? '展开 →' : '关联 →'}</button>
+    <div className="garden-node-bottom"><span>{item.kind === 'document' ? '规范文档' : count ? `${count} 个下级主题` : '知识框架'}</span>
+      <button type="button" className="nodrag" onClick={() => expand(item.id)} aria-label={`${count ? '展开' : '探索关联'} ${item.label}`}>{item.kind === 'document' ? '阅读 →' : count ? '展开 →' : '关联 →'}</button>
     </div>
     <Handle type="source" position={Position.Right} isConnectable={false} />
   </div>;
@@ -61,8 +60,6 @@ export default function GardenCanvas({ projection, selectedId, scopeId, isLight,
     markerEnd: edge.type === 'related' ? undefined : { type: MarkerType.ArrowClosed, color: 'var(--garden-edge)' },
     style: { stroke: 'var(--garden-edge)', strokeWidth: 1.3, strokeDasharray: edge.type === 'related' ? '5 5' : undefined },
     labelStyle: { fill: 'var(--ui-muted)', fontSize: 11 }, labelBgStyle: { fill: 'var(--ui-panel)' } })), [projection]);
-  // A tall topic must not force every card into tiny text. Start at a readable
-  // neighborhood; the explicit fit button is the user's whole-subgraph overview.
   const scope = projection.nodes.find(node => node.id === scopeId);
   const firstFocus = selectedId ?? (scope?.kind === 'concept' ? scopeId : projection.nodes.find(node => node.id !== scopeId)?.id ?? scopeId);
   const initialFitNodes = projection.atlas ? undefined : narrow ? [{ id: firstFocus }] : projection.nodes.slice(0, 4).map(node => ({ id: node.id }));

@@ -5,17 +5,33 @@ on:
 permissions:
   contents: read
 jobs:
-  snapshot:
+  audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - name: Archive tracked source only
-        run: git archive --format=zip --output=/tmp/markdown-layout-source.zip HEAD
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Capture actual Markdown baseline
+        run: |
+          npm run dev -- --host 127.0.0.1 > /tmp/vite.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:3000/ >/dev/null && break || sleep 1; done
+          node scripts/audit-markdown-layout.mjs
       - uses: actions/upload-artifact@v4
         with:
-          name: markdown-layout-source
-          path: /tmp/markdown-layout-source.zip
+          name: markdown-layout-baseline
+          path: test-results/layout-audit/
+          retention-days: 7
+      - name: Prepare isolated test browser
+        run: tar -czf /tmp/layout-test-browser.tgz -C ~/.cache/ms-playwright chromium_headless_shell-1193
+      - uses: actions/upload-artifact@v4
+        with:
+          name: layout-test-browser
+          path: /tmp/layout-test-browser.tgz
           retention-days: 1

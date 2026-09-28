@@ -47,7 +47,7 @@ test('one explorer covers every published document and preserves canonical owner
     if (entry.articleId) expect(model.documents.has(entry.articleId)).toBe(true);
   }
   const global=graphProjection('root:ai',model);
-  expect(global.nodes.filter(node=>node.kind==='document')).toHaveLength(chapters.length);
+  expect(global.nodes.filter(node=>node.kind==='document')).toHaveLength(0);
   expect(global.edges.every(edge=>global.nodes.some(node=>node.id===edge.source)&&global.nodes.some(node=>node.id===edge.target))).toBe(true);
   expect(safeGardenReturn('https://evil.example')).toBeUndefined();
   expect(safeGardenReturn('?view=article&article=bad')).toBeUndefined();
@@ -80,7 +80,7 @@ for (const width of [320,390,768,1024,1280,1440,1920]) for (const theme of ['lig
   });
 }
 
-test('root immediately reads a document; search opens documents in the same shell and deduplicates tabs', async ({page}) => {
+test('root immediately reads a document; search replaces the current document in the same shell', async ({page}) => {
   await page.goto('/');
   await expect(page.locator('.ws-scroll .markdown-body')).toBeVisible();
   await expect(page.getByRole('button',{name:'进入文档',exact:true})).toHaveCount(0);
@@ -89,13 +89,11 @@ test('root immediately reads a document; search opens documents in the same shel
   await expect(page.locator('[data-document="llm-tokenization"]')).toBeVisible();
   await searchDoc(page,'KV Cache');
   await expect(page.locator('[data-document="llm-kv-cache"]')).toBeVisible();
-  const count = await page.getByRole('tab').count();
   await searchDoc(page,'Token 与分词');
-  expect(await page.getByRole('tab').count()).toBe(count);
+  await expect(page.locator('[data-document="llm-tokenization"]')).toBeVisible();
+  expect(await page.getByRole('tab').count()).toBe(0);
   expect(await shell?.evaluate(el=>el.isConnected)).toBe(true);
-  await page.getByRole('button',{name:/关闭标签.*Token 与分词/}).click();
-  await expect(page.locator('.ws-scroll .markdown-body')).toBeVisible();
-  await page.getByRole('tab',{name:/KV Cache/}).click();
+  await page.goBack();
   await expect(page.locator('[data-document="llm-kv-cache"]')).toBeVisible();
   await page.reload();
   await expect(page.locator('[data-document="llm-kv-cache"]')).toBeVisible();
@@ -110,7 +108,8 @@ test('tree keyboard, directory navigation, active file reveal and read scroll re
   await page.keyboard.press('ArrowRight');await page.keyboard.press('ArrowRight');
   const before=await page.locator('.ws-scroll').evaluate(el=>{el.scrollTop=480;return el.scrollTop});
   await searchDoc(page,'Softmax 与温度');
-  await page.getByRole('tab',{name:/Token 与分词/}).click();
+  await page.goBack();
+  await expect(page.locator('[data-document="llm-tokenization"]')).toBeVisible();
   await expect.poll(()=>page.locator('.ws-scroll').evaluate(el=>el.scrollTop)).toBe(before);
   await page.getByRole('button',{name:'折叠所有目录'}).click();
   await page.getByRole('button',{name:'定位当前文档'}).click();
@@ -140,7 +139,7 @@ test('old topic links open the same reader; rankings and pricing keep original c
   }
 });
 
-test('graph is a main-pane tab and can open a document without replacing explorer',async({page})=>{
+test('graph is a main-pane view and can open a document without replacing explorer',async({page})=>{
   await page.goto(articleURL('llm-tokenization'));
   await page.getByRole('button',{name:'查看当前关系图'}).click();
   await expect(page.locator('.garden-canvas')).toHaveAttribute('data-layout','ready');
@@ -149,8 +148,8 @@ test('graph is a main-pane tab and can open a document without replacing explore
   await bounds(page);
   await page.getByRole('button',{name:/查看 Token 与分词/}).click();
   await expect(page.locator('[data-document="llm-tokenization"]')).toBeVisible();
-  await expect(page.getByRole('tab',{name:/关系图/})).toHaveCount(1);
-  await page.getByRole('tab',{name:/关系图/}).click();
+  expect(await page.getByRole('tab').count()).toBe(0);
+  await page.getByRole('button',{name:'查看当前关系图'}).click();
   await expect(page.locator('.garden-canvas')).toHaveAttribute('data-layout','ready');
   await page.reload();await expect(page.locator('.garden-canvas')).toHaveAttribute('data-layout','ready');
 });
@@ -189,9 +188,3 @@ for (const width of [390, 1440]) test(`Markdown diagrams paint inside workspace 
   await bounds(page);
 });
 
-test('closing last tab retains a usable guide tab', async({page})=>{
-  await page.goto('/');await expect(page.getByRole('tab')).toHaveCount(1);
-  await page.locator('.ws-tab-close').click();
-  await expect(page.getByRole('tab')).toHaveCount(1);
-  await expect(page.locator('.ws-scroll .markdown-body')).toBeVisible();
-});

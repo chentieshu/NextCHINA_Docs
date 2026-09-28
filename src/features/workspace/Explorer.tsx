@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronRight, FileText, Folder, FolderOpen, Search, ChevronsDownUp, Crosshair, X, Network } from 'lucide-react';
+import { ChevronRight, FileText, Folder, FolderOpen, Search, ChevronsDownUp, Crosshair, X } from 'lucide-react';
 import type { AppRoute } from '../../routing';
 import { activeEntry, documentRoute, folderRoute, type ExplorerModel, type Entry } from './model';
 interface Props { model: ExplorerModel; route: AppRoute; onOpen: (route: AppRoute) => void; searchMode: boolean; onSearchMode: (value: boolean) => void; onClose: () => void; mobile: boolean; }
@@ -47,7 +47,9 @@ export function Explorer({ model, route, onOpen, searchMode, onSearchMode, onClo
   const results = useMemo(() => {
     const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
     if (!terms.length) return [];
-    return [...model.documents.values()].filter(article => terms.every(term => `${article.title} ${article.tags.join(' ')} ${article.content}`.toLocaleLowerCase().includes(term)));
+    const score = (title: string) => terms.filter(term => title.toLocaleLowerCase().includes(term)).length;
+    return [...model.documents.values()].filter(article => terms.every(term => `${article.title} ${article.tags.join(' ')} ${article.content}`.toLocaleLowerCase().includes(term)))
+      .sort((a,b) => score(b.title)-score(a.title));
   }, [query, model]);
   const reveal = () => { if (!current) return; setExpanded(previous => new Set([...previous, ...model.parents(current)])); setFocusId(current); onSearchMode(false); requestAnimationFrame(() => focus(current)); };
   const tabbable = visible.some(row => row.entry.id === focusId) ? focusId : visible[0]?.entry.id;

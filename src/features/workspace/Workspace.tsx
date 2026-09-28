@@ -6,7 +6,7 @@ import { useAppRoute, readRoute, routeUrl, type AppRoute } from '../../routing';
 import { byId } from '../garden/data';
 import { useMedia } from '../garden/useMedia';
 import { LazyBoundary } from '../../components/LazyBoundary';
-import { buildExplorer, routeKey, routeTitle, routeContext, documentRoute, folderRoute, isGraphRoute, activeEntry } from './model';
+import { buildExplorer, routeTitle, routeContext, documentRoute, folderRoute, isGraphRoute, activeEntry } from './model';
 import { useWorkspaceTabs, useOverlayFocus, useTheme } from './useWorkspace';
 import { Explorer } from './Explorer';
 import { WorkspaceContent, RelatedContent, currentDocument } from './Content';
@@ -71,7 +71,7 @@ export default function Workspace() {
   const handleLink = (event: React.MouseEvent) => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const anchor = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[href]');
-    if (!anchor || anchor.target === '_blank') return;
+    if (!anchor || anchor.target === '_blank' || anchor.hasAttribute('download') || anchor.getAttribute('href')?.startsWith('#')) return;
     const url = new URL(anchor.href, window.location.href);
     if (url.origin !== window.location.origin || url.pathname !== window.location.pathname || !['article','garden'].includes(url.searchParams.get('view') ?? '')) return;
     event.preventDefault(); open(readRoute(url.search));

@@ -1,46 +1,42 @@
-# NextCHINA · AI 到哪了？
+# NextCHINA · AI 知识工作区
 
-面向普通读者、开发者与研究者的中文综合 AI 知识库。目标是连接 AI 原理、数据、模型、系统、实践、评测、产业与社会影响；目前并非全部维度都已完成。库存与内容路线见 [知识库规划](docs/ai-knowledge-roadmap.md)。
+面向普通读者、开发者与研究者的中文综合 AI 知识库。左侧目录选择文档，主区域阅读或查看关系图；文档与数字花园是同一工作区，不再是两套独立页面。目标是连接 AI 原理、数据、模型、系统、实践、评测、产业与社会影响，目前并非全部维度都已完成。
 
 项目保持纯静态：GitHub 保存 MD/JSON，React/Vite 装配和渲染，GitHub Actions 验证与构建，Wrangler 发布至 Cloudflare Workers Static Assets。不使用 MDX，不引入数据库、CMS 服务端或运行时内容 API。
 
-## 两条阅读入口
+## 工作区使用
 
-首页保留 **进入文档**，并提供平行的 **探索知识花园**。
+打开网站直接进入阅读指南。所有现有文档从左侧文件树选择。LLM 等专题是文件夹，继续展开到数学、内部计算、训练、推理、榜单、价格、产品与教程。分支引用的同一文档不会复制正文。
 
-文档：Sidebar 切换空间，再按小分类阅读；上下篇和文档搜索仍限定当前空间。现有空间为 Models、AI Products、Agents、Research、教程。
+顶部标签支持多篇文档切换、关闭、会话内恢复；全库搜索就在侧栏。Ctrl/Cmd+K 搜索，Ctrl/Cmd+反斜杠切换侧栏。侧栏可折叠所有目录或定位当前文档。未写分支默认隐藏，可以显示完整待完善大纲。
 
-花园：全景 → 领域 → 专题 → 概念详情 → 相关文章 → 返回原图谱位置。支持 React Flow 图谱和同源列表、一跳关联、全库概念/文章搜索、URL 分享和浏览器历史。手机默认列表，可切到局部图谱。原文章不会被强制改成画布卡片。
+关系图是主区域中的另一种视图。点击文档节点仍在同一个工作区阅读。右侧可选“关联资料”显示收录位置与已识别的文档链接，不是本文标题目录。移动端使用覆盖式侧栏，选择文档后关闭，不推移页面。
 
-花园当前包含14个领域、77个专题、380个概念与23个阅读页面映射。472个框架节点不是472篇完成文章；待完善和未核验状态明确保留。学习路径与Attention数值样例已有数据，但交互课程尚属下一阶段。设计与实现见 [花园设计](docs/ai-garden-design.md) 和 [当前实现](docs/ai-garden-implementation.md)。
+当前 28 篇阅读页面包含 13 篇 Markdown 与 15 篇 JSON 派生文档。14 领域、77 专题、380 概念为覆盖框架，18 个专题中心承接已有资料；框架节点不等于完成文章。内容路线见 [知识库规划](docs/ai-knowledge-roadmap.md)，当前 UX 见 [统一工作区](docs/unified-workspace-ux.md)。此前花园/专题实施文档保留作历史说明，以新 UX 契约为准。
 
-## 内容入口
+## 内容事实源
 
-- `content/articles.json`：Markdown 元数据；`content/spaces.json`：文档空间和顺序。
-- `content/models/**/*.md`：模型原理文章。
-- `content/tutorials/video/apple-style-premium-product-video.md`：教程 → 视频制作；保留原文章ID和方法论正文。
-- `content/data/products/*.json`：产品事实，只保存一份，多分类由 categories 表达。
-- `content/data/benchmarks.json`、`model-api-prices.json`、`sources.json`：评测快照、价格与来源。
-- `content/data/research-meta.json`、`categories.json`：数据口径、日期摘要和分类。
-- `content/garden/blueprint.json`：知识框架、编辑关系、路径和文章绑定。
-- `content/garden/microscopes/*.json`：明确标注假设的教学数值。
-- `src/data/essays.ts` 装配MD；`generated-docs.ts` 从JSON派生正文；`docs.ts` 转义美元价格，避免误识别为公式。
+- `content/articles.json`：Markdown 元数据及独立知识单元的概念、分支、来源绑定。
+- `content/spaces.json`：公开页面集合和原始顺序，旧链接保持兼容。
+- `content/models/**/*.md`：模型原理和独立知识正文。
+- `content/tutorials/video/apple-style-premium-product-video.md`：教程中的视频制作方法，同一文章可以从视频专题引用。
+- `content/data/products/*.json`：产品事实；`benchmarks.json`、`model-api-prices.json`、`sources.json`：评测、报价与来源。
+- `content/garden/blueprint.json`：知识覆盖框架；`plans/topic-hubs-v2.json` 与 `hub-integration.json`：递归分支和资源放置。
+- `src/data/essays.ts` 装配 MD；`generated-docs.ts` 从 JSON 派生正文；`docs.ts` 转义美元价格。
 
-`src/generated/` 和 `public/garden-generated/` 是开发/构建前生成的产物，不提交、不手改。ELK 官方 standalone worker 从已安装的锁定依赖复制为带内容摘要的同源资源，图谱计算不阻塞 React 主线程。
+`src/generated/` 和 `public/garden-generated/` 是开发/构建前生成的产物，不提交、不手改。ELK 官方 Worker 从锁定依赖复制为带内容摘要的同源资源。文档阅读不需要加载 React Flow。
 
-## 证据、榜单和价格规则
+## 证据规则
 
-checkedAt 是核验日期，不等于源站更新日期；snapshotDate、sourceDate 和逐条 submittedAt 分别保留。目录调整或成功构建不会刷新事实的核验日期。
+目录和 UI 调整不会刷新事实核验日期。Arena、Artificial Analysis、Terminal-Bench 各自保留版本、任务与口径，不拼成混合总榜。Agent 成绩不当作裸模型能力；模型名称相似不证明版本相同。
 
-Arena、Artificial Analysis、Terminal-Bench 各自按版本与口径展示，不拼成无共同量纲的总榜。摘录不包装成完整实时Top N；Agent成绩保留模型、配置与日期。来源不可读取时不补猜测。
+报价保留币种、周期、地区与适用条件。API 输入/输出/缓存计费与应用订阅分开。未知值不猜测，空 plans 不等于免费，页面能构建不等于内容已在线核验。
 
-partial/unavailable 不表示产品不存在或没有收费。未核实的国家保留null，不能由此推断数据驻留地。价格保留币种、周期和适用条件；年付、折算月价、促销价分别记录。空plans不是免费；模型API输入/输出/缓存计费不能与应用订阅混用。
-
-知识图上的导航、编辑关联与推荐先学不是因果主张。正式事实关系需要独立证据。文章只保存一份，图谱绑定articleId，不复制模型成绩和报价。
+图上的收录关系、编辑关联与正文链接不是因果主张。五篇独立 LLM 讲解的 Python 样例可在构建中验证，但程序通过不等于专家复核或商业模型实测。
 
 ## 安装、验证与部署
 
-使用Node 24及仓库锁文件：
+本地使用 Node 24、Python 3 和仓库锁文件：
 
 ```sh
 npm ci --no-audit --no-fund
@@ -50,10 +46,10 @@ npm run test:browser
 npm run test:production
 ```
 
-`npm run dev` 自动准备知识图数据；`npm run build` 包含数据、花园结构/数值、真实Markdown渲染、TypeScript和Vite构建。浏览器测试验证图示和控件；生产测试实际访问dist、动态分包和同源Worker。测试夹具不属于对外知识文章。当前浏览器自动验收使用Chromium，不能等价为真实iOS Safari验收。
+`npm run dev` 自动准备知识数据；构建包含数据、花园、专题、知识样例、真实 Markdown 渲染、TypeScript 与 Vite。浏览器测试包含实际工作区、所有文档、图示和控件；生产测试访问 dist 与同源布局 Worker。测试夹具不属于公开文章。Chromium 自动验收不等价于真实 iOS Safari 验收。
 
-正文采用CommonMark + GFM + KaTeX数学 + Mermaid；原始HTML/JSX不作为可执行内容。无阴影外观保留必要HTML语义。细节见 [Markdown规范](docs/markdown-rendering.md) 与 [图示规范](docs/diagram-rendering.md)。
+正文采用 CommonMark + GFM + KaTeX 数学 + Mermaid；HTML/JSX 不作为可执行正文。无阴影外观保留必要的 HTML 语义。见 [Markdown规范](docs/markdown-rendering.md) 与 [图示规范](docs/diagram-rendering.md)。
 
-生产链路：push main → npm ci → 数据与构建验证 → 开发页面浏览器测试 → 生产产物浏览器测试 → Wrangler直传。
+生产链：push main → npm ci → 数据/代码构建 → 浏览器回归 → 生产产物验证 → Wrangler 直传。
 
-GitHub Actions secrets配置 `CLOUDFLARE_ACCOUNT_ID` 与 `CLOUDFLARE_API_TOKEN`；凭据不写入仓库。关闭旧的Cloudflare Git自动构建，避免双重部署。`wrangler.jsonc` 指向 `./dist`。本地已完成Wrangler认证时可执行 `npm run deploy`；正式发布以前以上述浏览器验收为准。
+GitHub Actions secrets 为 `CLOUDFLARE_ACCOUNT_ID` 与 `CLOUDFLARE_API_TOKEN`，不写入仓库。关闭旧 Cloudflare Git 自动构建，避免双重部署。`wrangler.jsonc` 指向 `./dist`。本地已完成认证可执行 `npm run deploy`，正式发布前应完成浏览器验收。

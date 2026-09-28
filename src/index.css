@@ -36,12 +36,4 @@ html, body, #root { min-height: 100%; background: var(--page-bg); color: var(--p
 html, body { overflow-x: clip; overscroll-behavior-x: none; }
 #root, #nextchina-docs-root { overflow-x: clip; }
 body { margin: 0; min-height: 100dvh; background: var(--page-bg); color: var(--page-fg); touch-action: pan-x pan-y; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-/* The reader owns bottom safe-area padding; do not add it again to the root. */
-@media (max-width: 639px) {
-  body { font-size: 16px; }
-  .docs-article-main { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
-}
-@media (max-width: 1023px) { .docs-sidebar-scroll { padding-bottom: max(1rem, env(safe-area-inset-bottom)); } }
-.docs-sidebar { width: min(288px, calc(100vw - 32px)); max-width: calc(100vw - 32px); }
-@media (min-width: 1024px) { .docs-sidebar { width: clamp(288px, 22vw, 304px); max-width: 304px; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

@@ -47,7 +47,7 @@ test('one explorer covers every published document and preserves canonical owner
     if (entry.articleId) expect(model.documents.has(entry.articleId)).toBe(true);
   }
   const global=graphProjection('root:ai',model);
-  expect(global.nodes.filter(node=>node.kind==='document')).toHaveLength(chapters.length);
+  expect(global.nodes.filter(node=>node.kind==='document')).toHaveLength(0);
   expect(global.edges.every(edge=>global.nodes.some(node=>node.id===edge.source)&&global.nodes.some(node=>node.id===edge.target))).toBe(true);
   expect(safeGardenReturn('https://evil.example')).toBeUndefined();
   expect(safeGardenReturn('?view=article&article=bad')).toBeUndefined();

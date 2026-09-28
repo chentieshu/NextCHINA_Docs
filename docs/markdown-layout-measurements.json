@@ -1,0 +1,40 @@
+{
+  "scope": "UI layout measurements, not benchmark or model data verification",
+  "measuredAt": "2026-09-28",
+  "protocol": {
+    "browser": "Playwright Chromium headless shell 140.0.7339.186, build 1193",
+    "viewport": {"width": 1440, "height": 960},
+    "theme": "light",
+    "articleId": "aa-intelligence",
+    "externalResources": "blocked to reproduce the failed-logo condition",
+    "sameLocalEnvironment": true,
+    "note": "CSS pixels. Font-dependent measurements are not universal fixed row-height promises. Normal loaded logos have a separate browser regression test."
+  },
+  "baseline": {
+    "commit": "6f1fa3cd8fb4f612f08ef6b3039cb4e5fc8df032",
+    "tableWidth": 818,
+    "firstBodyRowHeight": 174.90625,
+    "columnWidths": [113.25, 327.203125, 201.34375, 176.203125]
+  },
+  "candidate": {
+    "commit": "2ac3b552c1b3d27c2ff218aa035e93b782d2f3b9",
+    "tableWidth": 1010,
+    "firstBodyRowHeight": 47.453125,
+    "columnWidths": [85.796875, 537.96875, 261.515625, 124.71875]
+  },
+  "inventory": {
+    "publicDocuments": 28,
+    "markdownFiles": 13,
+    "jsonDerivedPages": 15,
+    "documentsWithTables": 26,
+    "tables": 65,
+    "tableBodyRows": 337,
+    "tableColumnCounts": {"2": 15, "3": 35, "4": 12, "6": 2, "7": 1},
+    "ordinaryCodeBlocks": 11,
+    "mermaidContainers": 55,
+    "displayMath": 91,
+    "listsIncludingNested": 24,
+    "blockquotes": 41,
+    "note": "Rendered occurrences across public pages, not deduplicated products. SVG drawing is verified separately by the existing diagram suite."
+  }
+}

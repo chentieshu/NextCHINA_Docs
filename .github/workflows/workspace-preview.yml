@@ -1,0 +1,21 @@
+name: Verify unified knowledge workspace
+on:
+  push:
+    branches: [work/unified-knowledge-workspace]
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Archive tracked source only
+        run: git archive --format=zip --output=/tmp/nextchina-workspace-source.zip HEAD
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nextchina-workspace-source
+          path: /tmp/nextchina-workspace-source.zip
+          retention-days: 1

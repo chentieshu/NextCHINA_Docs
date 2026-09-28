@@ -99,6 +99,30 @@ function hostingHub(articleId: string, model: ExplorerModel) {
 }
 
 /** Atlas = reading purpose + domains + enabled hubs. Paths = blueprint learningPaths. Explore = local tree + one hop. Documents = published pages. */
+export function globalKnowledgeProjection(focusId?: string | null): Projection {
+  const macroKinds = new Set(['domain', 'topic', 'hub', 'branch']);
+  const nodes = new Map<string, KnowledgeNode>();
+  const add = (id: string) => { const node = byId.get(id); if (node && !['root','group','path','document'].includes(node.kind)) nodes.set(id, node); };
+  for (const node of graph.nodes) if (macroKinds.has(node.kind)) nodes.set(node.id, node);
+  if (focusId) {
+    add(focusId);
+    for (const ancestor of ancestors(focusId)) add(ancestor.id);
+    for (const edge of graph.edges) if (edge.source === focusId || edge.target === focusId) {
+      add(edge.source); add(edge.target);
+      const other = edge.source === focusId ? edge.target : edge.source;
+      for (const ancestor of ancestors(other)) add(ancestor.id);
+    }
+    const focus = byId.get(focusId);
+    for (const id of [...(focus?.conceptRefs ?? []), ...(focus?.hubRefs ?? [])]) add(id);
+    for (const child of childrenById.get(focusId) ?? []) add(child.id);
+  }
+  const ids = new Set(nodes.keys());
+  const edges = graph.edges.filter(edge => ids.has(edge.source) && ids.has(edge.target));
+  const total = graph.nodes.filter(node => !['root','group','path','document'].includes(node.kind)).length;
+  return { nodes:[...nodes.values()], edges, total, omitted:Math.max(0,total-nodes.size),
+    key:`global-knowledge:${focusId ?? 'macro'}:${nodes.size}`, atlas:true, layer:'atlas' };
+}
+
 export function graphProjection(scopeId: string, model: ExplorerModel, layer?: GraphLayer, groupId?: string): Projection {
   const scope = byId.get(scopeId);
   if (!scope && scopeId !== 'root:ai') return { nodes: [], edges: [], total: 0, omitted: 0, key: 'missing', atlas: false, layer: 'explore' };

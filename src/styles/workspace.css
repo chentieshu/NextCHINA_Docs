@@ -138,3 +138,18 @@ html[data-workspace="true"] { overflow: hidden; }
 @media (pointer: coarse) {
   .workspace .ws-icon-button { width: 44px; flex-basis: 44px; height: 44px; }
 }
+/* One global AI knowledge network. Focus changes visibility, never graph identity. */
+.ws-global-graph-header { position: relative; gap: 8px; }
+.ws-global-graph-header > span { flex: 1 1 320px; min-width: 0; }
+.ws-graph-search { position: relative; display: flex; align-items: center; gap: 6px; width: min(320px, 38vw); min-width: 180px; padding: 5px 8px; border: 1px solid var(--ui-border); border-radius: 6px; background: var(--page-bg); }
+.ws-graph-search svg { width: 14px; height: 14px; flex: none; color: var(--ui-muted); }
+.ws-graph-search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 12px; }
+.ws-graph-search-results { position: absolute; z-index: 30; top: 48px; right: 12px; width: min(360px, calc(100% - 24px)); max-height: min(420px, 50dvh); overflow: auto; border: 1px solid var(--ui-border); background: var(--ui-panel); }
+.ws-graph-search-results button { width: 100%; border-radius: 0; border-bottom: 1px solid var(--ui-border); padding: 9px 12px; font-size: 12px; }
+.ws-graph-legend > span { margin-left: auto; color: var(--ui-muted); font-size: 10px; }
+@media (max-width: 639px) {
+  .ws-global-graph-header { align-items: stretch; }
+  .ws-graph-search { width: 100%; min-width: 0; order: 3; }
+  .ws-graph-search-results { top: 86px; right: 8px; width: calc(100% - 16px); }
+  .ws-graph-legend > span { display: none; }
+}

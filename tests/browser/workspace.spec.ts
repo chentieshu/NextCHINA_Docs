@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import { buildExplorer, graphProjection, documentRoute, folderRoute } from '../../src/features/workspace/model';
+import { buildExplorer, graphProjection, globalKnowledgeProjection, documentRoute, folderRoute } from '../../src/features/workspace/model';
 import { graph, byId } from '../../src/features/garden/data';
 import { readRoute, routeUrl, safeGardenReturn } from '../../src/routing';
 import type { DocChapter } from '../../src/types';
@@ -46,6 +46,13 @@ test('one explorer covers every published document and preserves canonical owner
     expect(new Set(model.parents(id)).size).toBe(model.parents(id).length);
     if (entry.articleId) expect(model.documents.has(entry.articleId)).toBe(true);
   }
+  const globalKnowledge=globalKnowledgeProjection();
+  expect(globalKnowledge.nodes.some(node=>node.kind==='document')).toBe(false);
+  expect(globalKnowledge.nodes.filter(node=>node.kind==='domain')).toHaveLength(graph.nodes.filter(node=>node.kind==='domain').length);
+  expect(globalKnowledge.total).toBeGreaterThan(globalKnowledge.nodes.length);
+  const softmaxFocus=globalKnowledgeProjection('concept:softmax');
+  expect(softmaxFocus.nodes.some(node=>node.id==='concept:softmax')).toBe(true);
+  expect(softmaxFocus.nodes.some(node=>node.id==='concept:self-attention')).toBe(true);
   const atlas=graphProjection('root:ai',model);
   expect(atlas.atlas).toBe(true);
   expect(atlas.layer).toBe('atlas');
@@ -153,17 +160,19 @@ test('old topic links open the same reader; rankings and pricing keep original c
   }
 });
 
-test('graph is a main-pane view and can open a document without replacing explorer',async({page})=>{
+test('one global knowledge network is independent of the current document',async({page})=>{
   await page.goto(articleURL('llm-tokenization'));
-  await page.getByRole('button',{name:'查看当前关系图'}).click();
+  await page.getByRole('button',{name:'打开全局知识网络'}).click();
   await expect(page.locator('.garden-canvas')).toHaveAttribute('data-layout','ready');
   await expect(page.locator('.ws-sidebar')).toBeVisible();
   await page.screenshot({path:'test-results/workspace-graph.png'});
   await bounds(page);
-  await page.getByRole('button',{name:/查看 Token 与分词/}).click();
-  await expect(page.locator('[data-document="llm-tokenization"]')).toBeVisible();
+  await expect(page.getByRole('searchbox',{name:'搜索知识网络'})).toBeVisible();
+  await page.getByRole('searchbox',{name:'搜索知识网络'}).fill('Softmax');
+  await page.getByRole('option',{name:/Softmax/}).first().click();
+  await expect(page.getByRole('heading',{name:/Softmax/})).toBeVisible();
   expect(await page.getByRole('tab').count()).toBe(0);
-  await page.getByRole('button',{name:'查看当前关系图'}).click();
+  await page.getByRole('button',{name:'打开全局知识网络'}).click();
   await expect(page.locator('.garden-canvas')).toHaveAttribute('data-layout','ready');
   await page.reload();await expect(page.locator('.garden-canvas')).toHaveAttribute('data-layout','ready');
 });
@@ -173,7 +182,7 @@ test('graph module failure leaves the explorer and reading available',async({pag
   await page.goto(at('branch:llm:math/tokenization',true));
   await expect(page.getByRole('button',{name:'用列表继续阅读'})).toBeVisible();
   await page.getByRole('button',{name:'用列表继续阅读'}).click();
-  await expect(page.locator('[data-document="llm-tokenization"]')).toBeVisible();
+  await expect(page.locator('.ws-scroll .markdown-body')).toBeVisible();
 });
 
 test('restricted storage, invalid links, short landscape and enlarged text',async({page})=>{

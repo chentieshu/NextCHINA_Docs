@@ -12,5 +12,6 @@ export function escapeResearchCurrency(content: string): string {
 
 export const DOC_CHAPTERS = generatedChapters.map(chapter => ({
   ...chapter,
+  readingLayout: 'reference' as const,
   content: escapeResearchCurrency(chapter.content),
 }));

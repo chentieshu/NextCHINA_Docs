@@ -5,9 +5,9 @@ on:
 permissions:
   contents: read
 jobs:
-  audit:
+  verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
         with:
@@ -17,21 +17,17 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --no-audit --no-fund
+      - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - name: Capture actual Markdown baseline
-        run: |
-          npm run dev -- --host 127.0.0.1 > /tmp/vite.log 2>&1 &
-          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:3000/ >/dev/null && break || sleep 1; done
-          node scripts/audit-markdown-layout.mjs
+      - name: Verify documents, diagrams, tables and workspace
+        run: npm run test:browser
+      - name: Verify production workspace and layout worker
+        run: npm run test:production
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: markdown-layout-baseline
-          path: test-results/layout-audit/
+          name: markdown-responsive-verification
+          path: |
+            test-results/
+            test-results-production/
           retention-days: 7
-      - name: Prepare isolated test browser
-        run: tar -czf /tmp/layout-test-browser.tgz -C ~/.cache/ms-playwright chromium_headless_shell-1193
-      - uses: actions/upload-artifact@v4
-        with:
-          name: layout-test-browser
-          path: /tmp/layout-test-browser.tgz
-          retention-days: 1

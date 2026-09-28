@@ -45,31 +45,3 @@ export function codeBlock(node?: MarkdownNode) {
   };
 }
 
-/** Read columns from HAST, not React children (custom components change their types). */
-export function tableLayout(node?: MarkdownNode) {
-  const rows: MarkdownNode[][] = [];
-  const visit = (item: MarkdownNode) => {
-    if (item.tagName === 'tr') {
-      rows.push((item.children ?? []).filter(child => child.tagName === 'th' || child.tagName === 'td'));
-      return;
-    }
-    item.children?.forEach(visit);
-  };
-  if (node) visit(node);
-  const columns = Math.max(1, ...rows.map(row => row.length));
-  const widths = Array.from({ length: columns }, (_, index) => {
-    const values = rows.slice(1).map(row => nodeText(row[index]).trim()).filter(Boolean);
-    const header = nodeText(rows[0]?.[index]);
-    const numeric = values.length > 0 && values.every(value => /^[+−-]?[\d,.]+(?:\s*[%％])?$/.test(value));
-    const length = Math.max(header.length, ...values.map(value => value.length));
-    // Readability budgets, not measured pixels: actual wrapping is still the browser's job.
-    return numeric ? Math.max(4.5, Math.min(7, header.length * 0.7 + 1.5))
-      : length <= 8 ? 6 : length <= 22 ? 8 : 13;
-  });
-  return {
-    columns,
-    widths,
-    minimumRem: columns <= 2 ? 0 : widths.reduce((sum, width) => sum + width, 0),
-    kind: columns <= 2 ? 'narrow' : columns <= 4 ? 'standard' : 'wide',
-  };
-}

@@ -100,8 +100,8 @@
 
 /* Images only. Never turn a math SVG or Lucide icon into a block image. */
 .markdown-prose .md-image { display: block; max-width: 100%; height: auto; margin: 1.25em auto; border-radius: var(--md-radius); }
-.markdown-prose .md-provider-logo { display: inline-block; width: 1.15em; height: 1.15em; margin: 0 .3em 0 0; border-radius: 0; vertical-align: -.18em; object-fit: contain; }
-.markdown-dark .md-provider-logo { filter: brightness(0) invert(1); }
+.markdown-prose .md-provider-logo { display: inline-flex; align-items: center; justify-content: center; overflow: hidden; line-height: 1; width: 1.15em; height: 1.15em; margin: 0 .3em 0 0; border-radius: 0; vertical-align: -.18em; object-fit: contain; }
+.markdown-dark .md-logo-image { filter: brightness(0) invert(1); }
 .markdown-prose .md-control-icon { display: inline-block; width: 1rem; height: 1rem; flex: none; margin: 0; vertical-align: middle; }
 
 .md-inline-code { font-family: var(--md-mono); font-size: .88em; padding: .15em .35em; border: 1px solid var(--md-border); border-radius: 5px; background: var(--md-soft); color: var(--md-heading); box-decoration-break: clone; -webkit-box-decoration-break: clone; }
@@ -117,13 +117,13 @@
 .md-codeblock[data-wrap="true"] pre code { white-space: pre-wrap; overflow-wrap: anywhere; }
 .md-plain-pre { margin: 1.5em 0; background: var(--md-soft); border-radius: var(--md-radius); }
 
-/* Fixed column proportions with a content-derived minimum keep long prose from
-   expanding the whole table. Short 1–2 column tables always fit the reader. */
+/* Columns are allocated from visible content and the actual container width.
+   The table scrollport owns overflow; the page and sidebar never grow. */
 .md-table-scroll { width: 100%; max-width: 100%; min-width: 0; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
 .md-table-scroll:focus-visible { outline-offset: -2px; }
-.md-table-region table { table-layout: fixed; border-collapse: separate; border-spacing: 0; width: 100%; min-width: var(--md-table-min, 0rem); font-size: .875rem; font-size: clamp(.8125rem, calc(.78rem + .18cqi), .9rem); line-height: 1.65; font-variant-numeric: tabular-nums; }
-.md-table-region :where(th, td) { padding: .8em 1em; border-bottom: 1px solid var(--md-border); text-align: start; vertical-align: top; overflow-wrap: anywhere; word-break: normal; white-space: normal; }
-.md-table-region th { background: var(--md-head); color: var(--md-heading); font-weight: 650; }
+.md-table-region table { table-layout: fixed; border-collapse: separate; border-spacing: 0; width: 100%;  font-size: .875rem; font-size: clamp(.8125rem, calc(.78rem + .18cqi), .9rem); line-height: 1.65; font-variant-numeric: tabular-nums; }
+.md-table-region :where(th, td) { min-width: 0; padding: .8em 1em; border-bottom: 1px solid var(--md-border); text-align: start; vertical-align: top; overflow-wrap: anywhere; word-break: normal; white-space: normal; }
+.md-table-region thead th { background: var(--md-head); color: var(--md-heading); font-weight: 650; }
 .md-table-region :where(th, td) + :where(th, td) { border-inline-start: 1px solid var(--md-border); }
 .md-table-region :where(th, td)[align="right"] { text-align: right; }
 .md-table-region :where(th, td)[align="center"] { text-align: center; }
@@ -167,3 +167,19 @@
 }
 @media (pointer: coarse) { .md-code-actions button, .md-table-tools button { min-height: 40px; min-width: 40px; } }
 @media (prefers-reduced-motion: reduce) { .markdown-body * { scroll-behavior: auto !important; } }
+
+/* Standalone reference tables opt into this same reader via markdown-body.
+   Local theme overrides also cover nested scrollbars and selection. */
+.markdown-body { --scrollbar-thumb: rgba(70,70,78,.45); --scrollbar-thumb-hover: rgba(55,55,62,.6); --scrollbar-track: transparent; scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); }
+.markdown-dark { --scrollbar-thumb: rgba(205,205,215,.45); --scrollbar-thumb-hover: rgba(225,225,235,.6); }
+.markdown-body ::selection { background: var(--md-head); color: var(--md-heading); }
+.md-table-region tbody th { font-weight: 550; color: var(--md-heading); }
+.md-table-region tbody tr:last-child :is(th,td) { border-bottom: 0; }
+.md-table-region :is(th,td) .md-inline-code { overflow-wrap: anywhere; white-space: normal; }
+.md-table-region :is(th,td) .katex { max-width: 100%; }
+.md-table-region caption { caption-side: top; padding: .8em 1em; text-align: start; color: var(--md-muted); }
+:where(.md-table-scroll,.md-codeblock pre,.md-plain-pre,.md-diagram-source pre,.katex-display,.md-mermaid) { scrollbar-width: thin; scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); }
+
+.markdown-prose .md-logo-image { display: block; width: 100%; height: 100%; margin: 0; object-fit: contain; }
+.markdown-prose .md-provider-logo[data-failed="true"] { border: 1px solid var(--md-border); border-radius: 3px; background: var(--md-soft); color: var(--md-muted); font: 600 .8em/1 var(--md-sans); }
+.markdown-prose .md-media-fallback { display: block; max-width: 100%; margin: 1.25em 0; padding: .8em; border: 1px dashed var(--md-border); color: var(--md-muted); background: var(--md-soft); font-size: .875em; overflow-wrap: anywhere; }

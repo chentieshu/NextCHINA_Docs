@@ -6,6 +6,7 @@ import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { codeBlock, rehypeDocumentHeadings } from '../utils/markdown';
 import { MarkdownCodeBlock } from './MarkdownCodeBlock';
+import { MarkdownImage } from './MarkdownImage';
 import { MarkdownTable } from './MarkdownTable';
 import { MermaidDiagram } from './MermaidDiagram';
 
@@ -24,11 +25,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, isL
             return <a {...props} href={href} target={external ? '_blank' : undefined}
               rel={external ? 'noopener noreferrer' : undefined}>{children}</a>;
           },
-          img: ({ node: _node, className, alt, src, ...props }) => {
-            const logo = /^https:\/\/cdn\.simpleicons\.org\//i.test(src ?? '');
-            return <img {...props} src={src} alt={alt ?? ''} loading="lazy" decoding="async"
-              className={['md-image', logo ? 'md-provider-logo' : '', className].filter(Boolean).join(' ')} />;
-          },
+          img: ({ node: _node, ...props }) => <MarkdownImage {...props} />,
           input: ({ node: _node, ...props }) => <input {...props} disabled={props.type === 'checkbox' || props.disabled} />,
           pre: ({ node, children }) => {
             const block = codeBlock(node);

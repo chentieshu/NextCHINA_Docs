@@ -19,7 +19,7 @@ export function WorkspaceContent({ route, model, isLight, onOpen }: Props) {
   const recovery = () => onOpen({ kind: 'home' });
   if (article) {
     const meta = resourceMeta(article.id), independent = meta?.kind === 'independent-explanation';
-    return <div className="ws-reading-column" data-document={article.id}>
+    return <div className="ws-reading-column" data-document={article.id} data-reading-layout={article.readingLayout ?? 'prose'}>
       <header className="ws-document-heading"><p className="ws-eyebrow">{article.categoryName} <span> / </span>{independent ? '独立讲解' : '文档'}</p><h1>{article.title}</h1><p className="ws-subtitle">{article.subtitle}</p><div className="ws-document-meta"><span>{independent ? '撰写' : '页面日期'} {article.date}</span><span>{article.readTime}</span><span>只读知识库</span></div></header>
       {meta && <aside className="ws-evidence" role="note">{independent ? '包含一手来源、教学假设与数值示例。程序验证不等于专家复核，也不代表商业模型实测。' : '保留资料的原始日期与口径；本次界面更新未重新核验名称、分数或价格。'}{article.id === 'terminal-bench' && ' 此页是 Agent 系统任务评测，不是裸模型能力排名。'}</aside>}
       <LazyBoundary label="文档渲染器" fallbackAction={recovery}><Suspense fallback={<p role="status">正在排版文档…</p>}><MarkdownRenderer content={article.content} isLight={isLight} /></Suspense></LazyBoundary>
@@ -37,7 +37,7 @@ export function WorkspaceContent({ route, model, isLight, onOpen }: Props) {
     {entries.length > 0 && <section><h2>目录内容</h2><div className="ws-folder-rows">{entries.map(entry => <button type="button" key={entry.id} data-folder-entry={entry.id} onClick={() => onOpen(entry.articleId ? documentRoute(entry.articleId, entry.nodeId) : folderRoute(entry.nodeId))}>
       {entry.articleId ? <FileText /> : <Folder />}<span>{entry.label}</span><small>{entry.articleId ? '文档' : '目录'}</small><ArrowUpRight /></button>)}</div></section>}
     {linked.length > 0 && !entries.some(entry => entry.articleId) && <section><h2>关联阅读资料</h2><div className="ws-folder-rows">{linked.map(id => { const doc = model.documents.get(id); return doc ? <button key={id} onClick={() => onOpen(documentRoute(id))}><FileText /><span>{doc.title}</span><ArrowUpRight /></button> : null; })}</div><p className="ws-muted">资料入口不等于本概念已完成独立讲解。</p></section>}
-    {scope?.hubId === 'hub:llm' && ['models','models/model-detail'].includes(scope.outlinePath ?? '') && <LazyBoundary label="模型来源记录" fallbackAction={recovery}><Suspense fallback={<p role="status">读取来源索引…</p>}><ModelReferenceIndex onOpen={id => onOpen(folderRoute(id))} /></Suspense></LazyBoundary>}
+    {scope?.hubId === 'hub:llm' && ['models','models/model-detail'].includes(scope.outlinePath ?? '') && <LazyBoundary label="模型来源记录" fallbackAction={recovery}><Suspense fallback={<p role="status">读取来源索引…</p>}><ModelReferenceIndex isLight={isLight} onOpen={id => onOpen(folderRoute(id))} /></Suspense></LazyBoundary>}
     {!entries.length && !linked.length && <div className="ws-empty"><strong>这个分支的独立内容尚待完善。</strong><p>不会把同一篇总览冒充所有子章节。你可以查看下方的共享知识，或从左侧选择已写文档。</p></div>}
     {!!scope?.conceptRefs?.length && <section><h2>共享知识</h2><div className="ws-folder-rows">{scope.conceptRefs.map(id => <button type="button" key={id} onClick={() => onOpen(folderRoute(id))}><Network /><span>{byId.get(id)?.label ?? id}</span></button>)}</div></section>}
     {!!scope?.hubEntries?.length && <section><h2>进入对应专题</h2><div className="ws-folder-rows">{scope.hubEntries.map(id => <button key={id} onClick={() => onOpen(folderRoute(id))}><Folder /><span>{byId.get(id)?.label ?? id}</span></button>)}</div></section>}

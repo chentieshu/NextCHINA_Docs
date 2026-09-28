@@ -10,6 +10,7 @@ export interface DocChapter {
   tags: string[];
   excerpt: string;
   content: string;
+  readingLayout?: 'prose' | 'reference';
 }
 
 export interface DocSpace {

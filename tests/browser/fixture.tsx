@@ -3,10 +3,11 @@ import { createRoot } from 'react-dom/client';
 import { MarkdownRenderer } from '../../src/components/MarkdownRenderer';
 import '../../src/index.css';
 import samples from './diagrams.md?raw';
+import tables from './tables.md?raw';
 const documents = import.meta.glob('../../content/**/*.md', { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
 const parameters = new URLSearchParams(location.search);
 const file = parameters.get('file');
-const source = file ? documents['../../' + file] : samples;
+const source = file ? documents['../../' + file] : parameters.get('sample') === 'tables' ? tables : samples;
 if (!source) throw new Error('Unknown fixture Markdown');
 function Fixture() {
   const [light, setLight] = useState(parameters.get('theme') !== 'dark');

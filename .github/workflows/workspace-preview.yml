@@ -5,17 +5,22 @@ on:
 permissions:
   contents: read
 jobs:
-  snapshot:
+  prepare:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - name: Archive tracked source only
-        run: git archive --format=zip --output=/tmp/nextchina-workspace-source.zip HEAD
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Archive installed build dependencies without credentials
+        run: tar -czf /tmp/nextchina-workspace-deps.tgz node_modules src/generated public/garden-generated
       - uses: actions/upload-artifact@v4
         with:
-          name: nextchina-workspace-source
-          path: /tmp/nextchina-workspace-source.zip
+          name: nextchina-workspace-deps
+          path: /tmp/nextchina-workspace-deps.tgz
           retention-days: 1

@@ -32,7 +32,7 @@ export default function WorkspaceGraph({ model, isLight, onOpen }: Props) {
   return <div className="ws-graph-pane" data-inspector={Boolean(selected)} data-layer="global">
     <div className="ws-graph-caption ws-global-graph-header">
       <span><strong>AI 全局知识网络</strong> · {projection.nodes.length} 个当前节点 / {projection.total} 个知识节点{projection.omitted ? ` · ${projection.omitted} 个微观节点可搜索聚焦` : ''}</span>
-      <label className="ws-graph-search"><Search /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="搜索任意知识点…" aria-label="搜索知识网络" /></label>
+      <label className="ws-graph-search"><Search /><input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="搜索任意知识点…" aria-label="搜索知识网络" /></label>
       {selectedId && <button type="button" onClick={() => setSelectedId(null)}><X />清除聚焦</button>}
     </div>
     {results.length > 0 && <div className="ws-graph-search-results" role="listbox" aria-label="知识网络搜索结果">

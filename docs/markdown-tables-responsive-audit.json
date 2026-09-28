@@ -1,0 +1,41 @@
+{
+  "scope": "Responsive Markdown table geometry and rendering, not research fact verification",
+  "testedCommit": "fc45372947f5e26fc622ec79017f6445a37fa0c3",
+  "workflowRunId": 36409513809,
+  "artifactId": 10964347250,
+  "browser": "Chromium",
+  "buildPassed": true,
+  "allBrowserRegressionPassed": true,
+  "productionRegressionPassed": true,
+  "realSafariDeviceTested": false,
+  "inventory": {
+    "publicDocuments": 28,
+    "markdownFiles": 13,
+    "jsonDerivedPages": 15,
+    "documentsWithTables": 26,
+    "tables": 65,
+    "bodyRows": 337,
+    "tableColumnDistribution": { "2": 15, "3": 35, "4": 12, "6": 2, "7": 1 },
+    "otherRenderedOccurrences": { "codeBlocks": 11, "diagramContainers": 55, "displayMath": 91, "lists": 24, "blockquotes": 41 }
+  },
+  "coverage": {
+    "allDocumentWidths": [390, 1440, 1920],
+    "targetedTableWidths": [320, 390, 768, 1024, 1440, 1920, 2560],
+    "desktopReferenceWidths": [1280, 1440, 1920, 2560, 3840],
+    "themes": ["light", "dark"],
+    "pathologicalFixtureRootFontSizes": [16, 20, 24],
+    "cases": ["long numbers remain on one line", "numeric cell content does not clip", "GFM alignment preserved", "short and long headers", "missing values", "long inline code", "RTL horizontal scrolling", "live side panel resize", "loaded and failed logos", "forced colors", "shared model reference renderer"]
+  },
+  "priceTableExamples": {
+    "390px": { "scrollportPx": 346, "tablePx": 518.125, "horizontalOverflowPx": 172, "readingHostOverflowPx": 0, "pageOverflowPx": 0 },
+    "1920px": { "readingAndTableFramePx": 1120, "headingLeftPx": 561, "tableLeftPx": 561, "horizontalOverflowPx": 0, "readingHostOverflowPx": 0, "pageOverflowPx": 0 }
+  },
+  "notes": [
+    "Counts are rendered occurrences across canonical public documents, not unique research facts.",
+    "CI uses installed fallback fonts with external requests blocked; exact user font metrics can vary.",
+    "Reference pages share a 1120px maximum reading width; normal prose remains capped at 820px.",
+    "Scrollport width includes actual reserved scrollbar effects; it is not assumed to be viewport minus a fixed 32px.",
+    "No new runtime dependencies, no copied data and no revised research verification dates."
+  ],
+  "researchFactsReverified": false
+}

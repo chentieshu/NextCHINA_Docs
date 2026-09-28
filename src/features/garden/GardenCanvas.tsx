@@ -103,13 +103,13 @@ export default function GardenCanvas({ projection, selectedId, scopeId, isLight,
   const scope = projection.nodes.find(node => node.id === scopeId);
   const firstFocus = selectedId ?? (scope?.kind === 'concept' ? scopeId : projection.nodes.find(node => node.id !== scopeId)?.id ?? scopeId);
   const initialFitNodes = projection.atlas ? undefined : narrow ? [{ id: firstFocus }] : projection.nodes.slice(0, 4).map(node => ({ id: node.id }));
-  const fit = () => void api?.fitView({ padding: .14, minZoom: .25, maxZoom: 1, duration: reduced ? 0 : 160 });
-  const legend = projection.layer === 'paths'
-    ? '规划路径：从左到右是建议先学顺序，不是必修。'
-    : projection.layer === 'documents'
-      ? '文档挂在收录专题上；虚线是正文链接。'
-      : projection.atlas
-        ? '全局知识网：宏观骨架始终保留；搜索任意微观知识点并聚焦其一跳邻域。'
+  const fit = () => void api?.fitView({ padding: .12, minZoom: projection.atlas ? .06 : .25, maxZoom: 1, duration: reduced ? 0 : 160 });
+  const legend = projection.atlas
+    ? '一张宏观关系图：领域、专题，以及全部已写明的知识关联。空大纲不在图上，可搜索后聚焦。'
+    : projection.layer === 'paths'
+      ? '规划路径：从左到右是建议先学顺序，不是必修。'
+      : projection.layer === 'documents'
+        ? '文档挂在收录专题上；虚线是正文链接。'
         : '实线先学 · 虚线关联 · 点线目录。悬停查看邻域。';
   if (error) return <div className="garden-state" role="alert"><h2>图谱布局暂不可用</h2><p>{error}</p><div><button onClick={() => setAttempt(value => value + 1)}>重试布局</button><button onClick={onList}>用列表继续阅读</button></div></div>;
   if (!positions) return <div className="garden-state" role="status">正在整理知识关系…</div>;

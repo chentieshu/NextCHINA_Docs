@@ -29,9 +29,9 @@ export default function WorkspaceGraph({ model, isLight, onOpen }: Props) {
   const focus = (id: string) => { setSelectedId(id); setQuery(''); };
   const relationCount = selected ? directRelations(selected.id).length : 0;
 
-  return <div className="ws-graph-pane" data-inspector={Boolean(selected)} data-layer="global">
+  return <div className="ws-graph-pane" data-inspector={Boolean(selected) || (projection.index?.length ?? 0) > 0} data-layer="global">
     <div className="ws-graph-caption ws-global-graph-header">
-      <span><strong>AI 全局知识网络</strong> · {projection.nodes.length} 个当前节点 / {projection.total} 个知识节点{projection.omitted ? ` · ${projection.omitted} 个微观节点可搜索聚焦` : ''}</span>
+      <span><strong>宏观关系图</strong> · {projection.nodes.length} 个节点 · {projection.index?.length ?? 0} 条知识关联{projection.omitted ? ` · ${projection.omitted} 个空大纲不在图上` : ''}</span>
       <label className="ws-graph-search"><Search /><input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="搜索任意知识点…" aria-label="搜索知识网络" /></label>
       {selectedId && <button type="button" onClick={() => setSelectedId(null)}><X />清除聚焦</button>}
     </div>
@@ -55,7 +55,20 @@ export default function WorkspaceGraph({ model, isLight, onOpen }: Props) {
         <p>{selected.summary || '这是全局知识网络中的规范知识节点。专题与文档引用它，而不是复制它。'}</p>
         <p className="ws-muted">{relationCount} 条直接语义关联 · {selected.articleBindings.length + (selected.resourceRefs?.length ?? 0)} 个阅读资源</p>
         {selectedArticle && <button type="button" onClick={() => onOpen(documentRoute(selectedArticle.id, model.occurrence(selectedArticle.id)?.nodeId))}>阅读 {selectedArticle.title}</button>}
-        <p className="ws-muted">聚焦只展开这个知识点的一跳邻域，仍属于同一张全局网络。</p>
+        <p className="ws-muted">仍是同一张宏观关系图。聚焦只是把这个知识点的邻域留在画面里。</p>
+      </aside>}
+      {!selected && (projection.index?.length ?? 0) > 0 && <aside className="ws-graph-inspector" aria-label="全部知识关联">
+        <p className="ws-graph-kicker">同一张图</p>
+        <h2>全部知识关联</h2>
+        <p>地图上是领域、专题，以及已经写明关联的知识点。下面按原文列出每一条关联，点一下即在图上定位。</p>
+        {(['path', 'before', 'related', 'cite'] as const).map(tone => {
+          const rows = projection.index?.filter(entry => entry.tone === tone) ?? [];
+          if (!rows.length) return null;
+          const title = tone === 'path' ? '阅读路径' : tone === 'before' ? '建议先学' : tone === 'related' ? '知识关联' : '专题引用';
+          return <section key={tone}><h3>{title}</h3><ul className="ws-macro-index">{rows.map(entry =>
+            <li key={entry.id}><button type="button" onClick={() => entry.focusId && setSelectedId(entry.focusId)}>{entry.text}</button></li>
+          )}</ul></section>;
+        })}
       </aside>}
     </div>
   </div>;

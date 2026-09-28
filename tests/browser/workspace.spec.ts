@@ -49,7 +49,15 @@ test('one explorer covers every published document and preserves canonical owner
   const globalKnowledge=globalKnowledgeProjection();
   expect(globalKnowledge.nodes.some(node=>node.kind==='document')).toBe(false);
   expect(globalKnowledge.nodes.filter(node=>node.kind==='domain')).toHaveLength(graph.nodes.filter(node=>node.kind==='domain').length);
+  expect(globalKnowledge.nodes.some(node=>node.id==='concept:softmax')).toBe(true);
+  expect(globalKnowledge.nodes.some(node=>node.id==='concept:self-attention')).toBe(true);
   expect(globalKnowledge.total).toBeGreaterThan(globalKnowledge.nodes.length);
+  for (const edge of graph.edges.filter(edge=>edge.type!=='browse_child' && !/共享知识引用|相关专题入口/.test(edge.reason ?? ''))) {
+    expect(globalKnowledge.nodes.some(node=>node.id===edge.source), edge.id).toBe(true);
+    expect(globalKnowledge.nodes.some(node=>node.id===edge.target), edge.id).toBe(true);
+    expect(globalKnowledge.index?.some(item=>item.id===edge.id), edge.id).toBe(true);
+  }
+  expect(globalKnowledge.index?.filter(item=>item.tone==='path')).toHaveLength(graph.learningPaths.length);
   const softmaxFocus=globalKnowledgeProjection('concept:softmax');
   expect(softmaxFocus.nodes.some(node=>node.id==='concept:softmax')).toBe(true);
   expect(softmaxFocus.nodes.some(node=>node.id==='concept:self-attention')).toBe(true);

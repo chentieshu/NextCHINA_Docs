@@ -2,6 +2,12 @@ import { byId, childrenById, directRelations, graph } from './data';
 import type { KnowledgeNode, KnowledgeEdge } from './domain';
 
 export type GraphLayer = 'atlas' | 'paths' | 'explore' | 'documents';
+export interface MacroIndexEntry {
+  id: string;
+  tone: 'before' | 'related' | 'cite' | 'path';
+  text: string;
+  focusId?: string;
+}
 export interface Projection {
   nodes: KnowledgeNode[];
   edges: KnowledgeEdge[];
@@ -10,6 +16,8 @@ export interface Projection {
   key: string;
   atlas: boolean;
   layer?: GraphLayer;
+  /** Every recorded association for the single macro graph. Not a second diagram. */
+  index?: MacroIndexEntry[];
 }
 
 /** Selection and theme do not affect projection or layout. Shared concepts retain their IDs. */

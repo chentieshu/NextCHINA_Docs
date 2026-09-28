@@ -3,7 +3,7 @@ import type { AppRoute, GardenRoute } from '../../routing';
 import { gardenHome, readRoute } from '../../routing';
 import { graph, byId, ancestors, childrenById } from '../garden/data';
 import type { KnowledgeNode, KnowledgeEdge } from '../garden/domain';
-import type { GraphLayer, Projection } from '../garden/projection';
+import type { GraphLayer, MacroIndexEntry, Projection } from '../garden/projection';
 
 export type { GraphLayer };
 export interface Entry {
@@ -98,29 +98,81 @@ function hostingHub(articleId: string, model: ExplorerModel) {
   return context ? ancestors(context).find(node => node.kind === 'hub') ?? byId.get(context) : undefined;
 }
 
-/** Atlas = reading purpose + domains + enabled hubs. Paths = blueprint learningPaths. Explore = local tree + one hop. Documents = published pages. */
+const citeEdge = (edge: KnowledgeEdge) => /共享知识引用|相关专题入口/.test(edge.reason ?? '');
+function knowledgeIndex(): MacroIndexEntry[] {
+  const label = (id: string) => byId.get(id)?.label ?? id;
+  const index: MacroIndexEntry[] = [];
+  for (const path of graph.learningPaths ?? []) index.push({
+    id: `path:${path.id}`, tone: 'path', focusId: path.steps[0],
+    text: `${path.label}：${path.steps.map(label).join(' → ')}`
+  });
+  for (const edge of graph.edges) if (edge.type !== 'browse_child') index.push({
+    id: edge.id,
+    tone: edge.type === 'recommended_before' ? 'before' : citeEdge(edge) ? 'cite' : 'related',
+    focusId: edge.source,
+    text: `${label(edge.source)} → ${label(edge.target)}${edge.reason ? ` · ${edge.reason}` : ''}`
+  });
+  return index;
+}
+/** One network. The unfocused map is every recorded knowledge association, placed under its domain, not a second diagram and not the empty outline. */
 export function globalKnowledgeProjection(focusId?: string | null): Projection {
-  const macroKinds = new Set(['domain', 'topic', 'hub', 'branch']);
   const nodes = new Map<string, KnowledgeNode>();
-  const add = (id: string) => { const node = byId.get(id); if (node && !['root','group','path','document'].includes(node.kind)) nodes.set(id, node); };
-  for (const node of graph.nodes) if (macroKinds.has(node.kind)) nodes.set(node.id, node);
+  const extra = new Map<string, KnowledgeEdge>();
+  const add = (id?: string | null) => {
+    const node = id ? byId.get(id) : undefined;
+    if (!node || node.kind === 'root') return;
+    if (node.kind === 'branch' && node.id !== focusId) return;
+    nodes.set(node.id, node);
+  };
+  for (const node of graph.nodes) if (node.kind === 'domain' || node.kind === 'hub') add(node.id);
+  const linkConcept = (id: string) => {
+    add(id);
+    const domain = ancestors(id).find(node => node.kind === 'domain');
+    if (!domain || domain.id === id || !nodes.has(id)) return;
+    const key = `browse_child:${domain.id}>${id}`;
+    if (!graph.edges.some(edge => edge.source === domain.id && edge.target === id) && !extra.has(key)) {
+      extra.set(key, { id: key, source: domain.id, target: id, type: 'browse_child', assertionStatus: 'editorial', reason: '知识所在领域' });
+    }
+  };
+  for (const edge of graph.edges) {
+    if (edge.type === 'browse_child' || citeEdge(edge)) continue;
+    linkConcept(edge.source); linkConcept(edge.target);
+  }
+  for (const path of graph.learningPaths ?? []) {
+    let previous: string | null = null;
+    for (const step of path.steps) {
+      linkConcept(step);
+      if (previous && previous !== step) {
+        const id = `recommended_before:${previous}>${step}`;
+        const exists = graph.edges.some(edge => edge.type === 'recommended_before' && edge.source === previous && edge.target === step);
+        if (!exists && !extra.has(id)) extra.set(id, { id, source: previous, target: step, type: 'recommended_before', assertionStatus: 'editorial', reason: path.label });
+      }
+      previous = step;
+    }
+  }
+  for (const node of graph.nodes) {
+    if ((node.kind === 'concept' || node.kind === 'topic') && (node.articleBindings.length || (node.resourceRefs?.length ?? 0))) linkConcept(node.id);
+  }
   if (focusId) {
     add(focusId);
-    for (const ancestor of ancestors(focusId)) add(ancestor.id);
+    for (const ancestor of ancestors(focusId)) if (ancestor.kind !== 'branch') add(ancestor.id);
     for (const edge of graph.edges) if (edge.source === focusId || edge.target === focusId) {
-      add(edge.source); add(edge.target);
       const other = edge.source === focusId ? edge.target : edge.source;
-      for (const ancestor of ancestors(other)) add(ancestor.id);
+      linkConcept(other);
+      for (const ancestor of ancestors(other)) if (ancestor.kind !== 'branch') add(ancestor.id);
     }
     const focus = byId.get(focusId);
-    for (const id of [...(focus?.conceptRefs ?? []), ...(focus?.hubRefs ?? [])]) add(id);
-    for (const child of childrenById.get(focusId) ?? []) add(child.id);
+    for (const id of [...(focus?.conceptRefs ?? []), ...(focus?.hubRefs ?? [])]) linkConcept(id);
+    for (const child of childrenById.get(focusId) ?? []) if (child.kind !== 'branch') add(child.id);
   }
   const ids = new Set(nodes.keys());
-  const edges = graph.edges.filter(edge => ids.has(edge.source) && ids.has(edge.target));
-  const total = graph.nodes.filter(node => !['root','group','path','document'].includes(node.kind)).length;
-  return { nodes:[...nodes.values()], edges, total, omitted:Math.max(0,total-nodes.size),
-    key:`global-knowledge:${focusId ?? 'macro'}:${nodes.size}`, atlas:true, layer:'atlas' };
+  const edges = [...graph.edges.filter(edge => ids.has(edge.source) && ids.has(edge.target) && !citeEdge(edge)), ...extra.values()]
+    .filter(edge => ids.has(edge.source) && ids.has(edge.target));
+  const total = graph.nodes.filter(node => !['root', 'group', 'path', 'document'].includes(node.kind)).length;
+  return {
+    nodes: [...nodes.values()], edges, total, omitted: Math.max(0, total - nodes.size), index: knowledgeIndex(),
+    key: `global-knowledge:${focusId ?? 'macro'}:${nodes.size}:${edges.length}`, atlas: true, layer: 'atlas'
+  };
 }
 
 export function graphProjection(scopeId: string, model: ExplorerModel, layer?: GraphLayer, groupId?: string): Projection {

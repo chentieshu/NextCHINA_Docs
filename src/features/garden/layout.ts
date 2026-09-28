@@ -29,7 +29,8 @@ export function layoutGraph(projection: Projection, signal: AbortSignal): Promis
     const cleanup = () => { clearTimeout(timer); signal.removeEventListener('abort', abort); worker.terminate(); };
     const fail = (error: Error) => { if (finished) return; finished = true; cleanup(); reject(error); };
     const abort = () => fail(new DOMException('Cancelled', 'AbortError'));
-    const timer = setTimeout(() => fail(new Error('布局超时，请切换列表后重试。')), 15000);
+    const broad = projection.atlas && projection.nodes.length > 40;
+    const timer = setTimeout(() => fail(new Error('布局超时，请切换列表后重试。')), broad ? 45000 : 15000);
     signal.addEventListener('abort', abort, { once: true });
     worker.addEventListener('error', event => {
       console.error('Garden layout worker failed:', event.message);
@@ -39,7 +40,11 @@ export function layoutGraph(projection: Projection, signal: AbortSignal): Promis
       const elk = new ELK({ workerFactory: () => worker });
       void elk.layout({
         id: 'layout-root',
-        layoutOptions: {
+        layoutOptions: broad ? {
+          'elk.algorithm': 'stress',
+          'elk.stress.desiredEdgeLength': '280',
+          'elk.randomSeed': '1'
+        } : {
           'elk.algorithm': 'layered',
           'elk.direction': projection.atlas ? 'DOWN' : 'RIGHT',
           'elk.spacing.nodeNode': '28',

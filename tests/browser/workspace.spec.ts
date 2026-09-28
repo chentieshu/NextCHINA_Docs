@@ -46,9 +46,23 @@ test('one explorer covers every published document and preserves canonical owner
     expect(new Set(model.parents(id)).size).toBe(model.parents(id).length);
     if (entry.articleId) expect(model.documents.has(entry.articleId)).toBe(true);
   }
-  const global=graphProjection('root:ai',model);
-  expect(global.nodes.filter(node=>node.kind==='document')).toHaveLength(0);
-  expect(global.edges.every(edge=>global.nodes.some(node=>node.id===edge.source)&&global.nodes.some(node=>node.id===edge.target))).toBe(true);
+  const atlas=graphProjection('root:ai',model);
+  expect(atlas.atlas).toBe(true);
+  expect(atlas.layer).toBe('atlas');
+  expect(atlas.nodes.filter(node=>node.kind==='document')).toHaveLength(0);
+  expect(atlas.nodes.filter(node=>node.kind==='group')).toHaveLength(graph.groups.length);
+  expect(atlas.nodes.filter(node=>node.kind==='domain')).toHaveLength(graph.nodes.filter(node=>node.kind==='domain').length);
+  expect(atlas.nodes.filter(node=>node.kind==='hub')).toHaveLength(graph.nodes.filter(node=>node.kind==='hub').length);
+  expect(atlas.edges.every(edge=>atlas.nodes.some(node=>node.id===edge.source)&&atlas.nodes.some(node=>node.id===edge.target))).toBe(true);
+  const docs=graphProjection('root:ai',model,'documents');
+  expect(docs.nodes.filter(node=>node.kind==='document')).toHaveLength(chapters.length);
+  expect(docs.edges.every(edge=>docs.nodes.some(node=>node.id===edge.source)&&docs.nodes.some(node=>node.id===edge.target))).toBe(true);
+  const paths=graphProjection('root:ai',model,'paths');
+  expect(paths.nodes.filter(node=>node.kind==='path')).toHaveLength(graph.learningPaths.length);
+  expect(paths.edges.every(edge=>edge.type==='recommended_before')).toBe(true);
+  const local=graphProjection('branch:llm:math/tokenization',model);
+  expect(local.layer).toBe('explore');
+  expect(local.nodes.some(node=>node.id==='article:llm-tokenization'||node.articleBindings.some(binding=>binding.articleId==='llm-tokenization'))).toBe(true);
   expect(safeGardenReturn('https://evil.example')).toBeUndefined();
   expect(safeGardenReturn('?view=article&article=bad')).toBeUndefined();
   expect(readRoute(routeUrl(documentRoute('llm-tokenization','branch:llm:math/tokenization')))).toEqual(documentRoute('llm-tokenization','branch:llm:math/tokenization'));
@@ -187,4 +201,3 @@ for (const width of [390, 1440]) test(`Markdown diagrams paint inside workspace 
   }
   await bounds(page);
 });
-

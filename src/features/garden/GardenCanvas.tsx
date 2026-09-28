@@ -11,23 +11,27 @@ import { savedViewport, rememberViewport } from './viewport';
 import { useMedia } from './useMedia';
 
 type FlowNode = Node<{ item: KnowledgeNode; inspect: (id: string) => void; expand: (id: string) => void; isScope: boolean; dimmed: boolean }, 'knowledge'>;
+function actionLabel(item: KnowledgeNode) {
+  if (item.kind === 'document') return { text: '阅读 →', name: `查看 ${item.label}` };
+  if (item.kind === 'group') return { text: '只看这组', name: `只看 ${item.label}` };
+  if (item.kind === 'path') return { text: '查看步骤', name: `查看路径 ${item.label}` };
+  return { text: '展开 →', name: `展开 ${item.label}` };
+}
 const KnowledgeCard = memo(function KnowledgeCard({ data, selected }: NodeProps<FlowNode>) {
   const { item, inspect, expand, isScope, dimmed } = data;
   const count = childrenById.get(item.id)?.length ?? 0;
   const reading = item.kind === 'document' || item.articleBindings.length > 0;
+  const action = actionLabel(item);
   return <div className="garden-node nopan" style={{ pointerEvents: 'auto' }} data-active={selected} data-scope={isScope}
     data-kind={item.kind} data-status={reading ? 'ready' : item.contentStatus} data-dimmed={dimmed}>
     <Handle type="target" position={Position.Left} isConnectable={false} />
     <button type="button" className="garden-node-main nodrag" onClick={() => inspect(item.id)} aria-label={`选择 ${item.label}`}>
-      <span className="garden-node-kicker">{kindLabel[item.kind]} <span>{item.kind === 'document' ? '可阅读' : reading ? '有资料' : '框架'}</span></span>
+      <span className="garden-node-kicker">{kindLabel[item.kind]} <span>{item.kind === 'document' ? '可阅读' : item.kind === 'path' ? '规划' : reading ? '有资料' : '框架'}</span></span>
       <strong>{item.label}</strong>
     </button>
     <div className="garden-node-bottom">
-      <span>{item.kind === 'document' ? '规范文档' : count ? `${count} 个下级` : item.summary ? '知识节点' : '知识框架'}</span>
-      <button type="button" className="nodrag" onClick={() => expand(item.id)}
-        aria-label={item.kind === 'document' ? `查看 ${item.label}` : `展开 ${item.label}`}>
-        {item.kind === 'document' ? '阅读 →' : '展开 →'}
-      </button>
+      <span>{item.kind === 'document' ? '规范文档' : item.kind === 'path' ? '建议先学' : count ? `${count} 个下级` : item.summary ? '知识节点' : '知识框架'}</span>
+      <button type="button" className="nodrag" onClick={() => expand(item.id)} aria-label={action.name}>{action.text}</button>
     </div>
     <Handle type="source" position={Position.Right} isConnectable={false} />
   </div>;
@@ -100,9 +104,16 @@ export default function GardenCanvas({ projection, selectedId, scopeId, isLight,
   const firstFocus = selectedId ?? (scope?.kind === 'concept' ? scopeId : projection.nodes.find(node => node.id !== scopeId)?.id ?? scopeId);
   const initialFitNodes = projection.atlas ? undefined : narrow ? [{ id: firstFocus }] : projection.nodes.slice(0, 4).map(node => ({ id: node.id }));
   const fit = () => void api?.fitView({ padding: .14, minZoom: .25, maxZoom: 1, duration: reduced ? 0 : 160 });
+  const legend = projection.layer === 'paths'
+    ? '规划路径：从左到右是建议先学顺序，不是必修。'
+    : projection.layer === 'documents'
+      ? '文档挂在收录专题上；虚线是正文链接。'
+      : projection.atlas
+        ? '全景：阅读目的 → 领域 → 已启用专题。点卡片选中，点展开进入局部图。'
+        : '实线先学 · 虚线关联 · 点线目录。悬停查看邻域。';
   if (error) return <div className="garden-state" role="alert"><h2>图谱布局暂不可用</h2><p>{error}</p><div><button onClick={() => setAttempt(value => value + 1)}>重试布局</button><button onClick={onList}>用列表继续阅读</button></div></div>;
   if (!positions) return <div className="garden-state" role="status">正在整理知识关系…</div>;
-  return <div className="garden-canvas" data-layout="ready" tabIndex={0} role="region" aria-label="知识图谱画布；方向键平移，加减号缩放，0 居中"
+  return <div className="garden-canvas" data-layout="ready" data-layer={projection.layer ?? (projection.atlas ? 'atlas' : 'explore')} tabIndex={0} role="region" aria-label="知识图谱画布；方向键平移，加减号缩放，0 居中"
     onKeyDown={event => {
       if ((event.target as HTMLElement).closest('button,input,a')) return;
       const step = 64; const viewport = api?.getViewport(); if (!viewport) return;
@@ -131,6 +142,6 @@ export default function GardenCanvas({ projection, selectedId, scopeId, isLight,
       <button type="button" disabled={!api} aria-label="居中图谱" onClick={fit}><Maximize /></button>
       <button type="button" disabled={!api} aria-label="恢复原始缩放" onClick={() => void api?.zoomTo(1)}><RotateCcw /></button>
     </div>
-    <div className="garden-canvas-legend">{projection.atlas ? '全景：阅读目的 → 领域 → 专题。点卡片选中，点展开进入局部图。' : '实线先学 · 虚线关联 · 点线目录。悬停查看邻域。'}</div>
+    <div className="garden-canvas-legend">{legend}</div>
   </div>;
 }

@@ -8,7 +8,7 @@
 .garden-node[data-scope="true"] { background: var(--ui-soft); }
 .garden-node[data-dimmed="true"] { opacity: .3; }
 .garden-node[data-status="outline"], .garden-node[data-status="seed"] { border-style: dashed; }
-.garden-node[data-kind="group"], .garden-node[data-kind="domain"] { border-radius: 8px; }
+.garden-node[data-kind="group"], .garden-node[data-kind="domain"], .garden-node[data-kind="path"] { border-radius: 8px; }
 .garden-node button.garden-node-main { border: 0; display: flex; flex-direction: column; align-items: stretch; padding: 12px 14px 8px; min-height: 0; border-radius: 12px 12px 0 0; }
 .garden-node-kicker { display: flex; justify-content: space-between; gap: 8px; color: var(--ui-muted); font-size: 10px; }
 .garden-node-main strong { font-size: 14px; line-height: 1.45; font-weight: 650; margin-top: 7px; height: 40px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
@@ -21,6 +21,9 @@
 .garden-state { padding:24px; font-size:13px; line-height:1.8; background:var(--page-bg); }
 .garden-state button { border:1px solid var(--ui-border); margin:8px 8px 0 0; }
 .ws-graph-pane { height: 100%; display: grid; grid-template-rows: auto auto minmax(0,1fr); }
+.ws-graph-caption { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 12px 6px; font-size: 12px; }
+.ws-graph-caption span { margin-right: auto; color: var(--ui-muted); }
+.ws-graph-caption button[aria-pressed="true"] { background: var(--ui-soft); }
 .ws-graph-legend { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 12px 8px; font-size: 11px; }
 .ws-graph-legend button[aria-pressed="true"] { background: var(--ui-soft); }
 .ws-graph-body { min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(0,1fr); }
@@ -30,6 +33,7 @@
 .ws-graph-inspector h2 { font-size: 16px; font-weight: 650; line-height: 1.4; margin: 6px 0 10px; overflow-wrap: anywhere; }
 .ws-graph-inspector p { font-size: 12px; line-height: 1.8; color: var(--ui-muted); }
 .ws-graph-inspector button { width: 100%; margin-top: 8px; border: 1px solid var(--ui-border); }
+.ws-graph-steps { margin: 0; padding-left: 18px; font-size: 12px; line-height: 1.7; color: var(--ui-muted); }
 @media (max-width: 1023px) {
   .ws-graph-pane[data-inspector="true"] .ws-graph-body { grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(0,1fr) minmax(160px,36%); }
   .ws-graph-inspector { border-left: 0; border-top: 1px solid var(--ui-border); }

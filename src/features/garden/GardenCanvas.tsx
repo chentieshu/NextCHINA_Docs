@@ -109,7 +109,7 @@ export default function GardenCanvas({ projection, selectedId, scopeId, isLight,
     : projection.layer === 'documents'
       ? '文档挂在收录专题上；虚线是正文链接。'
       : projection.atlas
-        ? '全景：阅读目的 → 领域 → 已启用专题。点卡片选中，点展开进入局部图。'
+        ? '全局知识网：宏观骨架始终保留；搜索任意微观知识点并聚焦其一跳邻域。'
         : '实线先学 · 虚线关联 · 点线目录。悬停查看邻域。';
   if (error) return <div className="garden-state" role="alert"><h2>图谱布局暂不可用</h2><p>{error}</p><div><button onClick={() => setAttempt(value => value + 1)}>重试布局</button><button onClick={onList}>用列表继续阅读</button></div></div>;
   if (!positions) return <div className="garden-state" role="status">正在整理知识关系…</div>;
@@ -126,9 +126,9 @@ export default function GardenCanvas({ projection, selectedId, scopeId, isLight,
     <ReactFlow<FlowNode> nodes={nodes} edges={edges} nodeTypes={nodeTypes} onInit={setApi}
       nodesDraggable={false} nodesConnectable={false} nodesFocusable={false} edgesFocusable={false}
       elementsSelectable={false} deleteKeyCode={null} selectionKeyCode={null}
-      zoomOnDoubleClick={false} minZoom={.25} maxZoom={1.75} zoomOnPinch panOnDrag
+      zoomOnDoubleClick={false} minZoom={.08} maxZoom={1.75} zoomOnPinch panOnDrag
       defaultViewport={initialViewport} fitView={!initialViewport}
-      fitViewOptions={{ nodes: initialFitNodes, padding: .14, minZoom: projection.atlas ? .25 : .9, maxZoom: 1 }}
+      fitViewOptions={{ nodes: initialFitNodes, padding: .14, minZoom: projection.atlas ? .08 : .9, maxZoom: 1 }}
       onMoveEnd={(_, viewport) => rememberViewport(projection.key, viewport)}
       onNodeMouseEnter={(_, node) => setHovered(node.id)}
       onNodeMouseLeave={() => setHovered(null)}

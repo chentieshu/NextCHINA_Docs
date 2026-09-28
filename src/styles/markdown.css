@@ -117,11 +117,19 @@
 .md-codeblock[data-wrap="true"] pre code { white-space: pre-wrap; overflow-wrap: anywhere; }
 .md-plain-pre { margin: 1.5em 0; background: var(--md-soft); border-radius: var(--md-radius); }
 
-/* Columns are allocated from visible content and the actual container width.
-   The table scrollport owns overflow; the page and sidebar never grow. */
+/* Content-aware width, not viewport-wide stretching. The outer frame is
+   bounded by the reading column or its intrinsic preferred budget; only the
+   inner scrollport can overflow. Match its font to table em measurements. */
+.md-table-region {
+  font-size: .875rem;
+  font-size: clamp(.8125rem, calc(.78rem + .18cqi), .9rem);
+  max-width: min(100%, max(51.25rem, var(--md-table-ideal, 51.25rem)));
+  margin-block: 1.5rem;
+}
+
 .md-table-scroll { width: 100%; max-width: 100%; min-width: 0; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
 .md-table-scroll:focus-visible { outline-offset: -2px; }
-.md-table-region table { table-layout: fixed; border-collapse: separate; border-spacing: 0; width: 100%;  font-size: .875rem; font-size: clamp(.8125rem, calc(.78rem + .18cqi), .9rem); line-height: 1.65; font-variant-numeric: tabular-nums; }
+.md-table-region table { table-layout: fixed; border-collapse: separate; border-spacing: 0; width: 100%; font-size: inherit; line-height: 1.65; font-variant-numeric: tabular-nums; }
 .md-table-region :where(th, td) { min-width: 0; padding: .8em 1em; border-bottom: 1px solid var(--md-border); text-align: start; vertical-align: top; overflow-wrap: anywhere; word-break: normal; white-space: normal; }
 .md-table-region thead th { background: var(--md-head); color: var(--md-heading); font-weight: 650; }
 .md-table-region :where(th, td) + :where(th, td) { border-inline-start: 1px solid var(--md-border); }
@@ -183,3 +191,11 @@
 .markdown-prose .md-logo-image { display: block; width: 100%; height: 100%; margin: 0; object-fit: contain; }
 .markdown-prose .md-provider-logo[data-failed="true"] { border: 1px solid var(--md-border); border-radius: 3px; background: var(--md-soft); color: var(--md-muted); font: 600 .8em/1 var(--md-sans); }
 .markdown-prose .md-media-fallback { display: block; max-width: 100%; margin: 1.25em 0; padding: .8em; border: 1px dashed var(--md-border); color: var(--md-muted); background: var(--md-soft); font-size: .875em; overflow-wrap: anywhere; }
+/* Cells preserve GFM alignment, but a long inline token is never a page-wide
+   overflow source. Keep controls on the same typographic scale as the cell. */
+.md-table-region :where(th, td) :where(button, input) { font-size: inherit; }
+@media (forced-colors: active) {
+  .md-table-region, .md-table-region :where(th, td), .md-table-tools { border-color: CanvasText; }
+  .md-table-region thead th { background: Canvas; color: CanvasText; }
+  .md-table-tools button:disabled { color: GrayText; opacity: 1; }
+}

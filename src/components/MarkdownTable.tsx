@@ -37,6 +37,9 @@ export function MarkdownTable({ node, columnLayout, scrollLabel, children, style
     window.addEventListener('resize', schedule);
     return () => { disposed = true; cancelAnimationFrame(frame); observer?.disconnect(); window.removeEventListener('resize', schedule); document.fonts?.removeEventListener('loadingdone', schedule); };
   }, [children, update]);
+  // A table may use a wide reference reader, but short tables should not
+  // stretch just because a monitor is wide. em uses the region/table font.
+  const preferred = layout.tracks.reduce((sum, track) => sum + track.preferred, 0);
   const widths = allocateTableColumns(layout, available);
   const total = widths.reduce((sum, width) => sum + width, 0);
   const minimum = layout.columns <= 2 ? 0 : layout.tracks.reduce((sum, track) => sum + track.minimum, 0);
@@ -45,7 +48,7 @@ export function MarkdownTable({ node, columnLayout, scrollLabel, children, style
     element?.scrollBy({ left: direction * element.clientWidth * .75,
       behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
   };
-  return <div className={`md-table-region md-table-${layout.kind}`} data-columns={layout.columns} data-overflow={edges.overflow} data-measured={available > 0}>
+  return <div className={`md-table-region md-table-${layout.kind}`} style={{ '--md-table-ideal': `${preferred}em` } as React.CSSProperties} data-columns={layout.columns} data-overflow={edges.overflow} data-measured={available > 0}>
     <div ref={scroller} className="md-table-scroll" onScroll={update} onLoadCapture={update}
       tabIndex={edges.overflow ? 0 : undefined} role={edges.overflow || scrollLabel ? 'region' : undefined}
       aria-label={scrollLabel ?? `数据表格，共 ${layout.columns} 列${edges.overflow ? '，可左右滚动' : ''}`}>

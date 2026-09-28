@@ -138,7 +138,7 @@ html[data-workspace="true"] { overflow: hidden; }
 .ws-reading-column[data-reading-layout="reference"] { max-width: 1280px; }
 .ws-reading-column[data-reading-layout="reference"] > :not(.markdown-body),
 .ws-reading-column[data-reading-layout="reference"] .markdown-prose > :not(.md-table-region),
-.ws-reading-column[data-reading-layout="reference"] .md-table-narrow { max-width: 820px; margin-inline: auto; }
+.ws-reading-column[data-reading-layout="reference"] .md-table-narrow { max-width: 820px; margin-inline: 0; }
 @media (pointer: coarse) {
   .workspace .ws-icon-button { width: 44px; flex-basis: 44px; height: 44px; }
 }

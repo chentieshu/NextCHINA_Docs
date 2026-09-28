@@ -11,7 +11,13 @@ const kindNames: Record<string, string> = {
 };
 const cell = (value: unknown): string => String(value ?? '待核验').replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
 function table(headers: string[], rows: unknown[][]): string {
-  return [headers, headers.map(() => '---'), ...rows].map(row => `| ${row.map(cell).join(' | ')} |`).join('\n');
+  // Source numbers are aligned as numbers; never parse model names, dates,
+  // currency strings or missing values as new facts. Handwritten MD is untouched.
+  const alignment = headers.map((_, index) => {
+    const values = rows.map(row => row[index]).filter(value => value != null && value !== '');
+    return values.length > 0 && values.every(value => typeof value === 'number' && Number.isFinite(value)) ? '---:' : '---';
+  });
+  return [headers, alignment, ...rows].map(row => `| ${row.map(cell).join(' | ')} |`).join('\n');
 }
 function sourceLinks(ids: string[]): string {
   return [...new Set(ids)].map(id => {

@@ -70,7 +70,11 @@ export function allocateTableColumns(layout: TableLayout, available: number): nu
   if (need > 0) result.forEach((_, index) => { result[index] += toPreferred * needs[index] / need; });
   extra -= toPreferred;
   const flexible = tracks.map((track, index) => track.kind === 'text' ? index : -1).filter(index => index >= 0);
-  const grow = flexible.length ? flexible : tracks.map((_, index) => index);
+  // Short names/status labels should not receive the same expansion as prose.
+  // Prefer genuinely long text columns once their comfortable sizes are met.
+  const longest = Math.max(0, ...flexible.map(index => tracks[index].preferred));
+  const prose = flexible.filter(index => tracks[index].preferred >= 18 && tracks[index].preferred >= longest * .8);
+  const grow = prose.length ? prose : flexible.length ? flexible : tracks.map((_, index) => index);
   const weight = grow.reduce((sum, index) => sum + tracks[index].preferred, 0);
   grow.forEach(index => { result[index] += extra * tracks[index].preferred / weight; });
   return result;

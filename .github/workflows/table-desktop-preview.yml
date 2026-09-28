@@ -7,7 +7,7 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
         with:
@@ -17,37 +17,17 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --no-audit --no-fund
-      - run: npx playwright install chromium
-      - name: Desktop geometry
-        run: |
-          npm run dev -- --host 127.0.0.1 > /tmp/site.log 2>&1 &
-          for i in $(seq 1 30); do curl -s http://127.0.0.1:3000/ > /dev/null && break || sleep 1; done
-          mkdir -p test-results
-          node --input-type=module <<'JS'
-          import { chromium } from 'playwright';
-          import fs from 'node:fs';
-          const browser = await chromium.launch();
-          const report = [];
-          for (const width of [1440, 1920, 2560]) {
-            const page = await browser.newPage({viewport:{width,height:1000},reducedMotion:'reduce'});
-            await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
-            for (const id of ['aa-intelligence','arena-text','model-api-prices','catalog-video','llm-kv-cache']) {
-              await page.goto(`http://127.0.0.1:3000/?view=article&article=${id}`);
-              await page.locator('.md-table-region[data-measured="true"]').first().waitFor();
-              await page.locator('.md-table-region').first().scrollIntoViewIfNeeded();
-              await page.waitForTimeout(250);
-              const data = await page.evaluate(()=>({width:innerWidth,host:document.querySelector('.ws-scroll').clientWidth,headerX:document.querySelector('.ws-document-heading').getBoundingClientRect().x,tables:[...document.querySelectorAll('.md-table-region')].map(r=>{const t=r.querySelector('table');return {width:t.getBoundingClientRect().width,x:t.getBoundingClientRect().x,viewport:r.clientWidth,columns:[...t.querySelectorAll('thead th')].map(c=>({label:c.textContent,w:c.getBoundingClientRect().width,font:getComputedStyle(c).fontSize})),row:t.querySelector('tbody tr')?.getBoundingClientRect().height};})}));
-              report.push({id,...data});
-              await page.screenshot({path:`test-results/table-${id}-${width}.png`});
-            }
-            await page.close();
-          }
-          fs.writeFileSync('test-results/desktop-geometry.json',JSON.stringify(report,null,2));
-          await browser.close();
-          JS
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Desktop, phone, typography and full document inventory
+        run: npx playwright test tests/browser/markdown-layout.spec.ts tests/browser/workspace-markdown.spec.ts tests/browser/workspace-table-typography.spec.ts
+      - name: Production work area and table geometry
+        run: npm run test:production
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: desktop-tables-diagnostics
-          path: test-results/
+          name: desktop-tables-verified
+          path: |
+            test-results/
+            test-results-production/
           retention-days: 7

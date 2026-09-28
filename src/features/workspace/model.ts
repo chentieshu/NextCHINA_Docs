@@ -34,7 +34,6 @@ export function buildExplorer(chapters: DocChapter[]) {
     const entry: Entry = { id: node.id, label: node.label, type: 'folder', parentId, nodeId: node.id, children: [] };
     entries.set(node.id, entry);
     if (parentId) entries.get(parentId)?.children.push(node.id); else roots.push(node.id);
-    // Explicit resources only: never make an inherited overview appear as every leaf's article.
     for (const ref of node.resourceRefs ?? []) addDocument(ref.articleId, node.id);
     for (const child of childrenById.get(node.id) ?? []) {
       if (['hub', 'branch', 'topic'].includes(child.kind)) addFolder(child, node.id);
@@ -42,10 +41,8 @@ export function buildExplorer(chapters: DocChapter[]) {
   };
   for (const domain of graph.nodes.filter(node => node.kind === 'domain')) {
     addFolder(domain, null);
-    // Keep topic hubs before shared foundations without reparenting canonical knowledge.
     entries.get(domain.id)!.children.sort((a, b) => Number(byId.get(b)?.kind === 'hub') - Number(byId.get(a)?.kind === 'hub'));
   }
-  // All public documents remain selectable even if an editorial mapping is later missing.
   const fallback = 'workspace:unfiled';
   for (const chapter of chapters) if (!occurrences.has(chapter.id)) {
     if (!entries.has(fallback)) { entries.set(fallback, { id: fallback, label: '其他文档', type: 'folder', parentId: null, nodeId: 'root:ai', children: [] }); roots.push(fallback); }
@@ -86,18 +83,45 @@ export function outgoingDocuments(chapter: DocChapter, model: ExplorerModel): Do
   }
   return [...ids].map(id => model.documents.get(id)!);
 }
-export function graphProjection(scopeId: string, model: ExplorerModel): Projection {
-  const scope = byId.get(scopeId); if (!scope) return { nodes: [], edges: [], total: 0, omitted: 0, key: 'missing', atlas: false };
-  const nodes = new Map<string, KnowledgeNode>(); const edges = new Map<string, KnowledgeEdge>();
-  const addEdge = (source: string, target: string, reason: string, type: 'browse_child' | 'related' = 'browse_child') => {
-    const id = `${source}>${target}`; edges.set(id, { id, source, target, type, assertionStatus: 'editorial', reason });
+
+export type GraphLayer = 'atlas' | 'explore' | 'documents';
+function documentNode(article: DocChapter): KnowledgeNode {
+  return {
+    id: `article:${article.id}`, label: article.title, kind: 'document', parentId: null,
+    contentStatus: 'published', evidenceStatus: 'source-specific',
+    articleBindings: [{ articleId: article.id, coverage: 'explanation' }], summary: article.excerpt
+  };
+}
+
+/** Atlas = domains and hubs. Explore = local tree plus one-hop knowledge edges. Documents = published pages. */
+export function graphProjection(scopeId: string, model: ExplorerModel, layer?: GraphLayer): Projection {
+  const scope = byId.get(scopeId);
+  if (!scope && scopeId !== 'root:ai') return { nodes: [], edges: [], total: 0, omitted: 0, key: 'missing', atlas: false };
+  const nodes = new Map<string, KnowledgeNode>();
+  const edges = new Map<string, KnowledgeEdge>();
+  const addEdge = (source: string, target: string, reason: string, type: KnowledgeEdge['type'] = 'browse_child') => {
+    const id = `${type}:${source}>${target}`;
+    if (edges.has(id) || source === target) return;
+    edges.set(id, { id, source, target, type, assertionStatus: 'editorial', reason });
   };
   const addArticle = (id: string) => {
-    const article = model.documents.get(id); if (!article) return;
-    nodes.set(`article:${id}`, { id: `article:${id}`, label: article.title, kind: 'document', parentId: null,
-      contentStatus: 'published', evidenceStatus: 'source-specific', articleBindings: [{ articleId: id, coverage: 'explanation' }], summary: article.excerpt });
+    const article = model.documents.get(id);
+    if (article) nodes.set(`article:${id}`, documentNode(article));
   };
-  if (scopeId === 'root:ai') {
+  const attachKnowledge = (id: string) => {
+    for (const edge of graph.edges) {
+      if (edge.type === 'browse_child' || (edge.source !== id && edge.target !== id)) continue;
+      const other = edge.source === id ? edge.target : edge.source;
+      const node = byId.get(other);
+      if (!node) continue;
+      nodes.set(node.id, node);
+      edges.set(edge.id, edge);
+    }
+  };
+
+  const resolvedLayer: GraphLayer = layer ?? (scopeId === 'root:ai' || scope?.kind === 'root' ? 'atlas' : 'explore');
+
+  if (resolvedLayer === 'documents') {
     for (const article of model.documents.values()) addArticle(article.id);
     for (const article of model.documents.values()) {
       const context = model.occurrence(article.id)?.nodeId;
@@ -105,13 +129,54 @@ export function graphProjection(scopeId: string, model: ExplorerModel): Projecti
       if (hub) { nodes.set(hub.id, hub); addEdge(hub.id, `article:${article.id}`, '文档收录位置，不代表科学包含关系'); }
       for (const linked of outgoingDocuments(article, model)) addEdge(`article:${article.id}`, `article:${linked.id}`, '正文显式链接', 'related');
     }
+  } else if (resolvedLayer === 'atlas') {
+    for (const group of graph.groups) {
+      nodes.set(`group:${group.id}`, {
+        id: `group:${group.id}`, label: group.label, kind: 'group', parentId: 'root:ai',
+        contentStatus: 'maintained', evidenceStatus: 'editorial', articleBindings: [],
+        summary: '阅读目的入口', group: group.id
+      });
+    }
+    for (const domain of graph.nodes.filter(node => node.kind === 'domain')) {
+      nodes.set(domain.id, domain);
+      if (domain.group) addEdge(`group:${domain.group}`, domain.id, '阅读目的分组');
+    }
+    for (const hub of graph.nodes.filter(node => node.kind === 'hub')) {
+      nodes.set(hub.id, hub);
+      const domain = ancestors(hub.id).find(node => node.kind === 'domain');
+      if (domain) addEdge(domain.id, hub.id, '专题入口');
+      else if (hub.parentId && nodes.has(hub.parentId)) addEdge(hub.parentId, hub.id, '专题入口');
+    }
   } else {
-    nodes.set(scope.id, scope);
-    for (const child of childrenById.get(scopeId) ?? []) { nodes.set(child.id, child); addEdge(scopeId, child.id, '下级导航'); }
-    for (const binding of [...(scope.resourceRefs ?? []), ...scope.articleBindings]) { addArticle(binding.articleId); if (nodes.has(`article:${binding.articleId}`)) addEdge(scopeId, `article:${binding.articleId}`, '已有文档'); }
-    for (const id of [...(scope.conceptRefs ?? []), ...(scope.hubRefs ?? [])]) if (byId.has(id)) { nodes.set(id, byId.get(id)!); addEdge(scopeId, id, '共享知识引用', 'related'); }
+    if (scope) nodes.set(scope.id, scope);
+    for (const child of childrenById.get(scopeId) ?? []) {
+      nodes.set(child.id, child);
+      addEdge(scopeId, child.id, '下级导航');
+    }
+    if (scope) {
+      for (const binding of [...(scope.resourceRefs ?? []), ...scope.articleBindings]) {
+        addArticle(binding.articleId);
+        if (nodes.has(`article:${binding.articleId}`)) addEdge(scopeId, `article:${binding.articleId}`, '已有文档');
+      }
+      for (const id of [...(scope.conceptRefs ?? []), ...(scope.hubRefs ?? [])]) {
+        const node = byId.get(id);
+        if (!node) continue;
+        nodes.set(node.id, node);
+        addEdge(scopeId, node.id, '共享知识引用', 'related');
+      }
+    }
+    for (const id of [...nodes.keys()]) attachKnowledge(id);
   }
-  const all = [...nodes.values()]; const visible = all.slice(0, 150); const ids = new Set(visible.map(node => node.id));
-  return { nodes: visible, edges: [...edges.values()].filter(edge => ids.has(edge.source) && ids.has(edge.target)), total: all.length,
-    omitted: all.length - visible.length, key: `workspace:${scopeId}:${visible.map(node => node.id).join('|')}`, atlas: false };
+
+  const all = [...nodes.values()];
+  const visible = all.slice(0, 150);
+  const ids = new Set(visible.map(node => node.id));
+  return {
+    nodes: visible,
+    edges: [...edges.values()].filter(edge => ids.has(edge.source) && ids.has(edge.target)),
+    total: all.length,
+    omitted: all.length - visible.length,
+    key: `workspace:${resolvedLayer}:${scopeId}:${visible.map(node => node.id).join('|')}`,
+    atlas: resolvedLayer === 'atlas'
+  };
 }

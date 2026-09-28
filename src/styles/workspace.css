@@ -153,7 +153,7 @@ html[data-workspace="true"] :is(body, #root) { height: 100%; min-height: 0; over
 .ws-folder-index .hub-model-index :is(th,td) { text-align: start; overflow-wrap: anywhere; font-weight: 400; }
 .ws-folder-index .hub-model-index th { font-weight: 600; }
 @media (any-pointer: coarse), (width < 40rem) {
-  .workspace :where(button):not(:where(.markdown-body *, .garden-canvas *)),
+  .workspace :is(.ws-sidebar, .ws-tab-header, .ws-toolbar, .ws-ribbon, .ws-related) button,
   .workspace .ws-icon-button, .workspace .ws-tab-close { min-width: 44px; min-height: 44px; height: auto; }
   .workspace .ws-tab-close { width: 44px; padding: 8px; }
   .ws-tree-row { min-height: 44px; }

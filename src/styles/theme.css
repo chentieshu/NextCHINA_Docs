@@ -69,7 +69,7 @@ html[data-theme="dark"], .markdown-dark { color-scheme: dark; }
 :where(input,textarea)::placeholder { color: var(--ui-muted); opacity: 1; }
 /* Keep affordances and outlines in Windows High Contrast; do not disable forced colors. */
 @media (forced-colors: active) {
-  :root, .markdown-light, .markdown-dark {
+  :root, html[data-theme="light"], html[data-theme="dark"], .markdown-light, .markdown-dark {
     --color-canvas: Canvas; --color-panel: Canvas; --color-sidebar: Canvas;
     --color-soft: Canvas; --color-code: Canvas; --color-head: Canvas;
     --color-stripe: Canvas; --color-row-hover: Canvas;

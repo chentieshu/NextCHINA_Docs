@@ -3,10 +3,15 @@ import { readFileSync } from 'node:fs';
 import { buildExplorer, graphProjection, documentRoute, folderRoute } from '../../src/features/workspace/model';
 import { graph, byId } from '../../src/features/garden/data';
 import { readRoute, routeUrl, safeGardenReturn } from '../../src/routing';
-import { DOC_CHAPTERS } from '../../src/data/docs';
 import type { DocChapter } from '../../src/types';
 const registry = JSON.parse(readFileSync('content/articles.json','utf8')).articles;
-const chapters: DocChapter[] = [...DOC_CHAPTERS, ...registry.map((a: any) => ({...a, content:readFileSync(a.file,'utf8'), slug:a.id, readTime:'5 分钟'}))];
+// Node-side navigation checks need only public IDs; actual derived content is tested in the browser.
+const publishedIds: string[] = JSON.parse(readFileSync('content/spaces.json','utf8')).spaces.flatMap((space: {chapterIds:string[]})=>space.chapterIds);
+const chapters: DocChapter[] = publishedIds.map(id => {
+  const article=registry.find((a: {id:string})=>a.id===id);
+  return article ? {...article, content:readFileSync(article.file,'utf8'), slug:id, readTime:'5 分钟'} :
+    {id,slug:id,title:'',subtitle:'',category:'research',categoryName:'',content:'',date:'',tags:[],excerpt:'',readTime:''};
+});
 const model = buildExplorer(chapters);
 const articleURL = (id: string) => `/?view=article&article=${id}`;
 const at = (id: string, graphView = false) => '/' + routeUrl(folderRoute(id, graphView));
@@ -60,6 +65,7 @@ for (const width of [320,390,768,1024,1280,1440,1920]) for (const theme of ['lig
       await page.getByRole('button',{name:'打开文档侧栏',exact:true}).click();
       await expect(page.getByRole('dialog',{name:'文档侧栏'})).toBeVisible();
       expect(await page.locator('.ws-main').evaluate(el=>el.hasAttribute('inert'))).toBe(true);
+      if (width===390 && theme==='light') await page.screenshot({path:'test-results/workspace-mobile-explorer.png'});
       await page.keyboard.press('Tab');
       expect(await page.locator('.ws-sidebar').evaluate(el=>el.contains(document.activeElement))).toBe(true);
       await page.keyboard.press('Escape');
@@ -90,6 +96,7 @@ test('root immediately reads a document; search opens documents in the same shel
   await page.getByRole('button',{name:/关闭标签.*Token 与分词/}).click();
   await expect(page.locator('.ws-scroll .markdown-body')).toBeVisible();
   await page.getByRole('tab',{name:/KV Cache/}).click();
+  await expect(page.locator('[data-document="llm-kv-cache"]')).toBeVisible();
   await page.reload();
   await expect(page.locator('[data-document="llm-kv-cache"]')).toBeVisible();
 });
@@ -114,7 +121,9 @@ for(const article of chapters) {
   test(`every document remains directly accessible: ${article.id}`, async({page})=>{
     await page.setViewportSize({width:390,height:844});
     await page.goto(articleURL(article.id));
-    await expect(page.locator(`[data-document="${article.id}"] h1`)).toHaveText(article.title);
+    const title = page.locator(`[data-document="${article.id}"] h1`);
+    await expect(title).toBeVisible();
+    if (article.title) await expect(title).toHaveText(article.title); else await expect(title).not.toBeEmpty();
     await expect(page.locator('.markdown-body')).toBeVisible();
     await expect(page.locator('.katex-error')).toHaveCount(0);
     await bounds(page);
@@ -136,6 +145,7 @@ test('graph is a main-pane tab and can open a document without replacing explore
   await page.getByRole('button',{name:'查看当前关系图'}).click();
   await expect(page.locator('.garden-canvas')).toHaveAttribute('data-layout','ready');
   await expect(page.locator('.ws-sidebar')).toBeVisible();
+  await page.screenshot({path:'test-results/workspace-graph.png'});
   await bounds(page);
   await page.getByRole('button',{name:/查看 Token 与分词/}).click();
   await expect(page.locator('[data-document="llm-tokenization"]')).toBeVisible();
@@ -163,4 +173,25 @@ test('restricted storage, invalid links, short landscape and enlarged text',asyn
   await page.addStyleTag({content:'html{font-size:20px}'});await bounds(page);
   await searchDoc(page,'苹果风格');await expect(page.locator('[data-document="apple-style-premium-product-video"]')).toBeVisible();
   await bounds(page);
+});
+
+for (const width of [390, 1440]) test(`Markdown diagrams paint inside workspace scroll ${width}px`, async({page})=>{
+  await page.setViewportSize({width,height:900});
+  await page.goto(articleURL('llm-attention-calculation'));
+  await expect(page.locator('.ws-scroll .markdown-body')).toBeVisible();
+  const diagrams=page.locator('.ws-scroll .md-diagram');
+  expect(await diagrams.count()).toBeGreaterThan(0);
+  for(let index=0;index<await diagrams.count();index++) {
+    const diagram=diagrams.nth(index);await diagram.scrollIntoViewIfNeeded();
+    await expect(diagram).toHaveAttribute('data-status','ready');
+    await expect(diagram.locator('.md-mermaid > svg')).toBeVisible();
+  }
+  await bounds(page);
+});
+
+test('closing last tab retains a usable guide tab', async({page})=>{
+  await page.goto('/');await expect(page.getByRole('tab')).toHaveCount(1);
+  await page.locator('.ws-tab-close').click();
+  await expect(page.getByRole('tab')).toHaveCount(1);
+  await expect(page.locator('.ws-scroll .markdown-body')).toBeVisible();
 });

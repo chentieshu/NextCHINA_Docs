@@ -23,16 +23,23 @@ export function useWorkspaceTabs(route: AppRoute, navigate: (route: AppRoute) =>
   useEffect(() => {
     setTabs(previous => {
       if (previous.some(tab => tab.key === currentKey)) return previous.map(tab => tab.key === currentKey ? { key: currentKey, route } : tab);
-      // Folder drilling is a single navigation tab, not one tab for every directory visited.
       const keep = route.kind === 'garden' && route.display !== 'graph' ? previous.filter(tab => !tab.key.startsWith('folder:')) : previous;
       return [...keep, { key: currentKey, route }];
     });
   }, [route, currentKey]);
   useEffect(() => { try { sessionStorage.setItem(STORAGE, JSON.stringify(tabs.slice(-24).map(tab => routeUrl(tab.route)))); } catch { /* Session-only UI remains usable. */ } }, [tabs]);
+  useEffect(() => {
+    const row = document.querySelector<HTMLElement>('.ws-tabs .ws-tab[data-active="true"]');
+    const host = row?.parentElement;
+    if (!row || !host) return;
+    if (row.offsetLeft < host.scrollLeft) host.scrollLeft = row.offsetLeft;
+    else if (row.offsetLeft + row.offsetWidth > host.scrollLeft + host.clientWidth) host.scrollLeft = row.offsetLeft + row.offsetWidth - host.clientWidth;
+  }, [currentKey, tabs.length]);
   const closeTab = (key: string) => {
     const index = tabs.findIndex(tab => tab.key === key); const remaining = tabs.filter(tab => tab.key !== key);
-    if (key === currentKey) navigate(remaining[Math.max(0, index - 1)]?.route ?? { kind: 'home' });
-    setTabs(remaining);
+    const next: WorkspaceTab[] = remaining.length ? remaining : [{key: 'article:overview',route: {kind:'home'}}];
+    if (key === currentKey) navigate(next[Math.min(Math.max(0, index - 1), next.length-1)].route);
+    setTabs(next);
   };
   return { tabs, currentKey, closeTab };
 }

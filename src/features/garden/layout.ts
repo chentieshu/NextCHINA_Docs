@@ -8,7 +8,7 @@ export type Positions = { id: string; x: number; y: number }[];
 const cache = new Map<string, Positions>();
 
 export function nodeSize(node: KnowledgeNode): { width: number; height: number } {
-  if (node.kind === 'group') return { width: 200, height: 72 };
+  if (node.kind === 'group' || node.kind === 'path') return { width: 200, height: 72 };
   if (node.kind === 'domain') return { width: 220, height: 96 };
   if (node.kind === 'concept') return { width: 196, height: 88 };
   if (node.kind === 'document') return { width: CARD_WIDTH, height: CARD_HEIGHT };

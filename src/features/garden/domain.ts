@@ -1,4 +1,4 @@
-export type NodeKind = 'root' | 'group' | 'domain' | 'topic' | 'concept' | 'hub' | 'branch' | 'document';
+export type NodeKind = 'root' | 'group' | 'path' | 'domain' | 'topic' | 'concept' | 'hub' | 'branch' | 'document';
 export type RelationKind = 'browse_child' | 'related' | 'recommended_before';
 export interface ArticleBinding { articleId: string; coverage: string; }
 export interface ResourceRef { articleId: string; role: string; }
@@ -27,7 +27,7 @@ export interface GardenGraph {
   hubResources?: Record<string, HubResource>;
 }
 export const kindLabel: Record<NodeKind, string> = {
-  root: '全景', group: '阅读目的', domain: '领域', topic: '专题', concept: '概念',
+  root: '全景', group: '阅读目的', path: '学习路径', domain: '领域', topic: '专题', concept: '概念',
   hub: '专题中心', branch: '专题分支', document: '文档'
 };
 export const coverageLabel: Record<string, string> = {

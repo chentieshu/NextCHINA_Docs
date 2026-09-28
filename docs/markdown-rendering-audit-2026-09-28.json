@@ -1,0 +1,48 @@
+{
+  "scope": "Markdown rendering inventory and desktop geometry, not research fact verification",
+  "testedCommit": "37c840e18385e874271abf44126d8f1a42d6b077",
+  "workflowRunId": 36399686027,
+  "testedBrowser": "Chromium",
+  "safariDeviceTested": false,
+  "inventory": {
+    "publicDocuments": 28,
+    "markdownFiles": 13,
+    "jsonDerivedPages": 15,
+    "documentsWithTables": 26,
+    "totals": {
+      "tables": 65,
+      "bodyRows": 337,
+      "codeBlocks": 11,
+      "diagrams": 55,
+      "displayMath": 91,
+      "lists": 24,
+      "blockquotes": 41
+    }
+  },
+  "tableColumnDistribution": {"2": 15, "3": 35, "4": 12, "6": 2, "7": 1},
+  "desktop": {
+    "widths": [1280, 1440, 1920, 2560, 3840],
+    "themes": ["light", "dark"],
+    "documentSamples": 40,
+    "maxHeadingToTableOffsetPx": 0,
+    "maxReadingHostOverflowPx": 0,
+    "maxPageOverflowPx": 0
+  },
+  "examplesAt1920px": [
+    {"articleId": "aa-intelligence", "headingLeftPx": 481, "tableLeftPx": 481, "tableFrameWidthPx": 820},
+    {"articleId": "arena-text", "headingLeftPx": 481, "tableLeftPx": 481, "tableFrameWidthPx": 820},
+    {"articleId": "model-api-prices", "headingLeftPx": 481, "tableLeftPx": 481, "tableFrameWidthPx": 863.422},
+    {"articleId": "catalog-video", "headingLeftPx": 481, "tableLeftPx": 481, "tableFrameWidthPx": 923.609}
+  ],
+  "additionalCases": [
+    "390px local horizontal scrolling and return to desktop",
+    "20px root font",
+    "both side panels",
+    "GFM column alignment",
+    "single-line short numeric headers at 1440px and 1920px",
+    "forced-colors table headings and borders"
+  ],
+  "inventoryNote": "Counts are rendered occurrences across 28 published pages. Diagram containers are counted here; actual SVG rendering remains covered by the separate Mermaid suite.",
+  "fontNote": "Measurements use CI-installed local fallback fonts with external requests blocked. Exact text widths can vary with user fonts; baseline screenshots used a different installed font set, so row-height comparisons are not made.",
+  "researchFactsReverified": false
+}

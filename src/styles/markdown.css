@@ -117,26 +117,32 @@
 .md-codeblock[data-wrap="true"] pre code { white-space: pre-wrap; overflow-wrap: anywhere; }
 .md-plain-pre { margin: 1.5em 0; background: var(--md-soft); border-radius: var(--md-radius); }
 
-/* Content-aware width, not viewport-wide stretching. The outer frame is
-   bounded by the reading column or its intrinsic preferred budget; only the
-   inner scrollport can overflow. Match its font to table em measurements. */
+/* The reading container owns the frame; the browser owns intrinsic column
+   widths. Numbers/dates stay whole, prose wraps, excess width scrolls locally. */
 .md-table-region {
   font-size: .875rem;
-  font-size: clamp(.8125rem, calc(.78rem + .18cqi), .9rem);
-  max-width: min(100%, max(51.25rem, var(--md-table-ideal, 51.25rem)));
+  font-size: clamp(.875rem, calc(.825rem + .16cqi), .9375rem);
+  width: 100%;
+  max-width: 100%;
   margin-block: 1.5rem;
+  border-radius: 10px;
 }
-
 .md-table-scroll { width: 100%; max-width: 100%; min-width: 0; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
-.md-table-scroll:focus-visible { outline-offset: -2px; }
-.md-table-region table { table-layout: fixed; border-collapse: separate; border-spacing: 0; width: 100%; font-size: inherit; line-height: 1.65; font-variant-numeric: tabular-nums; }
-.md-table-region :where(th, td) { min-width: 0; padding: .8em 1em; border-bottom: 1px solid var(--md-border); text-align: start; vertical-align: top; overflow-wrap: anywhere; word-break: normal; white-space: normal; }
-.md-table-region thead th { background: var(--md-head); color: var(--md-heading); font-weight: 650; }
+.md-table-scroll:focus-visible { outline: 2px solid var(--md-focus); outline-offset: -2px; }
+.md-table-region table { table-layout: auto; border-collapse: separate; border-spacing: 0; width: 100%; font: inherit; line-height: 1.65; font-variant-numeric: tabular-nums; }
+.md-table-region :where(th, td) { padding: .8em 1em; border-bottom: 1px solid var(--md-border); text-align: start; vertical-align: top; overflow-wrap: anywhere; word-break: normal; white-space: normal; }
+.md-table-region [data-column-kind="text"] { min-width: 6em; }
+.md-table-region:not(.md-table-narrow) [data-column-content="prose"] { min-width: 12em; }
+.md-table-region :where(th, td)[data-column-kind="numeric"],
+.md-table-region :where(th, td)[data-column-kind="date"] { width: 1%; white-space: nowrap; overflow-wrap: normal; }
+.md-table-region thead th[data-column-kind] { white-space: normal; }
+.md-table-region thead th[data-short-header="true"] { white-space: nowrap; }
+.md-table-region thead th { background: var(--md-head); color: var(--md-heading); font-weight: 650; line-height: 1.5; }
 .md-table-region :where(th, td) + :where(th, td) { border-inline-start: 1px solid var(--md-border); }
 .md-table-region :where(th, td)[align="right"] { text-align: right; }
 .md-table-region :where(th, td)[align="center"] { text-align: center; }
 .md-table-region :where(th, td)[align="left"] { text-align: left; }
-.md-table-region tr:last-child td { border-bottom: 0; }
+.md-table-region tbody tr:last-child :where(th,td) { border-bottom: 0; }
 .md-table-region tbody tr:nth-child(even) { background: var(--md-stripe); }
 .md-table-region td > :first-child { margin-top: 0; }
 .md-table-region td > :last-child { margin-bottom: 0; }

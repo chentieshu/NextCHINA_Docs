@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { allocateTableColumns, tableLayoutFromText } from '../../src/utils/table-layout';
+import { tableLayoutFromText } from '../../src/utils/table-layout';
 
 type CountKey = 'tables' | 'bodyRows' | 'codeBlocks' | 'diagrams' | 'displayMath' | 'lists' | 'blockquotes';
 type DocumentInventory = Record<CountKey, number> & { id: string; columns: number[] };
@@ -27,16 +27,12 @@ async function measure(page: Page) {
       rootOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       tables: [...body.querySelectorAll('.md-table-region')].map(frame => {
         const table = frame.querySelector('table')!;
-        const style = getComputedStyle(frame);
-        const rootEm = parseFloat(getComputedStyle(document.documentElement).fontSize);
-        const font = parseFloat(style.fontSize);
         const available = frame.parentElement!.clientWidth;
-        const ideal = parseFloat(style.getPropertyValue('--md-table-ideal')) * font;
         return {
           columns: Number((frame as HTMLElement).dataset.columns),
           left: frame.getBoundingClientRect().left,
           width: frame.getBoundingClientRect().width,
-          budget: Math.min(available, Math.max(51.25 * rootEm, ideal)),
+          budget: available,
           available,
           overflow: frame.querySelector('.md-table-scroll')!.scrollWidth - frame.querySelector('.md-table-scroll')!.clientWidth,
           cells: [...table.querySelectorAll('thead th')].map(cell => ({ text: cell.textContent, width: cell.getBoundingClientRect().width, align: getComputedStyle(cell).textAlign })),
@@ -49,13 +45,10 @@ async function measure(page: Page) {
   });
 }
 
-test('extra width grows long explanations rather than every short text label', () => {
-  const layout = tableLayoutFromText(['名称', '性质', '解释'], [['A', 'SaaS', '用于验证布局而不是事实的长说明'.repeat(6)]]);
-  const preferred = layout.tracks.reduce((sum, track) => sum + track.preferred, 0);
-  const columns = allocateTableColumns(layout, preferred + 20);
-  expect(columns[0]).toBeCloseTo(layout.tracks[0].preferred);
-  expect(columns[1]).toBeCloseTo(layout.tracks[1].preferred);
-  expect(columns[2]).toBeCloseTo(layout.tracks[2].preferred + 20);
+test('semantic hints do not make whitespace an artificial width budget', () => {
+  const layout = tableLayoutFromText(['名称', '性质', '解释'], [['A', 'SaaS', '长说明'.repeat(30)]]);
+  expect(layout.tracks.map(track => track.content)).toEqual(['label','label','prose']);
+  expect(layout.tracks.every(track => !('preferred' in track) && !('minimum' in track))).toBe(true);
 });
 
 for (const width of [1280, 1440, 1920, 2560, 3840]) for (const theme of ['light', 'dark']) {
@@ -72,13 +65,13 @@ for (const width of [1280, 1440, 1920, 2560, 3840]) for (const theme of ['light'
       expect(Math.abs(result.headingLeft - result.bodyLeft)).toBeLessThanOrEqual(1);
       for (const table of result.tables) {
         expect(Math.abs(table.left - result.headingLeft), 'heading, prose and table must share a left edge').toBeLessThanOrEqual(1);
-        expect(table.width, 'a short table must not stretch to fill a wide monitor').toBeLessThanOrEqual(table.budget + 1);
+        expect(Math.abs(table.width - table.available), 'frame must use the actual reading column').toBeLessThanOrEqual(1);
         expect(table.scrollColor).not.toBe('auto');
         if (width >= 1920) expect(table.overflow).toBeLessThanOrEqual(1);
       }
       if (id === 'aa-intelligence') {
         expect(result.tables[0].cells.at(-1)?.align).toBe('right');
-        if (width >= 1920) expect(result.tables[0].width).toBeLessThan(1000);
+        if (width >= 1920) expect(result.tables[0].width).toBeLessThanOrEqual(1120);
       }
       if (id === 'model-api-prices') for (const index of [2, 3, 4]) expect(result.tables[0].cells[index].align).toBe('right');
       if (width === 1920 && ['aa-intelligence', 'model-api-prices'].includes(id)) {
@@ -101,7 +94,6 @@ test('resizing both panels and root text keeps one alignment and restores scroll
   expect(result.hostOverflow).toBeLessThanOrEqual(1);
   expect(Math.abs(result.headingLeft - result.tables[0].left)).toBeLessThanOrEqual(1);
   await page.setViewportSize({width:390,height:844}); await stable(page);
-  // Narrow-screen related panel may be an overlay; close it before exercising the table.
   const close = page.getByRole('button',{name:'关闭关联资料',exact:true});
   if (await close.isVisible()) await close.click();
   await page.locator('.md-table-region').first().scrollIntoViewIfNeeded();

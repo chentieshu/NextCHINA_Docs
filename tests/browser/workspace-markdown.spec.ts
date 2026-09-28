@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { tableLayoutFromText, allocateTableColumns, measureTable } from '../../src/utils/table-layout';
+import { tableLayoutFromText, measureTable } from '../../src/utils/table-layout';
 const published: string[] = JSON.parse(readFileSync('content/spaces.json','utf8')).spaces.flatMap((s: {chapterIds:string[]})=>s.chapterIds);
 const at = (id: string) => `/?view=article&article=${id}`;
 const offline = (page: Page) => page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
@@ -24,17 +24,13 @@ async function geometry(page: Page) {
     shadows:[...document.querySelectorAll('.workspace *')].filter(e=>{const s=getComputedStyle(e);return s.boxShadow!=='none'||s.textShadow!=='none'||s.filter.includes('drop-shadow');}).length
   }));
 }
-test('table allocation reserves text room without duplicating KaTeX or parsing Markdown twice',()=>{
+test('table semantics classify values without pixel estimates or duplicate math',()=>{
   const layout=tableLayoutFromText(['序位','模型说明','日期','成绩'],[['1','x'.repeat(60),'2026-09-28','95.2']]);
-  for (const width of [18,28,50,80,120]) {
-    const actual=allocateTableColumns(layout,width),minimum=layout.tracks.reduce((n,t)=>n+t.minimum,0);
-    expect(actual.reduce((a,b)=>a+b,0)).toBeCloseTo(Math.max(width,minimum),8);
-    actual.forEach((n,i)=>expect(n).toBeGreaterThanOrEqual(layout.tracks[i].minimum-1e-8));
-    expect(actual[1]).toBeGreaterThan(actual[0]);
-  }
-  const pair=tableLayoutFromText(['a','b'],[['x'.repeat(80),'y'.repeat(80)]]);
-  expect(allocateTableColumns(pair,18).reduce((a,b)=>a+b,0)).toBeCloseTo(18);
-  expect(allocateTableColumns(pair,NaN).every(Number.isFinite)).toBe(true);
+  expect(layout.tracks.map(track=>track.kind)).toEqual(['numeric','text','date','numeric']);
+  expect(layout.tracks[1].content).toBe('prose');
+  expect(layout.tracks[0].shortHeader).toBe(true);
+  expect(tableLayoutFromText(['混合'],[['1'],['文字']]).tracks[0].kind).toBe('text');
+  expect(tableLayoutFromText(['空值'],[['—']]).tracks[0].kind).toBe('text');
   const text=(value:string)=>({type:'text',value});
   const math={type:'element',tagName:'span',properties:{className:['katex']},children:[{type:'element',tagName:'annotation',children:[text('x+y')]},{type:'element',tagName:'span',children:[text('duplicated'.repeat(80))]}]};
   const tree={type:'element',tagName:'table',children:[{type:'element',tagName:'tr',children:[{type:'element',tagName:'th',children:[text('公式')]}]},{type:'element',tagName:'tr',children:[{type:'element',tagName:'td',children:[math]}]}]};

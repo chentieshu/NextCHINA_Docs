@@ -4,10 +4,11 @@ import { MarkdownRenderer } from '../../src/components/MarkdownRenderer';
 import '../../src/index.css';
 import samples from './diagrams.md?raw';
 import tables from './tables.md?raw';
+import responsiveTables from './tables-responsive.md?raw';
 const documents = import.meta.glob('../../content/**/*.md', { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
 const parameters = new URLSearchParams(location.search);
 const file = parameters.get('file');
-const source = file ? documents['../../' + file] : parameters.get('sample') === 'tables' ? tables : samples;
+const source = file ? documents['../../' + file] : parameters.get('sample') === 'tables' ? tables : parameters.get('sample') === 'responsive-tables' ? responsiveTables : samples;
 if (!source) throw new Error('Unknown fixture Markdown');
 function Fixture() {
   const [light, setLight] = useState(parameters.get('theme') !== 'dark');

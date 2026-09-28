@@ -5,16 +5,49 @@ on:
 permissions:
   contents: read
 jobs:
-  snapshot:
+  verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - run: git archive --format=tar.gz --output=/tmp/nextchina-table-source.tgz HEAD
-      - uses: actions/upload-artifact@v4
+      - uses: actions/setup-node@v6
         with:
-          name: nextchina-table-source
-          path: /tmp/nextchina-table-source.tgz
-          retention-days: 1
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install chromium
+      - name: Desktop geometry
+        run: |
+          npm run dev -- --host 127.0.0.1 > /tmp/site.log 2>&1 &
+          for i in $(seq 1 30); do curl -s http://127.0.0.1:3000/ > /dev/null && break || sleep 1; done
+          mkdir -p test-results
+          node --input-type=module <<'JS'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs';
+          const browser = await chromium.launch();
+          const report = [];
+          for (const width of [1440, 1920, 2560]) {
+            const page = await browser.newPage({viewport:{width,height:1000},reducedMotion:'reduce'});
+            await page.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.continue():r.abort());
+            for (const id of ['aa-intelligence','arena-text','model-api-prices','catalog-video','llm-kv-cache']) {
+              await page.goto(`http://127.0.0.1:3000/?view=article&article=${id}`);
+              await page.locator('.md-table-region[data-measured="true"]').first().waitFor();
+              await page.locator('.md-table-region').first().scrollIntoViewIfNeeded();
+              await page.waitForTimeout(250);
+              const data = await page.evaluate(()=>({width:innerWidth,host:document.querySelector('.ws-scroll').clientWidth,headerX:document.querySelector('.ws-document-heading').getBoundingClientRect().x,tables:[...document.querySelectorAll('.md-table-region')].map(r=>{const t=r.querySelector('table');return {width:t.getBoundingClientRect().width,x:t.getBoundingClientRect().x,viewport:r.clientWidth,columns:[...t.querySelectorAll('thead th')].map(c=>({label:c.textContent,w:c.getBoundingClientRect().width,font:getComputedStyle(c).fontSize})),row:t.querySelector('tbody tr')?.getBoundingClientRect().height};})}));
+              report.push({id,...data});
+              await page.screenshot({path:`test-results/table-${id}-${width}.png`});
+            }
+            await page.close();
+          }
+          fs.writeFileSync('test-results/desktop-geometry.json',JSON.stringify(report,null,2));
+          await browser.close();
+          JS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: desktop-tables-diagnostics
+          path: test-results/
+          retention-days: 7

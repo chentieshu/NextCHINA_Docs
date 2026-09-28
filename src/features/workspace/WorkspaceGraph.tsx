@@ -56,7 +56,7 @@ export default function WorkspaceGraph({ scopeId, model, isLight, onOpen }: Prop
   return <div className="ws-graph-pane" data-inspector={Boolean(selected)} data-layer={projection.layer}>
     <div className="ws-graph-caption">
       <span>{captions[projection.layer ?? activeLayer]}{groupId ? ` · ${graph.groups.find(group => group.id === groupId)?.label ?? groupId}` : ''} · {projection.nodes.length} 个节点{projection.omitted ? ` · 另有 ${projection.omitted} 个未展开` : ''}</span>
-      <button type="button" aria-pressed={activeLayer === 'atlas'} onClick={() => { setLayer('atlas'); }}>领域</button>
+      <button type="button" aria-pressed={isRoot && activeLayer === 'atlas'} onClick={() => isRoot ? setLayer('atlas') : onOpen(folderRoute('root:ai', true))}>领域</button>
       <button type="button" aria-pressed={activeLayer === 'paths'} onClick={() => { setLayer('paths'); setGroupId(undefined); }}>路径</button>
       <button type="button" aria-pressed={activeLayer === 'documents'} onClick={() => { setLayer('documents'); setGroupId(undefined); }}>文档</button>
       {groupId && <button type="button" onClick={() => setGroupId(undefined)}>全部目的</button>}

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "commit": "6f1fa3cd8fb4f612f08ef6b3039cb4e5fc8df032",
+  "scope": "authored CSS excluding generated/vendor files; regex inventory, not CSS coverage",
+  "stylesheets": 5,
+  "files": [
+    {"file":"src/index.css","lines":39,"colorLiterals":8,"customPropertyDefinitions":12,"mediaQueries":1,"containerQueries":0,"pixelFontDeclarations":0},
+    {"file":"src/styles/flat-ui.css","lines":42,"colorLiterals":14,"customPropertyDefinitions":14,"mediaQueries":2,"containerQueries":0,"pixelFontDeclarations":0},
+    {"file":"src/styles/garden.css","lines":19,"colorLiterals":0,"customPropertyDefinitions":0,"mediaQueries":0,"containerQueries":0,"pixelFontDeclarations":7},
+    {"file":"src/styles/markdown.css","lines":169,"colorLiterals":26,"customPropertyDefinitions":29,"mediaQueries":3,"containerQueries":1,"pixelFontDeclarations":0},
+    {"file":"src/styles/workspace.css","lines":136,"colorLiterals":6,"customPropertyDefinitions":6,"mediaQueries":3,"containerQueries":0,"pixelFontDeclarations":32}
+  ],
+  "paletteOwners": ["src/index.css","src/styles/flat-ui.css","src/styles/markdown.css","src/styles/workspace.css"],
+  "cssColorLiterals": 54,
+  "pixelFontDeclarations": 39,
+  "mediaQueries": 9,
+  "containerQueries": 1
+}

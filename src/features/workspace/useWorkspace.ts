@@ -1,5 +1,5 @@
 import type { RefObject } from 'react';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import type { AppRoute } from '../../routing';
 import { readRoute, routeUrl } from '../../routing';
 import { routeKey } from './model';
@@ -62,14 +62,4 @@ export function useOverlayFocus(open: boolean, ref: RefObject<HTMLElement | null
     document.addEventListener('keydown', key, true);
     return () => { document.removeEventListener('keydown', key, true); if (origin?.isConnected) origin.focus({ preventScroll: true }); };
   }, [open, ref]);
-}
-export function useTheme() {
-  const [light, setLight] = useState(() => { try { return localStorage.getItem('nextchina-theme') !== 'dark'; } catch { return true; } });
-  useEffect(() => {
-    const theme = light ? 'light' : 'dark';
-    document.documentElement.dataset.theme = theme; document.body.dataset.theme = theme; document.documentElement.style.colorScheme = theme;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', light ? '#ffffff' : '#18181b');
-    try { localStorage.setItem('nextchina-theme', theme); } catch { /* Theme without storage. */ }
-  }, [light]);
-  return [light, useCallback(() => setLight(value => !value), [])] as const;
 }

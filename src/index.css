@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./styles/theme.css";
 @import "./styles/markdown.css";
 @import "./styles/flat-ui.css";
 
@@ -8,20 +9,8 @@
     --font-serif: "Noto Serif SC", serif;
     --font-display: "Cinzel", "Noto Serif SC", serif;
     --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
-    --page-bg: #ffffff;
-    --page-fg: #2c2c30;
-    --scrollbar-thumb: rgba(70, 70, 78, 0.35);
-    --scrollbar-thumb-hover: rgba(55, 55, 62, 0.5);
-    --scrollbar-track: transparent;
   }
-  html[data-theme="dark"] {
-    --page-bg: #18181b;
-    --page-fg: #cfcfd5;
-    --scrollbar-thumb: rgba(205, 205, 215, 0.35);
-    --scrollbar-thumb-hover: rgba(225, 225, 235, 0.5);
-    color-scheme: dark;
-  }
-  html[data-theme="light"] { color-scheme: light; }
+
 }
 .font-serif-sc { font-family: var(--font-serif); }
 .font-display { font-family: var(--font-display); }
@@ -29,11 +18,11 @@
 ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: var(--scrollbar-track); }
 ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
-html { scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); scrollbar-width: thin; scroll-behavior: smooth; }
+html { scroll-behavior: smooth; }
 html, body, #root, #nextchina-docs-root { width: 100%; max-width: 100%; min-width: 0; }
 html, body, #root { min-height: 100%; background: var(--page-bg); color: var(--page-fg); }
-#root, #nextchina-docs-root { min-height: 100dvh; background: var(--page-bg); }
+#root, #nextchina-docs-root { min-height: 100vh; min-height: 100dvh; background: var(--page-bg); }
 html, body { overflow-x: clip; overscroll-behavior-x: none; }
 #root, #nextchina-docs-root { overflow-x: clip; }
-body { margin: 0; min-height: 100dvh; background: var(--page-bg); color: var(--page-fg); touch-action: pan-x pan-y; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { margin: 0; min-height: 100vh; min-height: 100dvh; background: var(--page-bg); color: var(--page-fg); touch-action: pan-x pan-y; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

@@ -1,0 +1,83 @@
+/* Palette owner. Components consume semantic aliases, not their own hex colors.
+   Explicit Markdown classes also work in isolated previews. */
+:root, .markdown-light {
+  --color-canvas: #ffffff;
+  --color-panel: #ffffff;
+  --color-sidebar: #fafafc;
+  --color-soft: #f0f0f4;
+  --color-code: #f6f7f9;
+  --color-head: #f0f1f4;
+  --color-stripe: #fafbfc;
+  --color-row-hover: #f1f4f8;
+  --color-text: #303036;
+  --color-body: #36363e;
+  --color-heading: #202028;
+  --color-muted: #656573;
+  --color-border: #dddfe6;
+  --color-prose-border: #e2e4e9;
+  --color-link: #245cab;
+  --color-link-line: #b7c8df;
+  --color-focus: #245cab;
+  --color-marker: #656573;
+  --color-scrollbar: #858996;
+  --color-scrollbar-hover: #656573;
+  --color-edge: #737c8b;
+  --color-grid: #dce0e7;
+  --color-overlay: rgb(255 255 255 / .88);
+}
+html[data-theme="dark"], .markdown-dark {
+  --color-canvas: #18181b;
+  --color-panel: #1d1d23;
+  --color-sidebar: #151518;
+  --color-soft: #28282e;
+  --color-code: #222229;
+  --color-head: #2a2a33;
+  --color-stripe: #202027;
+  --color-row-hover: #2a2f3a;
+  --color-text: #e2e2e9;
+  --color-body: #c5c5d0;
+  --color-heading: #ededf3;
+  --color-muted: #aaaab6;
+  --color-border: #3b3b46;
+  --color-prose-border: #393a45;
+  --color-link: #9cc7ff;
+  --color-link-line: #536781;
+  --color-focus: #a4c9ff;
+  --color-marker: #aaaab6;
+  --color-scrollbar: #747988;
+  --color-scrollbar-hover: #aaaab6;
+  --color-edge: #929cae;
+  --color-grid: #353844;
+  --color-overlay: rgb(0 0 0 / .8);
+}
+:root {
+  --page-bg: var(--color-canvas); --page-fg: var(--color-text);
+  --ui-surface: var(--color-sidebar); --ui-panel: var(--color-panel);
+  --ui-soft: var(--color-soft); --ui-border: var(--color-border);
+  --ui-text: var(--color-text); --ui-muted: var(--color-muted);
+  --ui-focus: var(--color-focus);
+  --scrollbar-thumb: var(--color-scrollbar);
+  --scrollbar-thumb-hover: var(--color-scrollbar-hover);
+  --scrollbar-track: transparent;
+  --garden-edge: var(--color-edge); --garden-grid: var(--color-grid);
+}
+html[data-theme="light"], .markdown-light { color-scheme: light; }
+html[data-theme="dark"], .markdown-dark { color-scheme: dark; }
+::selection { background: var(--color-soft); color: var(--color-heading); }
+:where(*) { scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); scrollbar-width: thin; }
+:where(input,textarea) { caret-color: var(--ui-focus); }
+:where(input,textarea)::placeholder { color: var(--ui-muted); opacity: 1; }
+/* Keep affordances and outlines in Windows High Contrast; do not disable forced colors. */
+@media (forced-colors: active) {
+  :root, .markdown-light, .markdown-dark {
+    --color-canvas: Canvas; --color-panel: Canvas; --color-sidebar: Canvas;
+    --color-soft: Canvas; --color-code: Canvas; --color-head: Canvas;
+    --color-stripe: Canvas; --color-row-hover: Canvas;
+    --color-text: CanvasText; --color-body: CanvasText; --color-heading: CanvasText;
+    --color-muted: CanvasText; --color-border: ButtonText; --color-prose-border: CanvasText;
+    --color-link: LinkText; --color-link-line: LinkText; --color-focus: Highlight;
+    --color-marker: CanvasText; --color-edge: CanvasText; --color-grid: Canvas;
+    --color-overlay: Canvas;
+  }
+  :where(*) { scrollbar-color: auto; scrollbar-width: auto; }
+}

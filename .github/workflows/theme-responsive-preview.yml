@@ -4,17 +4,36 @@ on:
     branches: [work/theme-responsive-audit]
 permissions:
   contents: read
+concurrency:
+  group: theme-responsive-preview
+  cancel-in-progress: true
 jobs:
-  snapshot:
+  verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - run: git archive --format=zip --output=/tmp/theme-audit-source.zip HEAD
-      - uses: actions/upload-artifact@v4
+      - uses: actions/setup-node@v6
         with:
-          name: theme-audit-source
-          path: /tmp/theme-audit-source.zip
-          retention-days: 1
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Theme, breakpoint and interaction regression
+        run: npm run test:browser
+      - name: Production asset and workspace regression
+        run: npm run test:production
+      - name: Rebuild source inventory after browser output cleanup
+        if: always()
+        run: npm run audit:ui
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: presentation-audit
+          path: |
+            test-results/
+            test-results-production/
+          retention-days: 7

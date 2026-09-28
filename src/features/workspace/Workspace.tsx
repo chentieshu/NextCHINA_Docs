@@ -7,8 +7,9 @@ import { byId } from '../garden/data';
 import { useMedia } from '../garden/useMedia';
 import { LazyBoundary } from '../../components/LazyBoundary';
 import { buildExplorer, routeTitle, routeContext, documentRoute, folderRoute, isGraphRoute, activeEntry } from './model';
-import { useWorkspaceTabs, useOverlayFocus, useTheme } from './useWorkspace';
+import { useWorkspaceTabs, useOverlayFocus } from './useWorkspace';
 import { Explorer } from './Explorer';
+import { useTheme, useWorkspaceViewport } from './usePresentation';
 import { WorkspaceContent, RelatedContent, currentDocument } from './Content';
 import '../../styles/workspace.css';
 const WorkspaceGraph = lazy(() => import('./WorkspaceGraph'));
@@ -27,9 +28,10 @@ export default function Workspace() {
   }, [legacyRoute]);
   useEffect(() => { if (routeUrl(route) !== routeUrl(legacyRoute)) navigate(route, true); }, [route, legacyRoute, navigate]);
   const [light, toggleTheme] = useTheme();
-  const mobile = useMedia('(max-width: 959px)');
-  const wide = useMedia('(min-width: 1280px)');
-  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 960);
+  useWorkspaceViewport();
+  const mobile = useMedia('(width < 60rem)');
+  const wide = useMedia('(width >= 80rem)');
+  const [sidebarOpen, setSidebarOpen] = useState(() => window.matchMedia('(width >= 60rem)').matches);
   const [searchMode, setSearchMode] = useState(false);
   const [relatedOpen, setRelatedOpen] = useState(false);
   const sidebar = useRef<HTMLElement>(null), related = useRef<HTMLElement>(null), scroll = useRef<HTMLElement>(null);
@@ -94,7 +96,7 @@ export default function Workspace() {
       </header>
       <div className="ws-toolbar"><div className="ws-history"><button type="button" aria-label="后退" onClick={() => window.history.back()}><ArrowLeft /></button><button type="button" aria-label="前进" onClick={() => window.history.forward()}><ArrowRight /></button></div>
         <nav className="ws-breadcrumbs" aria-label="当前知识位置"><button type="button" onClick={() => open({ kind: 'home' })}>知识库</button>{breadcrumbs.filter(entry => entry.type === 'folder').slice(-3).map(entry => <React.Fragment key={entry.id}><ChevronRight /><button type="button" onClick={() => open(folderRoute(entry.nodeId))}>{entry.label}</button></React.Fragment>)}</nav>
-        <div className="ws-view-switch" role="group" aria-label="内容视图"><button type="button" aria-pressed={!graphView} onClick={() => graphView && open(previousDocument.current)}><BookOpen /><span>阅读</span></button><button type="button" aria-pressed={graphView} aria-label="查看当前关系图" onClick={() => open(folderRoute(context, true))}><Network /><span>关系</span></button><button type="button" aria-pressed={relatedOpen} aria-label="显示关联资料" onClick={() => { if (!wide) setSidebarOpen(false); setRelatedOpen(value => !value); }}><PanelRightOpen /></button></div>
+        <div className="ws-view-switch" role="group" aria-label="内容视图"><button type="button" aria-label="阅读当前文档" aria-pressed={!graphView} onClick={() => graphView && open(previousDocument.current)}><BookOpen /><span>阅读</span></button><button type="button" aria-pressed={graphView} aria-label="查看当前关系图" onClick={() => open(folderRoute(context, true))}><Network /><span>关系</span></button><button type="button" aria-pressed={relatedOpen} aria-label="显示关联资料" onClick={() => { if (!wide) setSidebarOpen(false); setRelatedOpen(value => !value); }}><PanelRightOpen /></button></div>
       </div>
       {graphView ? <section className="ws-graph-slot" aria-label="文档关系图"><LazyBoundary label="关系图" fallbackAction={() => open(folderRoute(context))}><Suspense fallback={<div className="ws-empty" role="status">正在加载关系图，文档目录仍可使用…</div>}><WorkspaceGraph scopeId={route.scopeId} model={model} isLight={light} onOpen={open} /></Suspense></LazyBoundary></section>
         : <main ref={scroll} className="ws-scroll" id="workspace-reader" tabIndex={-1} aria-label="文档阅读区" onScroll={event => { scrollPositions.set(currentKey, event.currentTarget.scrollTop); if (scrollPositions.size > 100) scrollPositions.delete(scrollPositions.keys().next().value!); }} onClick={handleLink}><WorkspaceContent route={route} model={model} isLight={light} onOpen={open} /></main>}

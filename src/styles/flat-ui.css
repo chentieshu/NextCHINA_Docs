@@ -1,12 +1,4 @@
 /* Product-wide flat surfaces. Focus uses outlines, not box-shadow rings. */
-:root {
-  --ui-surface: #fafafc; --ui-panel: #ffffff; --ui-soft: #f0f0f4;
-  --ui-border: #dddfe6; --ui-text: #303036; --ui-muted: #656573; --ui-focus: #3974ca;
-}
-html[data-theme="dark"] {
-  --ui-surface: #151518; --ui-panel: #1d1d23; --ui-soft: #28282e;
-  --ui-border: #3b3b46; --ui-text: #e2e2e9; --ui-muted: #aaaab6; --ui-focus: #a4c9ff;
-}
 *, *::before, *::after { box-shadow: none !important; text-shadow: none !important; }
 button, input, textarea, select { -webkit-appearance: none; appearance: none; }
 button { -webkit-tap-highlight-color: transparent; }
@@ -40,3 +32,13 @@ input[type="number"] { -moz-appearance: textfield; }
 .md-mermaid svg, .md-mermaid svg * { filter: none !important; }
 @media (pointer: coarse) { .md-source-toggle, .md-diagram-actions button { min-height: 44px; } }
 @media (prefers-reduced-motion: reduce) { .md-source-toggle svg { transition: none; } }
+
+@media (forced-colors: active) {
+  .markdown-prose input[type="checkbox"] { border-color: ButtonText; }
+  .markdown-prose input[type="checkbox"]:checked { background: Highlight; border-color: Highlight; }
+  .markdown-prose input[type="checkbox"]:checked::after {
+    content: ""; display: block; width: .6em; height: .35em;
+    margin: .13em auto; border-inline-start: .13em solid HighlightText;
+    border-bottom: .13em solid HighlightText; transform: rotate(-45deg);
+  }
+}

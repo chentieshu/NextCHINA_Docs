@@ -1,19 +1,19 @@
 /* One owner for Markdown typography. No generic SVG rule: KaTeX, Mermaid and
    toolbar icons each have their own geometry. Theme is local to the reader. */
 .markdown-body {
-  --md-text: #36363e;
-  --md-heading: #202028;
-  --md-muted: #656571;
-  --md-link: #245cab;
-  --md-link-line: #b7c8df;
-  --md-surface: #ffffff;
-  --md-soft: #f6f7f9;
-  --md-head: #f0f1f4;
-  --md-stripe: #fafbfc;
-  --md-hover: #f1f4f8;
-  --md-border: #e2e4e9;
-  --md-marker: #777987;
-  --md-focus: #3974ca;
+  --md-text: var(--color-body);
+  --md-heading: var(--color-heading);
+  --md-muted: var(--color-muted);
+  --md-link: var(--color-link);
+  --md-link-line: var(--color-link-line);
+  --md-surface: var(--color-panel);
+  --md-soft: var(--color-code);
+  --md-head: var(--color-head);
+  --md-stripe: var(--color-stripe);
+  --md-hover: var(--color-row-hover);
+  --md-border: var(--color-prose-border);
+  --md-marker: var(--color-marker);
+  --md-focus: var(--color-focus);
   --md-radius: 12px;
   --md-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
   --md-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -22,25 +22,10 @@
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  color-scheme: light;
-}
-.markdown-dark {
-  --md-text: #c5c5d0;
-  --md-heading: #ededf3;
-  --md-muted: #a2a4b2;
-  --md-link: #9cc7ff;
-  --md-link-line: #536781;
-  --md-surface: #1b1b20;
-  --md-soft: #222229;
-  --md-head: #2a2a33;
-  --md-stripe: #202027;
-  --md-hover: #2a2f3a;
-  --md-border: #393a45;
-  --md-marker: #9799aa;
-  --md-focus: #a4c9ff;
-  color-scheme: dark;
+
 }
 .markdown-light { color-scheme: light; }
+.markdown-dark { color-scheme: dark; }
 .markdown-prose {
   color: var(--md-text);
   font-family: var(--md-sans);
@@ -108,7 +93,7 @@
 .md-codeblock, .md-table-region, .md-diagram { width: 100%; min-width: 0; max-width: 100%; margin: 1.5em 0; border: 1px solid var(--md-border); border-radius: var(--md-radius); background: var(--md-surface); overflow: hidden; }
 .md-codebar, .md-table-tools, .md-diagram > figcaption { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; padding: .45rem .8rem; background: var(--md-soft); color: var(--md-muted); font: 500 .75rem/1.5 var(--md-sans); border-bottom: 1px solid var(--md-border); }
 .md-code-language { font-family: var(--md-mono); min-width: 0; overflow-wrap: anywhere; }
-.md-code-actions, .md-table-tools > div { display: flex; flex: none; gap: .25rem; }
+.md-code-actions, .md-table-tools > div { display: flex; flex-wrap: wrap; max-width: 100%; gap: .25rem; }
 .md-code-actions button, .md-table-tools button { display: inline-flex; align-items: center; justify-content: center; gap: .35rem; min-height: 32px; min-width: 32px; padding: .25rem .5rem; border: 1px solid transparent; border-radius: 6px; color: var(--md-muted); background: transparent; cursor: pointer; font: inherit; }
 .md-code-actions button:hover, .md-code-actions button[aria-pressed="true"], .md-table-tools button:hover:not(:disabled) { background: var(--md-head); color: var(--md-heading); }
 .md-table-tools button:disabled { opacity: .4; cursor: default; }
@@ -149,7 +134,6 @@
 .md-mermaid > svg { display: block; height: auto; margin: 0 auto; border-radius: 0; }
 .md-diagram-status, .markdown-prose .md-mermaid-error { margin: 0; padding: 1.25rem; font-size: .875em; color: var(--md-muted); }
 .md-diagram-source { border-top: 1px solid var(--md-border); }
-.md-diagram-source summary { padding: .55rem .8rem; font-size: .75rem; color: var(--md-muted); cursor: pointer; }
 .md-diagram-source pre { background: var(--md-soft); }
 .markdown-prose [data-footnotes] { margin-top: 2.5em; padding-top: 1em; border-top: 1px solid var(--md-border); color: var(--md-muted); font-size: .875em; }
 .markdown-prose a[data-footnote-ref] { font-variant-numeric: tabular-nums; text-decoration: none; }
@@ -165,5 +149,5 @@
   .md-codeblock pre, .md-plain-pre, .md-diagram-source pre, .md-mermaid { padding: .8rem; }
   .md-table-region :where(th, td) { padding: .7em .8em; }
 }
-@media (pointer: coarse) { .md-code-actions button, .md-table-tools button { min-height: 40px; min-width: 40px; } }
+@media (pointer: coarse) { .md-code-actions button, .md-table-tools button { min-height: 44px; min-width: 44px; } }
 @media (prefers-reduced-motion: reduce) { .markdown-body * { scroll-behavior: auto !important; } }

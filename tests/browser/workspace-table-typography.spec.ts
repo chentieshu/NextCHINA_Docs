@@ -3,6 +3,10 @@ import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { allocateTableColumns, tableLayoutFromText } from '../../src/utils/table-layout';
 
+type CountKey = 'tables' | 'bodyRows' | 'codeBlocks' | 'diagrams' | 'displayMath' | 'lists' | 'blockquotes';
+type DocumentInventory = Record<CountKey, number> & { id: string; columns: number[] };
+const countKeys: CountKey[] = ['tables', 'bodyRows', 'codeBlocks', 'diagrams', 'displayMath', 'lists', 'blockquotes'];
+
 const article = (id: string) => `/?view=article&article=${id}`;
 const offline = (page: Page) => page.route('**/*', request => new URL(request.request().url()).hostname === '127.0.0.1' ? request.continue() : request.abort());
 async function stable(page: Page) {
@@ -115,7 +119,7 @@ test('inventory every public document with the actual renderer', async ({page}, 
   await offline(page); await page.setViewportSize({width:1440,height:1000});
   const ids: string[] = JSON.parse(readFileSync('content/spaces.json','utf8')).spaces.flatMap((space: {chapterIds: string[]}) => space.chapterIds);
   const markdownFiles = JSON.parse(readFileSync('content/articles.json','utf8')).articles.length;
-  const documents = [];
+  const documents: DocumentInventory[] = [];
   for (const id of ids) {
     await page.goto(article(id)); await stable(page);
     const counts = await page.evaluate(() => {
@@ -126,7 +130,7 @@ test('inventory every public document with the actual renderer', async ({page}, 
     documents.push({id,...counts});
   }
   const inventory = {publicDocuments: ids.length, markdownFiles, jsonDerivedPages: ids.length-markdownFiles, documentsWithTables: documents.filter(doc=>doc.tables>0).length,
-    totals: Object.fromEntries(['tables','bodyRows','codeBlocks','diagrams','displayMath','lists','blockquotes'].map(key=>[key,documents.reduce((sum,doc)=>sum+Number(doc[key as keyof typeof doc]),0)])), documents};
+    totals: Object.fromEntries(countKeys.map(key=>[key,documents.reduce((sum,doc)=>sum+doc[key],0)])), documents};
   expect(inventory.publicDocuments).toBe(new Set(ids).size);
   const target = info.outputPath('rendered-content-inventory.json');
   mkdirSync(path.dirname(target),{recursive:true}); writeFileSync(target,JSON.stringify(inventory,null,2));

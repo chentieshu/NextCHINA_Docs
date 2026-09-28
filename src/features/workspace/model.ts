@@ -3,8 +3,9 @@ import type { AppRoute, GardenRoute } from '../../routing';
 import { gardenHome, readRoute } from '../../routing';
 import { graph, byId, ancestors, childrenById } from '../garden/data';
 import type { KnowledgeNode, KnowledgeEdge } from '../garden/domain';
-import type { Projection } from '../garden/projection';
+import type { GraphLayer, Projection } from '../garden/projection';
 
+export type { GraphLayer };
 export interface Entry {
   id: string; label: string; type: 'folder' | 'document'; parentId: string | null;
   nodeId: string; articleId?: string; children: string[];
@@ -84,7 +85,6 @@ export function outgoingDocuments(chapter: DocChapter, model: ExplorerModel): Do
   return [...ids].map(id => model.documents.get(id)!);
 }
 
-export type GraphLayer = 'atlas' | 'explore' | 'documents';
 function documentNode(article: DocChapter): KnowledgeNode {
   return {
     id: `article:${article.id}`, label: article.title, kind: 'document', parentId: null,
@@ -93,10 +93,15 @@ function documentNode(article: DocChapter): KnowledgeNode {
   };
 }
 
-/** Atlas = domains and hubs. Explore = local tree plus one-hop knowledge edges. Documents = published pages. */
-export function graphProjection(scopeId: string, model: ExplorerModel, layer?: GraphLayer): Projection {
+function hostingHub(articleId: string, model: ExplorerModel) {
+  const context = model.occurrence(articleId)?.nodeId;
+  return context ? ancestors(context).find(node => node.kind === 'hub') ?? byId.get(context) : undefined;
+}
+
+/** Atlas = reading purpose + domains + enabled hubs. Paths = blueprint learningPaths. Explore = local tree + one hop. Documents = published pages. */
+export function graphProjection(scopeId: string, model: ExplorerModel, layer?: GraphLayer, groupId?: string): Projection {
   const scope = byId.get(scopeId);
-  if (!scope && scopeId !== 'root:ai') return { nodes: [], edges: [], total: 0, omitted: 0, key: 'missing', atlas: false };
+  if (!scope && scopeId !== 'root:ai') return { nodes: [], edges: [], total: 0, omitted: 0, key: 'missing', atlas: false, layer: 'explore' };
   const nodes = new Map<string, KnowledgeNode>();
   const edges = new Map<string, KnowledgeEdge>();
   const addEdge = (source: string, target: string, reason: string, type: KnowledgeEdge['type'] = 'browse_child') => {
@@ -122,30 +127,68 @@ export function graphProjection(scopeId: string, model: ExplorerModel, layer?: G
   const resolvedLayer: GraphLayer = layer ?? (scopeId === 'root:ai' || scope?.kind === 'root' ? 'atlas' : 'explore');
 
   if (resolvedLayer === 'documents') {
-    for (const article of model.documents.values()) addArticle(article.id);
-    for (const article of model.documents.values()) {
-      const context = model.occurrence(article.id)?.nodeId;
-      const hub = context ? ancestors(context).find(node => node.kind === 'hub') : null;
-      if (hub) { nodes.set(hub.id, hub); addEdge(hub.id, `article:${article.id}`, '文档收录位置，不代表科学包含关系'); }
-      for (const linked of outgoingDocuments(article, model)) addEdge(`article:${article.id}`, `article:${linked.id}`, '正文显式链接', 'related');
+    const local = scopeId !== 'root:ai' && scope;
+    const articles = local
+      ? [...model.documents.values()].filter(article => {
+          const host = hostingHub(article.id, model);
+          return Boolean(host && (host.id === scopeId || ancestors(host.id).some(node => node.id === scopeId)));
+        })
+      : [...model.documents.values()];
+    for (const article of articles) addArticle(article.id);
+    for (const article of articles) {
+      const host = hostingHub(article.id, model);
+      if (host) {
+        nodes.set(host.id, host);
+        addEdge(host.id, `article:${article.id}`, '文档收录位置，不代表科学包含关系');
+      }
+      for (const linked of outgoingDocuments(article, model)) {
+        if (nodes.has(`article:${linked.id}`) || !local) {
+          addArticle(linked.id);
+          addEdge(`article:${article.id}`, `article:${linked.id}`, '正文显式链接', 'related');
+        }
+      }
+    }
+  } else if (resolvedLayer === 'paths') {
+    const relevant = (graph.learningPaths ?? []).filter(path => {
+      if (scopeId === 'root:ai' || !scope) return true;
+      return path.steps.some(id => id === scopeId || ancestors(id).some(node => node.id === scopeId));
+    });
+    for (const path of relevant) {
+      const pathNodeId = `path:${path.id}`;
+      nodes.set(pathNodeId, {
+        id: pathNodeId, label: path.label, kind: 'path', parentId: null,
+        contentStatus: 'maintained', evidenceStatus: 'editorial', articleBindings: [],
+        summary: '编辑规划的阅读顺序，不是必修课表，也不是逻辑必要条件。'
+      });
+      let previous = pathNodeId;
+      for (const stepId of path.steps) {
+        const node = byId.get(stepId);
+        if (!node) continue;
+        nodes.set(node.id, node);
+        addEdge(previous, node.id, path.label, 'recommended_before');
+        previous = node.id;
+      }
     }
   } else if (resolvedLayer === 'atlas') {
-    for (const group of graph.groups) {
+    for (const group of graph.groups ?? []) {
+      if (groupId && group.id !== groupId) continue;
       nodes.set(`group:${group.id}`, {
         id: `group:${group.id}`, label: group.label, kind: 'group', parentId: 'root:ai',
         contentStatus: 'maintained', evidenceStatus: 'editorial', articleBindings: [],
-        summary: '阅读目的入口', group: group.id
+        summary: '阅读目的入口，不是学科系', group: group.id
       });
     }
     for (const domain of graph.nodes.filter(node => node.kind === 'domain')) {
+      if (groupId && domain.group !== groupId) continue;
       nodes.set(domain.id, domain);
-      if (domain.group) addEdge(`group:${domain.group}`, domain.id, '阅读目的分组');
+      if (domain.group && nodes.has(`group:${domain.group}`)) addEdge(`group:${domain.group}`, domain.id, '阅读目的分组');
     }
     for (const hub of graph.nodes.filter(node => node.kind === 'hub')) {
-      nodes.set(hub.id, hub);
       const domain = ancestors(hub.id).find(node => node.kind === 'domain');
-      if (domain) addEdge(domain.id, hub.id, '专题入口');
-      else if (hub.parentId && nodes.has(hub.parentId)) addEdge(hub.parentId, hub.id, '专题入口');
+      if (groupId && domain?.group !== groupId) continue;
+      nodes.set(hub.id, hub);
+      if (domain) addEdge(domain.id, hub.id, '已启用专题入口');
+      else if (hub.parentId && nodes.has(hub.parentId)) addEdge(hub.parentId, hub.id, '已启用专题入口');
     }
   } else {
     if (scope) nodes.set(scope.id, scope);
@@ -176,7 +219,8 @@ export function graphProjection(scopeId: string, model: ExplorerModel, layer?: G
     edges: [...edges.values()].filter(edge => ids.has(edge.source) && ids.has(edge.target)),
     total: all.length,
     omitted: all.length - visible.length,
-    key: `workspace:${resolvedLayer}:${scopeId}:${visible.map(node => node.id).join('|')}`,
-    atlas: resolvedLayer === 'atlas'
+    key: `workspace:${resolvedLayer}:${scopeId}:${groupId ?? ''}:${visible.map(node => node.id).join('|')}`,
+    atlas: resolvedLayer === 'atlas',
+    layer: resolvedLayer
   };
 }

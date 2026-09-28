@@ -37,9 +37,11 @@ export function tableLayoutFromText(headers: string[], rows: string[][]): TableL
     const header = textWidth(headers[i] ?? '');
     const longest = Math.max(0, ...values.map(textWidth));
     const kind = numeric ? 'numeric' : date ? 'date' : 'text';
-    const minimum = kind === 'numeric' ? clamp(Math.max(longest + 2, header / 2 + 2), 4, 10)
-      : kind === 'date' ? 8 : clamp(Math.max(header / 2 + 2, Math.min(longest + 2, 10)), 6, 12);
-    const preferred = Math.max(minimum, kind === 'text' ? clamp(Math.max(header, longest) + 2, 8, 26) : Math.max(longest, Math.min(header, 10)) + 2);
+    // 1em padding on each side, plus border and subpixel rounding room.
+    const gutter = 2.25;
+    const minimum = kind === 'numeric' ? clamp(Math.max(longest + gutter, header / 2 + gutter), 4.25, 10)
+      : kind === 'date' ? 8.25 : clamp(Math.max(header / 2 + gutter, Math.min(longest + gutter, 10)), 6, 12);
+    const preferred = Math.max(minimum, kind === 'text' ? clamp(Math.max(header, longest) + gutter, 8, 26) : Math.max(longest, Math.min(header, 10)) + gutter);
     return { kind, minimum, preferred };
   });
   return { columns, kind: columns <= 2 ? 'narrow' : columns <= 4 ? 'standard' : 'wide', tracks };

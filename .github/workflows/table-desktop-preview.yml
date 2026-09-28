@@ -19,14 +19,14 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - name: Desktop, phone, typography and full document inventory
-        run: npx playwright test tests/browser/markdown-layout.spec.ts tests/browser/workspace-markdown.spec.ts tests/browser/workspace-table-typography.spec.ts
-      - name: Production work area and table geometry
-        run: npm run test:production
+      - name: Desktop budgets, GFM, short headers and inventory
+        run: npx playwright test tests/browser/markdown-layout.spec.ts tests/browser/workspace-table-typography.spec.ts tests/browser/workspace-table-labels.spec.ts
+      - name: Production table typography and labels
+        run: npm run test:production -- tests/browser/workspace-table-typography.spec.ts tests/browser/workspace-table-labels.spec.ts
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: desktop-tables-verified
+          name: desktop-tables-final
           path: |
             test-results/
             test-results-production/

@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { globalKnowledgeProjection } from '../../src/features/workspace/model';
 import { macroOverviewProjection } from '../../src/features/workspace/macroOverview';
+import { macroGridLayout, MACRO_CARD } from '../../src/features/garden/macroLayout';
 
 async function ready(page: Page) {
   await expect(page.locator('.garden-canvas')).toHaveAttribute('data-layout', 'ready');
@@ -12,7 +13,11 @@ test('macro overview reuses canonical domains and hubs without promoting concept
   const source = globalKnowledgeProjection();
   const macro = macroOverviewProjection(source);
   const ids = new Set(macro.nodes.map(node => node.id));
-  expect(macro.nodes).toEqual(source.nodes.filter(node => ['domain','hub'].includes(node.kind)));
+  expect(macro.nodes.map(node => node.id).sort()).toEqual(source.nodes.filter(node => ['domain','hub'].includes(node.kind)).map(node => node.id).sort());
+  expect(macro.nodes.every(node => source.nodes.includes(node))).toBe(true);
+  const positions = macroGridLayout(macro.nodes);
+  expect(new Set(positions.map(point => `${point.x}:${point.y}`)).size).toBe(macro.nodes.length);
+  expect(Math.max(...positions.map(point => point.x + MACRO_CARD.width))).toBeLessThanOrEqual(1148);
   expect(macro.nodes.length).toBeGreaterThan(0);
   expect(macro.nodes.length).toBeLessThan(source.nodes.length);
   expect(macro.index).toBe(source.index);
@@ -43,6 +48,13 @@ for (const width of [320,390,768,1440,1920]) for (const theme of ['light','dark'
     expect(bounds.height).toBeLessThanOrEqual(bounds.viewHeight + 1);
     expect(bounds.canvasWidth).toBeGreaterThan(200);
     expect(bounds.canvasHeight).toBeGreaterThan(250);
+    const card = page.locator('.garden-node').first();
+    await expect(card).toBeVisible();
+    const effectiveFont = await card.evaluate(node => {
+      const scale = node.getBoundingClientRect().width / (node as HTMLElement).offsetWidth;
+      return parseFloat(getComputedStyle(node.querySelector('strong')!).fontSize) * scale;
+    });
+    expect(effectiveFont).toBeGreaterThanOrEqual(11.5);
     const dock = await page.locator('.ws-ribbon').boundingBox();
     if (width < 960) {
       expect(dock!.y).toBeGreaterThan(800);
@@ -67,6 +79,8 @@ test('graph search, relation index and reading share one shell', async ({page}) 
   await expect(page.getByRole('heading',{name:/Softmax/})).toBeVisible();
   await expect(page.locator('.ws-macro-home')).toHaveAttribute('data-density','knowledge');
   await ready(page);
+  await expect(page.locator('.garden-node[data-active="true"]')).toBeVisible();
+  await page.screenshot({path:'test-results/macro-node-selected.png'});
   await page.getByRole('button',{name:'回到全貌',exact:true}).click();
   await expect(page.locator('.ws-macro-home')).toHaveAttribute('data-density','macro');
   await page.getByRole('button',{name:'显示全部知识关联'}).click();
@@ -82,9 +96,11 @@ test('graph search, relation index and reading share one shell', async ({page}) 
   await ready(page);
 });
 
-test('a failed homepage worker can still open a real document', async ({page}) => {
+test('macro home survives a failed detail worker and retains a reading exit', async ({page}) => {
   await page.route(/layout\.worker/, route => route.abort());
   await page.goto('/');
+  await ready(page);
+  await page.getByRole('button',{name:'知识关联',exact:true}).click();
   await expect(page.getByRole('button',{name:'用列表继续阅读'})).toBeVisible();
   await page.getByRole('button',{name:'用列表继续阅读'}).click();
   await expect(page.locator('[data-document="overview"] .markdown-body')).toBeVisible();

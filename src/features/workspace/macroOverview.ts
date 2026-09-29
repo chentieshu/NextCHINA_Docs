@@ -7,7 +7,10 @@ import type { Projection } from '../garden/projection';
  * causal claim is added; the complete original relation index remains available.
  */
 export function macroOverviewProjection(source: Projection): Projection {
-  const nodes = source.nodes.filter(node => node.kind === 'domain' || node.kind === 'hub');
+  const domains = source.nodes.filter(node => node.kind === 'domain');
+  const hubs = source.nodes.filter(node => node.kind === 'hub');
+  const grouped = domains.flatMap(domain => [domain, ...hubs.filter(hub => ancestors(hub.id).some(parent => parent.id === domain.id))]);
+  const nodes = [...new Map([...grouped, ...hubs].map(node => [node.id, node])).values()];
   const ids = new Set(nodes.map(node => node.id));
   const representative = (id: string): string | undefined => {
     if (ids.has(id)) return id;
@@ -28,5 +31,5 @@ export function macroOverviewProjection(source: Projection): Projection {
       reason: from === edge.source && to === edge.target ? edge.reason : '下级知识存在显式关联；不代表整个领域的因果或先修关系' });
   }
   return { ...source, nodes, edges: [...edges.values()], omitted: source.total - nodes.length,
-    key: `global-macro:${nodes.length}:${edges.size}`, atlas: true, layer: 'atlas' };
+    key: `global-macro:v2:${nodes.length}:${edges.size}`, atlas: true, layer: 'atlas' };
 }

@@ -182,6 +182,7 @@ test('one global knowledge network is independent of the current document',async
 test('graph module failure leaves the explorer and reading available',async({page})=>{
   await page.route(/layout\.worker/,route=>route.abort());
   await page.goto(at('branch:llm:math/tokenization',true));
+  await page.getByRole('button',{name:'知识关联',exact:true}).click();
   await expect(page.getByRole('button',{name:'用列表继续阅读'})).toBeVisible();
   await page.getByRole('button',{name:'用列表继续阅读'}).click();
   await expect(page.locator('.ws-scroll .markdown-body')).toBeVisible();

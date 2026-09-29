@@ -1,7 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import { FileText, Folder, ArrowUpRight, Network } from 'lucide-react';
 import type { AppRoute } from '../../routing';
-import { byId, graph } from '../garden/data';
+import { byId } from '../garden/data';
 import { resourceMeta } from '../garden/hub-data';
 import { documentRoute, folderRoute, outgoingDocuments, type ExplorerModel } from './model';
 import { LazyBoundary } from '../../components/LazyBoundary';
@@ -16,7 +16,7 @@ export function WorkspaceContent({ route, model, isLight, onOpen }: Props) {
   const article = currentDocument(route, model);
   const scopeId = route.kind === 'garden' ? route.scopeId : 'root:ai';
   const scope = byId.get(scopeId);
-  const recovery = () => onOpen({ kind: 'home' });
+  const recovery = () => onOpen(documentRoute('overview'));
   if (article) {
     const meta = resourceMeta(article.id), independent = meta?.kind === 'independent-explanation';
     return <div className="ws-reading-column" data-document={article.id} data-reading-layout={article.readingLayout ?? 'prose'}>

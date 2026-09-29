@@ -157,7 +157,7 @@ test('old topic links open the same reader; rankings and pricing keep original c
 test('legacy local graph URLs canonicalize to the one global AI graph', async({page})=>{
   await page.goto(at('branch:llm:math/tokenization',true));
   await expect(page.locator('.ws-graph-pane')).toHaveAttribute('data-layer','global');
-  await expect(page.getByText('全局关系图',{exact:true})).toBeVisible();
+  await expect(page.getByText('AI 知识图谱',{exact:true})).toBeVisible();
   await expect.poll(()=>new URL(page.url()).searchParams.get('scope')).toBe('root:ai');
   await bounds(page);
 });
@@ -179,12 +179,14 @@ test('one global knowledge network is independent of the current document',async
   await page.reload();await expect(page.locator('.garden-canvas')).toHaveAttribute('data-layout','ready');
 });
 
-test('graph module failure leaves the explorer and reading available',async({page})=>{
+test('legacy layout worker failure leaves the new graph, navigation and reading available',async({page})=>{
   await page.route(/layout\.worker/,route=>route.abort());
   await page.goto(at('branch:llm:math/tokenization',true));
-  await page.getByRole('button',{name:'知识关联',exact:true}).click();
-  await expect(page.getByRole('button',{name:'用列表继续阅读'})).toBeVisible();
-  await page.getByRole('button',{name:'用列表继续阅读'}).click();
+  await expect(page.locator('.garden-canvas')).toHaveAttribute('data-layout','ready');
+  await page.getByRole('button',{name:'AI 学习导航',exact:true}).click();
+  await expect(page.getByRole('complementary',{name:'AI 学习导航'})).toBeVisible();
+  await page.getByRole('button',{name:'关闭学习导航',exact:true}).click();
+  await searchDoc(page,'Token 与分词');
   await expect(page.locator('.ws-scroll .markdown-body')).toBeVisible();
 });
 

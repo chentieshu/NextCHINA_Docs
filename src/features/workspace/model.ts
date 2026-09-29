@@ -10,7 +10,7 @@ export interface Entry {
   nodeId: string; articleId?: string; children: string[];
 }
 export const folderRoute = (id: string, graphView = false): GardenRoute => ({ ...gardenHome(), scopeId: id, display: graphView ? 'graph' : 'list' });
-export const documentRoute = (id: string, nodeId?: string): AppRoute => ({ kind: 'article', chapterId: id,
+export const documentRoute = (id: string, nodeId?: string): Extract<AppRoute, { kind: 'article' }> => ({ kind: 'article', chapterId: id,
   returnTo: nodeId ? `?view=garden&scope=${encodeURIComponent(nodeId)}&display=list` : undefined });
 export const routeKey = (route: AppRoute): string => route.kind === 'home' ? 'article:overview' : route.kind === 'article' ? `article:${route.chapterId}` : `${route.display === 'graph' ? 'graph' : 'folder'}:${route.scopeId}:${route.nodeId ?? ''}`;
 export const isGraphRoute = (route: AppRoute): route is GardenRoute => route.kind === 'garden' && route.display === 'graph';
@@ -113,7 +113,7 @@ function knowledgeIndex(): MacroIndexEntry[] {
   });
   return index;
 }
-/** One network. The unfocused map is every recorded knowledge association, placed under its domain, not a second diagram and not the empty outline. */
+/** Legacy canvas projection. The stable homepage atlas uses buildKnowledgeIndex instead. */
 export function globalKnowledgeProjection(focusId?: string | null): Projection {
   const nodes = new Map<string, KnowledgeNode>();
   const extra = new Map<string, KnowledgeEdge>();

@@ -3,6 +3,7 @@ import { RotateCcw, Maximize2 } from 'lucide-react';
 import type { KnowledgeIndex } from './knowledgeIndex';
 import type { NetworkSettings, NetworkStats } from './networkEngine.js';
 import { DEFAULT_NETWORK_SETTINGS } from './networkPreferences.js';
+import '../../styles/graphControls.css';
 
 interface Props {
   index: KnowledgeIndex; settings: NetworkSettings; stats: NetworkStats; selectedId: string | null;
@@ -10,11 +11,11 @@ interface Props {
 }
 export default function GraphSettings({ index, settings, stats, selectedId, onChange, onFit }: Props) {
   const change = <K extends keyof NetworkSettings>(key: K, value: NetworkSettings[K]) => onChange({ ...settings, [key]: value });
-  const switches: { key: 'structure' | 'relations' | 'prerequisites' | 'references'; label: string; note: string; count: number; tone: string }[] = [
-    { key: 'structure', label: '目录归属', note: '这个知识点属于哪个领域或专题。', count: index.graph.edges.filter(e => e.type === 'browse_child' && e.source !== 'root:ai').length, tone: 'structure' },
-    { key: 'relations', label: '概念联系', note: '可以放在一起理解，不代表因果。', count: index.relations.filter(r => r.role === 'related').length, tone: 'related' },
-    { key: 'prerequisites', label: '建议先学', note: '原数据明确记录的先后建议。', count: index.relations.filter(r => r.role === 'before').length, tone: 'before' },
-    { key: 'references', label: '专题引用', note: '不同专题复用同一个知识点。', count: index.relations.filter(r => r.role === 'reference').length, tone: 'reference' }
+  const switches: { key: 'structure' | 'relations' | 'prerequisites' | 'references'; label: string; note: string; tone: string }[] = [
+    { key: 'structure', label: '目录归属', note: '这个知识点属于哪个领域或专题。', tone: 'structure' },
+    { key: 'relations', label: '概念联系', note: '可以放在一起理解，不代表因果。', tone: 'related' },
+    { key: 'prerequisites', label: '建议先学', note: '原数据明确记录的先后建议。', tone: 'before' },
+    { key: 'references', label: '专题引用', note: '不同专题复用同一个知识点。', tone: 'reference' }
   ];
   return <div className="og-settings-content">
     <p className="og-panel-intro">只调整你看到的图，不改变知识内容。设置会保存在当前浏览器。</p>

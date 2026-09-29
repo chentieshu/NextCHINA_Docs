@@ -81,13 +81,20 @@ test('bad diagram recovers after source update; theme rerender remains usable', 
 for (const width of [390, 1440]) {
   test(`unified workspace custom controls / ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
+    // Theme-toggle coverage needs an explicit initial preference, not the app's default.
+    await page.addInitScript(() => localStorage.setItem('nextchina-theme', 'light'));
     await page.goto('/');
+    await expect(page.locator('.workspace')).toHaveAttribute('data-theme', 'light');
     if (width < 960) await page.getByRole('button', { name: '打开文档侧栏', exact: true }).click();
     await page.getByRole('button', { name: '全库搜索', exact: true }).click();
     await page.getByRole('searchbox', { name: '搜索全部文档', exact: true }).fill('苹果风格');
     await page.locator('.ws-search-results button').first().click();
     await expect(page.getByRole('heading', { level: 1, name: '苹果风格高端产品视频制作框架' })).toBeVisible();
     await page.getByRole('button', { name: '切换为暗黑模式', exact: true }).and(page.locator(':visible')).click();
+    await expect(page.locator('.workspace')).toHaveAttribute('data-theme', 'dark');
+    await checkFlatLayout(page);
+    await page.getByRole('button', { name: '切换为明亮模式', exact: true }).and(page.locator(':visible')).click();
+    await expect(page.locator('.workspace')).toHaveAttribute('data-theme', 'light');
     await checkFlatLayout(page);
   });
 }

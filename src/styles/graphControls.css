@@ -1,0 +1,45 @@
+/* Graph settings own their form controls. Inspector search-input rules must not
+   erase checked states, slider tracks or the actual hit area. */
+.workspace .og-settings-content input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none; display: inline-block;
+  box-sizing: border-box; width: 17px; height: 17px; min-height: 17px;
+  flex: 0 0 17px; padding: 0; margin: 0;
+  border: 1.5px solid var(--ui-muted); border-radius: 4px;
+  background-color: var(--page-bg); background-image: none;
+  background-position: center; background-repeat: no-repeat; background-size: 12px;
+  vertical-align: middle; cursor: pointer;
+}
+.workspace .og-settings-content input[type="checkbox"]:checked {
+  background-color: var(--ui-focus); border-color: var(--ui-focus);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3 8 3.2 3.2L13 4.5' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.workspace[data-theme="dark"] .og-settings-content input[type="checkbox"]:checked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3 8 3.2 3.2L13 4.5' fill='none' stroke='%231e1e1e' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.workspace .og-settings-content input[type="checkbox"]:disabled { opacity: .35; cursor: not-allowed; }
+.workspace .og-settings-content input[type="range"] {
+  appearance: none; -webkit-appearance: none; display: block;
+  width: 100%; max-width: 100%; height: 28px; min-height: 28px;
+  box-sizing: border-box; padding: 0; margin: 0; border: 0;
+  background: transparent; cursor: pointer; accent-color: var(--ui-focus);
+}
+.workspace .og-settings-content input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%; height: 4px; border: 0; border-radius: 3px; background: var(--ui-border);
+}
+.workspace .og-settings-content input[type="range"]::-webkit-slider-thumb {
+  appearance: none; -webkit-appearance: none; width: 16px; height: 16px;
+  margin-top: -6px; border-radius: 50%; border: 2px solid var(--ui-panel); background: var(--ui-focus);
+}
+.workspace .og-settings-content input[type="range"]::-moz-range-track {
+  height: 4px; border: 0; border-radius: 3px; background: var(--ui-border);
+}
+.workspace .og-settings-content input[type="range"]::-moz-range-thumb {
+  width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--ui-panel); background: var(--ui-focus);
+}
+.workspace .og-settings-content input:focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 3px; }
+@media (pointer: coarse) { .workspace .og-settings-content input[type="range"] { height: 44px; min-height: 44px; } }
+@media (forced-colors: active) {
+  .workspace .og-settings-content input[type="checkbox"],
+  .workspace .og-settings-content input[type="range"] { appearance: auto; -webkit-appearance: auto; }
+  .workspace .og-settings-content input[type="checkbox"]:checked { background-image: none; border-color: Highlight; }
+}

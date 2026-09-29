@@ -1,7 +1,9 @@
 import type { GardenGraph } from '../garden/domain';
 export interface NetworkSettings {
-  structure: boolean; relations: boolean; colored: boolean; labels: number;
-  onlyResources: boolean; groups: string[] | null;
+  structure: boolean; relations: boolean; prerequisites: boolean; references: boolean;
+  colored: boolean; labels: number; nodeSize: number; lineWidth: number; lineOpacity: number;
+  onlyResources: boolean; groups: string[] | null; detail: 'all' | 'overview' | 'concepts';
+  focusNeighbors: boolean; wheelMode: 'zoom' | 'pan';
 }
 export interface NetworkStats { nodes: number; total: number; edges: number; zoom: number; }
 export interface NetworkAPI {

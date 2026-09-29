@@ -55,10 +55,13 @@ test('native pan and zoom do not mutate nodes or relationships',async({page})=>{
   await expect(page.locator('.kg-node:visible')).toHaveCount(count);
 });
 
-test('mobile note dialog traps focus and can be closed',async({page})=>{
+test('mobile note is docked without a blackout or focus trap',async({page})=>{
   await page.setViewportSize({width:390,height:844});await page.goto('/');await ready(page);await choose(page,'Softmax');
-  await expect(page.getByRole('dialog',{name:'知识节点简报'})).toBeVisible();
-  await page.keyboard.press('Tab');expect(await page.locator('.og-inspector').evaluate(e=>e.contains(document.activeElement))).toBe(true);
-  await page.keyboard.press('Escape');await expect(page.getByRole('dialog',{name:'知识节点简报'})).toHaveCount(0);
+  const note=page.getByRole('complementary',{name:'知识节点简报'});
+  await expect(note).toBeVisible();
+  await expect(page.locator('.og-stage [aria-modal="true"],.og-stage [inert]')).toHaveCount(0);
+  const drawing=await page.locator('.og-network-host').boundingBox(),panel=await note.boundingBox();
+  expect(drawing!.height).toBeGreaterThan(135);expect(panel!.y).toBeGreaterThanOrEqual(drawing!.y+drawing!.height-1);
+  await page.getByRole('button',{name:'关闭知识节点简报',exact:true}).click();await expect(note).toHaveCount(0);
   await page.getByRole('button',{name:'打开文档侧栏',exact:true}).click();await expect(page.getByRole('dialog',{name:'文档侧栏'})).toBeVisible();
 });

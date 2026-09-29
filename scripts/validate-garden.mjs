@@ -118,6 +118,37 @@ export function buildGardenModel(blueprint, publishedArticleIds) {
       articleBindings: boundArticles.size, learningPaths: paths.size } };
 }
 
+export function validateMasterOutline(outline, blueprint, graph) {
+  assert.equal(outline.schemaVersion, 1, 'Unsupported master outline schema');
+  assert.equal(outline.graphPolicy.graphCount, 1, 'The product must expose exactly one knowledge graph');
+  assert.equal(outline.graphPolicy.graphId, blueprint.rootId, 'Master outline graph root mismatch');
+  assert.equal(outline.graphPolicy.pageSpecificGraphs, false, 'Page-specific graphs are not allowed');
+  const nodeIds = new Set(graph.nodes.map(node => node.id));
+  const stageIds = new Set();
+  const placedTopics = new Set();
+  for (const stage of outline.stages) {
+    assert.ok(slug(stage.id) && text(stage.label) && text(stage.goal) && !stageIds.has(stage.id), `Invalid/duplicate master stage: ${stage.id}`);
+    stageIds.add(stage.id);
+    assert.ok(Array.isArray(stage.refs) && stage.refs.length, `Empty master stage: ${stage.id}`);
+    for (const id of stage.refs) {
+      assert.ok(nodeIds.has(id), `Unknown master-outline node: ${id}`);
+      assert.ok(id.startsWith('topic:'), `Master stage must reference a topic placement: ${id}`);
+      placedTopics.add(id);
+    }
+  }
+  const blueprintTopics = new Set(blueprint.domains.flatMap(domain => domain.topics.map(topic => `topic:${topic.id}`)));
+  assert.deepEqual([...placedTopics].sort(), [...blueprintTopics].sort(), 'Master outline must place every canonical topic at least once');
+  const reuse = new Set();
+  for (const example of outline.reuseExamples) {
+    assert.ok(nodeIds.has(example.node), `Unknown reused canonical node: ${example.node}`);
+    assert.ok(example.node.startsWith('concept:'), 'Reuse examples must point to canonical concepts');
+    assert.ok(!reuse.has(example.node) && example.usedBy.length > 1 && text(example.rule), `Invalid reuse example: ${example.node}`);
+    reuse.add(example.node);
+  }
+  assert.ok(outline.knowledgeUnitContract.length >= 8, 'Knowledge-unit completion contract is incomplete');
+  return { stages: stageIds.size, placedTopics: placedTopics.size, reuseExamples: reuse.size };
+}
+
 /** Small, deterministic numeric fixture. This is not a full neural-network runtime. */
 export function validateAttentionExample(example, graph, publishedArticleIds) {
   assert.equal(example.schemaVersion, 1);
@@ -163,9 +194,11 @@ export function validateAttentionExample(example, graph, publishedArticleIds) {
 
 export function loadGarden(root = repositoryRoot) {
   const blueprint = addKnowledgeBindings(readJSON(root, 'content/garden/blueprint.json'), readKnowledgeUnits(root));
+  const masterOutline = readJSON(root, 'content/garden/master-outline.json');
   const spaces = readJSON(root, 'content/spaces.json');
   const publishedArticleIds = new Set(spaces.spaces.flatMap(space => space.chapterIds));
   const graph = buildGardenModel(blueprint, publishedArticleIds);
+  const masterOutlineStats = validateMasterOutline(masterOutline, blueprint, graph);
   const examples = blueprint.microscopes.map(id => {
     assert.ok(slug(id), 'Invalid microscope file ID');
     const example = readJSON(root, `content/garden/microscopes/${id}.json`);
@@ -179,19 +212,19 @@ export function loadGarden(root = repositoryRoot) {
     assert.ok(article.file.startsWith('content/') && !article.file.split('/').includes('..') && article.file.endsWith('.md'));
     assert.ok(existsSync(path.join(root, article.file)), `Missing article file: ${article.file}`);
   }
-  return { blueprint, graph, examples, computed, publishedArticleIds };
+  return { blueprint, masterOutline, masterOutlineStats, graph, examples, computed, publishedArticleIds };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   try {
-    const { graph, computed } = loadGarden();
+    const { graph, computed, masterOutlineStats } = loadGarden();
     const args = process.argv.slice(2);
     if (args.length) {
       assert.ok(args.length === 2 && args[0] === '--emit', 'Usage: node scripts/validate-garden.mjs [--emit output.json]');
       writeFileSync(path.resolve(args[1]), JSON.stringify(graph, null, 2) + '\n');
     }
     console.log(JSON.stringify({ status: 'pass', scope: 'knowledge-structure-and-numeric-fixtures', ...graph.stats,
-      unmappedArticleIds: graph.unmappedArticleIds, numericExamples: computed.length, factReverification: false }, null, 2));
+      unmappedArticleIds: graph.unmappedArticleIds, numericExamples: computed.length, masterOutline: masterOutlineStats, factReverification: false }, null, 2));
   } catch (error) {
     console.error(error instanceof Error ? error.message : error);
     process.exitCode = 1;

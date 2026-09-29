@@ -66,7 +66,7 @@ export function Explorer({ model, route, onOpen, searchMode, onSearchMode, onClo
       return <div key={entry.id} role="treeitem" aria-level={depth + 1} aria-posinset={pos} aria-setsize={size} aria-selected={selected}
         aria-expanded={folder ? isOpen : undefined} tabIndex={tabbable === entry.id ? 0 : -1} data-entry-id={entry.id} data-article-id={entry.articleId} data-planned={!(counts.get(entry.id) ?? 0)}
         className="ws-tree-row" style={{ '--tree-depth': Math.min(depth, 5) } as React.CSSProperties} title={entry.label}
-        onFocus={() => setFocusId(entry.id)} onClick={() => { if (folder) toggle(entry.id); open(entry); }}
+        onFocus={() => setFocusId(entry.id)} onClick={() => { if (folder) toggle(entry.id); else open(entry); }}
         onKeyDown={event => {
           const key = event.key; if (!['ArrowDown','ArrowUp','ArrowLeft','ArrowRight','Home','End','Enter',' '].includes(key)) return;
           event.preventDefault();
@@ -76,7 +76,7 @@ export function Explorer({ model, route, onOpen, searchMode, onSearchMode, onClo
           if (key === 'End') focus(visible.at(-1)!.entry.id);
           if (key === 'ArrowRight' && folder) { if (!isOpen) toggle(entry.id); else if (visible[index + 1]?.depth > depth) focus(visible[index + 1].entry.id); }
           if (key === 'ArrowLeft') { if (folder && isOpen) toggle(entry.id); else if (entry.parentId) focus(entry.parentId); }
-          if (key === 'Enter') open(entry);
+          if (key === 'Enter') { if (folder) toggle(entry.id); else open(entry); }
           if (key === ' ') { if (folder) toggle(entry.id); else open(entry); }
         }}>
         <span className="ws-tree-chevron" aria-hidden="true" onClick={event => { if (folder) { event.stopPropagation(); toggle(entry.id); } }}>{folder && <ChevronRight data-open={isOpen} />}</span>

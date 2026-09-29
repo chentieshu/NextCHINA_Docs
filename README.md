@@ -1,48 +1,34 @@
-# NextCHINA · AI 知识工作区
+# NextCHINA · AI 数字花园
 
-面向普通读者、开发者与研究者的中文 AI 知识库。首页是一张宏观知识地图，左侧目录选择文档，主区域单篇阅读。地图、知识点和文档是同一工作区的不同入口，不是互相分离的网站。目标是连接 AI 原理、数据、模型、系统、实践、评测、产业与社会影响；知识提纲不等于全部内容已经写完。
+面向普通读者、开发者与研究者的中文 AI 知识工作区。首页是 Obsidian 风格的全局点线知识网络，左侧文件树选择文档，主区域单篇阅读。无卡片式分区、无应用 titlebar、无多文档标签。知识提纲不等于所有内容已经完成。
 
-项目保持纯静态：GitHub 保存 MD/JSON，React/Vite 装配和渲染，GitHub Actions 验证与构建，Wrangler 发布至 Cloudflare Workers Static Assets。不使用 MDX，不引入数据库、CMS 服务端或运行时内容 API。
+现行交互契约见 [数字花园设计](docs/obsidian-digital-garden.md)。早期六区卡片、多标签和局部图设计不再作为现行需求。
 
-## 工作区使用
+## 使用
 
-打开网站直接进入唯一的宏观知识地图。地图复用知识数据中的六个区域：建立全景、数学/数据与学习、模型/算法与模态、系统/Agent 与工程、评测/产品与实践、应用/治理与前沿。
+文件夹点击只展开、收起；点击文档才切换到阅读器。Ctrl/Cmd+K 打开侧栏全文搜索，Ctrl/Cmd+反斜杠切换侧栏。侧栏保留折叠所有目录、定位当前文档和显示待完善大纲。
 
-点击领域或专题，只选择知识对象，不重建另一张密集图。详情展示下级知识、建议先学、相关知识、专题引用及被复用、阅读资料与学习路径。搜索可直接到达概念节点；跨区连线与区域“查看关联”入口可追溯原始关系两端和说明。
+点线图支持鼠标拖动、滚轮/双指缩放、搜索定位、方向键平移、加减号缩放和 0 显示全图。点击节点打开按需知识笔记，显示原始关系及阅读入口；默认不占用右侧说明栏。原有主题偏好被保留，未设置时默认暗色。
 
-地图按可用宽度呈现三列、两列或单列。手机使用正常滚动阅读，不要求拖拽画布或缩放文字。桌面详情区保持固定占位；窄屏详情采用可关闭的焦点约束面板。
+节点位置不会因选择、缩放或筛选重新计算。知识笔记与资料仍复用规范节点 ID 和文章 ID。文章打开后可返回原节点；URL 保留选择，支持刷新和浏览器历史。
 
-所有现有文档仍可从侧栏文件树或全文搜索打开。没有 titlebar，也没有多文档标签页；LLM 等专题仍可逐层展开。侧栏可以折叠所有目录、定位当前文档、显示待完善大纲。Ctrl/Cmd+K 搜索，Ctrl/Cmd+反斜杠切换侧栏。
+## 架构与内容事实源
 
-从知识点打开资料后，阅读器提供“返回知识地图”入口并保留原节点。继续阅读、浏览器后退/前进和刷新不把节点信息变成临时局部状态。文档模式可另开“关联资料”查看收录位置与正文链接；地图模式使用自己的知识详情，不再叠加另一份资料侧栏。
+保持纯静态架构：GitHub MD/JSON → 生成与校验 → React/Vite → Cloudflare Workers Static Assets。不引入数据库、CMS 服务端、运行时内容 API 或 MDX。
 
-节点和文章数量由事实源及构建产物统计，不在本说明重复维护。现行契约见 [宏观知识地图设计](docs/macro-knowledge-map-redesign.md) 和 [统一工作区 UX](docs/unified-workspace-ux.md)；内容路线见 [知识库规划](docs/ai-knowledge-roadmap.md)。早期文档中的多标签和局部图交互不再作为现行需求。
+- content/articles.json：文章注册及独立知识单元绑定；content/spaces.json：公开阅读页面。
+- content/models/**/*.md 与 content/tutorials/**/*.md：正文。
+- content/data/products/*.json、benchmarks.json、model-api-prices.json、sources.json：产品、评测、报价及来源。
+- content/garden/blueprint.json：规范知识框架；master-outline.json：学习大纲；plans/topic-hubs-v2.json 与 hub-integration.json：专题和资料放置。
+- src/generated/garden.json：构建产物，不手改。点线引擎直接读取完整数据，不使用原型子集。
 
-## 内容事实源
+每个概念只定义一次，文章可以在多个专题出现引用入口，但正文不复制。目录归属、知识关联、建议先学、专题引用和学习路径分别表达；布局不添加语义边。直接资料、引用资料、下级资料分开，不以总览填满独立讲解缺口。
 
-- `content/articles.json`：Markdown 元数据及独立知识单元的概念、分支、来源绑定。
-- `content/spaces.json`：公开页面集合和原始顺序，旧链接保持兼容。
-- `content/models/**/*.md`：模型原理和独立知识正文。
-- `content/tutorials/video/apple-style-premium-product-video.md`：视频制作教程，同一文章可以从视频专题引用。
-- `content/data/products/*.json`：产品事实；`benchmarks.json`、`model-api-prices.json`、`sources.json`：评测、报价与来源。
-- `content/garden/blueprint.json`：知识覆盖框架；`plans/topic-hubs-v2.json` 与 `hub-integration.json`：递归分支和资源放置。
-- `src/data/essays.ts` 装配 MD；`generated-docs.ts` 从 JSON 派生正文；`docs.ts` 转义美元价格。
+旧画布模块和 ELK 同源 Worker 生成脚本仍保留，新首页不再依赖它们。正文仍采用 CommonMark + GFM + KaTeX + Mermaid，HTML/JSX 不作为可执行正文。见 [Markdown 规范](docs/markdown-rendering.md) 和 [图示规范](docs/diagram-rendering.md)。
 
-`src/generated/` 和 `public/garden-generated/` 是开发/构建前生成的产物，不提交、不手改。首页通过 `buildKnowledgeIndex` 使用生成的同一份知识数据，不需要 React Flow 或布局 Worker。旧画布模块及 ELK 同源 Worker 生成脚本尚保留，不能将首页迁移误写为它们已经全部删除。
+## 验证与部署
 
-## 关系与证据规则
-
-目录归属、知识关联、建议先学、专题引用、学习路径分别表达。路径顺序不自动生成先修边；汇总连线不升级为领域因果。每条原始语义边必须在内部关系或跨区关系包中恰好出现一次，两端均可探索。
-
-阅读资料分为直接绑定、通过专题引用、下级资料。只有本节点直接绑定的独立讲解才计为本节点独立讲解资料。没有用同一篇总览填充所有空分支。
-
-目录和 UI 调整不会刷新事实核验日期。Arena、Artificial Analysis、Terminal-Bench 各自保留版本、任务与口径，不拼成混合总榜。Agent 成绩不当作裸模型能力；模型名称相似不证明版本相同。
-
-报价保留币种、周期、地区与适用条件。API 输入/输出/缓存计费与应用订阅分开。未知值不猜测，空 plans 不等于免费，页面能构建不等于内容已在线核验。独立讲解样例程序通过不等于专家复核或商业模型实测。
-
-## 安装、验证与部署
-
-本地使用 Node 24、Python 3 和仓库锁文件：
+使用 Node 24、Python 3 和仓库锁文件：
 
 ```sh
 npm ci --no-audit --no-fund
@@ -52,10 +38,8 @@ npm run test:browser
 npm run test:production
 ```
 
-`npm run dev` 自动准备知识数据；构建包含数据、花园、专题、知识样例、Markdown 渲染、TypeScript 与 Vite 校验。浏览器回归覆盖实际工作区、所有文档以及地图的关系完整性、响应式、选中状态、阅读返回与键盘交互。生产测试访问实际 dist 产物。Chromium 自动验收不等价于真实 iOS Safari 验收。
+构建包含既有数据、花园、专题、知识样例、Markdown、TypeScript 和 Vite 检查。浏览器回归验证实际阅读器和完整图谱，不用原型测试代替集成测试。生产测试访问 dist 产物；Chromium 回归不等于 iOS Safari 真机验收。
 
-正文采用 CommonMark + GFM + KaTeX 数学 + Mermaid；HTML/JSX 不作为可执行正文。无阴影外观保留必要 HTML 语义。见 [Markdown规范](docs/markdown-rendering.md) 与 [图示规范](docs/diagram-rendering.md)。
+生产链保留：push main → 安装 → 构建 → 浏览器回归 → 生产产物验证 → Wrangler。分支提交或 PR 更新不等于线上发布。wrangler.jsonc 指向 dist；CLOUDFLARE_ACCOUNT_ID 与 CLOUDFLARE_API_TOKEN 仍保存在 Actions secrets，不写入代码。
 
-生产链：push main → npm ci → 数据/代码构建 → 浏览器回归 → 生产产物验证 → Wrangler 直传。
-
-GitHub Actions secrets 为 `CLOUDFLARE_ACCOUNT_ID` 与 `CLOUDFLARE_API_TOKEN`，不写入仓库。关闭旧 Cloudflare Git 自动构建，避免双重部署。`wrangler.jsonc` 指向 `./dist`。本地已完成认证可执行 `npm run deploy`，正式发布前应完成浏览器验收。
+界面重构不重新核验或改写榜单、价格、模型事实与证据日期。未知数据不猜测，Agent 系统成绩不当作裸模型能力排名；样例程序或构建通过不等于专家复核。

@@ -96,7 +96,7 @@ for (const width of [320,390,768,1024,1280,1440,1920]) for (const theme of ['lig
 test('root opens the macro graph; search reads documents in the same titlebar-free shell', async ({page}) => {
   await page.goto('/');
   await expect(page.locator('.garden-canvas')).toHaveAttribute('data-layout','ready');
-  await expect(page.locator('.ws-macro-home')).toHaveAttribute('data-density','macro');
+  await expect(page.locator('.ws-macro-home')).toHaveAttribute('data-density','network');
   await expect(page.locator('.ws-reading-header,.ws-tab-header')).toHaveCount(0);
   await expect(page.getByRole('button',{name:'进入文档',exact:true})).toHaveCount(0);
   const shell = await page.locator('.workspace').elementHandle();
@@ -157,7 +157,7 @@ test('old topic links open the same reader; rankings and pricing keep original c
 test('legacy local graph URLs canonicalize to the one global AI graph', async({page})=>{
   await page.goto(at('branch:llm:math/tokenization',true));
   await expect(page.locator('.ws-graph-pane')).toHaveAttribute('data-layer','global');
-  await expect(page.getByText('宏观关系图',{exact:true})).toBeVisible();
+  await expect(page.getByText('全局关系图',{exact:true})).toBeVisible();
   await expect.poll(()=>new URL(page.url()).searchParams.get('scope')).toBe('root:ai');
   await bounds(page);
 });

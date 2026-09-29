@@ -12,6 +12,7 @@ import { Explorer } from './Explorer';
 import { WorkspaceContent, RelatedContent, currentDocument } from './Content';
 import '../../styles/workspace.css';
 import '../../styles/atlas.css';
+import '../../styles/obsidian.css';
 const WorkspaceGraph = lazy(() => import('./WorkspaceGraph'));
 const model = buildExplorer([...DOC_CHAPTERS, ...ESSAY_CHAPTERS]);
 const scrollPositions = new Map<string, number>();

@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import { buildExplorer, graphProjection, globalKnowledgeProjection, documentRoute, folderRoute } from '../../src/features/workspace/model';
+import { buildExplorer, globalKnowledgeProjection, documentRoute, folderRoute } from '../../src/features/workspace/model';
 import { graph, byId } from '../../src/features/garden/data';
 import { readRoute, routeUrl, safeGardenReturn } from '../../src/routing';
 import type { DocChapter } from '../../src/types';
@@ -61,23 +61,7 @@ test('one explorer covers every published document and preserves canonical owner
   const softmaxFocus=globalKnowledgeProjection('concept:softmax');
   expect(softmaxFocus.nodes.some(node=>node.id==='concept:softmax')).toBe(true);
   expect(softmaxFocus.nodes.some(node=>node.id==='concept:self-attention')).toBe(true);
-  const atlas=graphProjection('root:ai',model);
-  expect(atlas.atlas).toBe(true);
-  expect(atlas.layer).toBe('atlas');
-  expect(atlas.nodes.filter(node=>node.kind==='document')).toHaveLength(0);
-  expect(atlas.nodes.filter(node=>node.kind==='group')).toHaveLength(graph.groups.length);
-  expect(atlas.nodes.filter(node=>node.kind==='domain')).toHaveLength(graph.nodes.filter(node=>node.kind==='domain').length);
-  expect(atlas.nodes.filter(node=>node.kind==='hub')).toHaveLength(graph.nodes.filter(node=>node.kind==='hub').length);
-  expect(atlas.edges.every(edge=>atlas.nodes.some(node=>node.id===edge.source)&&atlas.nodes.some(node=>node.id===edge.target))).toBe(true);
-  const docs=graphProjection('root:ai',model,'documents');
-  expect(docs.nodes.filter(node=>node.kind==='document')).toHaveLength(chapters.length);
-  expect(docs.edges.every(edge=>docs.nodes.some(node=>node.id===edge.source)&&docs.nodes.some(node=>node.id===edge.target))).toBe(true);
-  const paths=graphProjection('root:ai',model,'paths');
-  expect(paths.nodes.filter(node=>node.kind==='path')).toHaveLength(graph.learningPaths.length);
-  expect(paths.edges.every(edge=>edge.type==='recommended_before')).toBe(true);
-  const local=graphProjection('branch:llm:math/tokenization',model);
-  expect(local.layer).toBe('explore');
-  expect(local.nodes.some(node=>node.id==='article:llm-tokenization'||node.articleBindings.some(binding=>binding.articleId==='llm-tokenization'))).toBe(true);
+  // The product intentionally exposes no page-, topic-, document-, or path-specific graph.
   expect(safeGardenReturn('https://evil.example')).toBeUndefined();
   expect(safeGardenReturn('?view=article&article=bad')).toBeUndefined();
   expect(readRoute(routeUrl(documentRoute('llm-tokenization','branch:llm:math/tokenization')))).toEqual(documentRoute('llm-tokenization','branch:llm:math/tokenization'));
@@ -166,6 +150,14 @@ test('old topic links open the same reader; rankings and pricing keep original c
     if(id==='terminal-bench') await expect(page.locator('.ws-evidence')).toContainText('不是裸模型能力排名');
     await bounds(page);
   }
+});
+
+test('legacy local graph URLs canonicalize to the one global AI graph', async({page})=>{
+  await page.goto(at('branch:llm:math/tokenization',true));
+  await expect(page.locator('.ws-graph-pane')).toHaveAttribute('data-layer','global');
+  await expect(page.getByText('宏观关系图',{exact:true})).toBeVisible();
+  await expect.poll(()=>new URL(page.url()).searchParams.get('scope')).toBe('root:ai');
+  await bounds(page);
 });
 
 test('one global knowledge network is independent of the current document',async({page})=>{

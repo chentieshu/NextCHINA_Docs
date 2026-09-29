@@ -80,6 +80,10 @@ test('graph search, relation index and reading share one shell', async ({page}) 
   await expect(page.locator('.ws-macro-home')).toHaveAttribute('data-density','knowledge');
   await ready(page);
   await expect(page.locator('.garden-node[data-active="true"]')).toBeVisible();
+  const selectedTitle = page.locator('.garden-node[data-active="true"] .garden-node-main strong');
+  await expect(selectedTitle).toBeVisible();
+  await expect(selectedTitle).toContainText('Softmax');
+  expect((await selectedTitle.boundingBox())!.height).toBeGreaterThanOrEqual(16);
   await page.screenshot({path:'test-results/macro-node-selected.png'});
   await page.getByRole('button',{name:'回到全貌',exact:true}).click();
   await expect(page.locator('.ws-macro-home')).toHaveAttribute('data-density','macro');

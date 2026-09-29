@@ -51,3 +51,10 @@
 .garden-canvas[data-density="macro"] .garden-node-kicker { font-size: 10px; line-height: 12px; }
 .garden-canvas[data-density="macro"] .garden-node-main strong { margin-top: 4px; height: auto; font-size: 17px; line-height: 1.25; }
 .workspace .ws-macro-home[data-density="macro"] .garden-canvas-legend { display: block; }
+
+/* Full knowledge cards have small fixed heights. Reserve a visible title row
+   instead of allowing flexbox to shrink it to zero; full text is in the inspector. */
+.garden-canvas[data-density="knowledge"] .garden-node-main { flex: 1; gap: 0; padding: 7px 10px 3px; }
+.garden-canvas[data-density="knowledge"] .garden-node-kicker { flex-shrink: 0; line-height: 12px; }
+.garden-canvas[data-density="knowledge"] .garden-node-main strong { flex-shrink: 0; height: auto; min-height: 20px; margin-top: 4px; display: block; white-space: nowrap; text-overflow: ellipsis; line-height: 20px; }
+.garden-canvas[data-density="knowledge"] .garden-node-bottom { flex-shrink: 0; }

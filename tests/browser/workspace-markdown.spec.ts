@@ -91,7 +91,10 @@ for(const width of [320,768,1024,1440,2560]) test(`table responds to live panels
 
 test('local themes, controls, broken logos and model records share the renderer contract',async({page})=>{
   await offline(page);await page.setViewportSize({width:1440,height:960});
+  // Seed only the first visit so later article navigation still tests persisted user preference.
+  await page.addInitScript(() => { if (!localStorage.getItem('nextchina-theme')) localStorage.setItem('nextchina-theme','light'); });
   await page.goto(at('aa-intelligence'));await stable(page);
+  await expect(page.locator('.workspace')).toHaveAttribute('data-theme','light');
   await page.locator('.md-table-region').first().scrollIntoViewIfNeeded();
   await expect(page.locator('.md-provider-logo[data-failed="true"]').first()).toBeVisible();
   await page.screenshot({path:'test-results/markdown-table-desktop-light.png'});
@@ -101,6 +104,7 @@ test('local themes, controls, broken logos and model records share the renderer 
   const after=await page.locator('table thead').first().evaluate(e=>getComputedStyle(e.firstElementChild!.firstElementChild!).backgroundColor);
   expect(after).not.toBe(before);await page.screenshot({path:'test-results/markdown-table-desktop-dark.png'});
   await page.goto(at('llm-attention-calculation'));await stable(page);
+  await expect(page.locator('.workspace')).toHaveAttribute('data-theme','dark');
   const source=page.locator('.md-code-actions');await source.scrollIntoViewIfNeeded();
   expect(await source.locator('button').first().evaluate(e=>parseFloat(getComputedStyle(e).fontSize))).toBeLessThan(14);
   await page.goto('/?view=garden&scope=branch%3Allm%3Amodels');

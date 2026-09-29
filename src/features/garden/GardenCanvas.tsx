@@ -4,6 +4,7 @@ import { ReactFlow, Handle, Position, Background, BackgroundVariant, MarkerType,
 import '@xyflow/react/dist/style.css';
 import { Plus, Minus, Maximize, RotateCcw } from 'lucide-react';
 import { layoutGraph, nodeSize, type Positions } from './layout';
+import { isMacroProjection } from './macroLayout';
 import { childrenById } from './data';
 import { edgeLabel, kindLabel, type KnowledgeNode, type RelationKind } from './domain';
 import type { Projection } from './projection';
@@ -50,7 +51,13 @@ export default function GardenCanvas({ projection, selectedId, scopeId, isLight,
   const [api, setApi] = useState<ReactFlowInstance<FlowNode> | null>(null);
   const reduced = useMedia('(prefers-reduced-motion: reduce)');
   const narrow = useMedia('(max-width: 639px)');
+  const macro = isMacroProjection(projection.key);
   const [initialViewport] = useState(() => savedViewport(projection.key));
+  // On phones, start at a readable corner of the same world rather than shrink
+  // all 32 cards to a few pixels. Users can pan or explicitly fit the whole map.
+  const startingViewport = initialViewport ?? (macro && narrow
+    ? { x: 16, y: 20, zoom: Math.min(.9, Math.max(.75, (window.innerWidth - 32) / 364)) }
+    : undefined);
   const visibleEdges = useMemo(
     () => projection.edges.filter(edge => !hiddenEdgeTypes.includes(edge.type)),
     [projection, hiddenEdgeTypes]
@@ -73,10 +80,17 @@ export default function GardenCanvas({ projection, selectedId, scopeId, isLight,
     }).catch(reason => { if (!controller.signal.aborted) setError(reason instanceof Error ? reason.message : '布局失败'); });
     return () => controller.abort();
   }, [projection, attempt]);
+  useEffect(() => {
+    if (macro || !selectedId || !api || !positions) return;
+    const frame = requestAnimationFrame(() => {
+      void api.fitView({ nodes: [{ id: selectedId }], padding: .15, minZoom: .85, maxZoom: 1, duration: reduced ? 0 : 160 });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [api, positions, selectedId, macro, reduced]);
   const nodes: FlowNode[] = useMemo(() => {
     const coordinates = new Map((positions ?? []).map(item => [item.id, { x: item.x, y: item.y }]));
     return projection.nodes.map(item => {
-      const size = nodeSize(item);
+      const size = nodeSize(item, macro);
       return {
         id: item.id, type: 'knowledge', position: coordinates.get(item.id) ?? { x: 0, y: 0 },
         data: { item, inspect: onSelect, expand: onExpand, isScope: item.id === scopeId, dimmed: Boolean(neighborhood && !neighborhood.has(item.id)) },
@@ -84,13 +98,13 @@ export default function GardenCanvas({ projection, selectedId, scopeId, isLight,
         focusable: false, connectable: false, style: { width: size.width, height: size.height }
       };
     });
-  }, [positions, projection, onSelect, onExpand, scopeId, selectedId, neighborhood]);
+  }, [positions, projection, onSelect, onExpand, scopeId, selectedId, neighborhood, macro]);
   const edges: Edge[] = useMemo(() => visibleEdges.map(edge => {
     const active = !neighborhood || neighborhood.has(edge.source) && neighborhood.has(edge.target);
     return {
       id: edge.id, source: edge.source, target: edge.target, type: 'smoothstep',
       selectable: false, focusable: false, deletable: false,
-      label: edge.type === 'browse_child' ? undefined : edgeLabel[edge.type],
+      label: macro || edge.type === 'browse_child' ? undefined : edgeLabel[edge.type],
       markerEnd: edge.type === 'related' ? undefined : { type: MarkerType.ArrowClosed, color: 'var(--garden-edge)' },
       style: {
         stroke: 'var(--garden-edge)', strokeWidth: edge.type === 'recommended_before' ? 1.7 : 1.3,
@@ -99,15 +113,15 @@ export default function GardenCanvas({ projection, selectedId, scopeId, isLight,
       },
       labelStyle: { fill: 'var(--ui-muted)', fontSize: 11 }, labelBgStyle: { fill: 'var(--ui-panel)' }
     };
-  }), [visibleEdges, neighborhood]);
+  }), [visibleEdges, neighborhood, macro]);
   const scope = projection.nodes.find(node => node.id === scopeId);
   const firstFocus = selectedId ?? (scope?.kind === 'concept' ? scopeId : projection.nodes.find(node => node.id !== scopeId)?.id ?? scopeId);
   const initialFitNodes = projection.atlas ? undefined : narrow ? [{ id: firstFocus }] : projection.nodes.slice(0, 4).map(node => ({ id: node.id }));
-  const fit = () => void api?.fitView({ padding: .12, minZoom: projection.atlas ? .06 : .25, maxZoom: 1, duration: reduced ? 0 : 160 });
-  const legend = '一张宏观关系图：领域、专题，以及全部已写明的知识关联。搜索和聚焦只改变观察窗口，不生成另一张图。';
+  const fit = () => void api?.fitView({ padding: .06, minZoom: projection.atlas ? .06 : .25, maxZoom: 1, duration: reduced ? 0 : 160 });
+  const legend = macro ? (narrow ? '拖动画布 · 双指缩放' : '领域与专题共用一张知识网 · 点击节点阅读 · 拖动或缩放查看') : '一张宏观关系图：领域、专题，以及全部已写明的知识关联。搜索和聚焦只改变观察窗口，不生成另一张图。';
   if (error) return <div className="garden-state" role="alert"><h2>图谱布局暂不可用</h2><p>{error}</p><div><button onClick={() => setAttempt(value => value + 1)}>重试布局</button><button onClick={onList}>用列表继续阅读</button></div></div>;
   if (!positions) return <div className="garden-state" role="status">正在整理知识关系…</div>;
-  return <div className="garden-canvas" data-layout="ready" data-layer="atlas" tabIndex={0} role="region" aria-label="知识图谱画布；方向键平移，加减号缩放，0 居中"
+  return <div className="garden-canvas" data-layout="ready" data-layer="atlas" data-density={macro ? 'macro' : 'knowledge'} tabIndex={0} role="region" aria-label="知识图谱画布；方向键平移，加减号缩放，0 居中"
     onKeyDown={event => {
       if ((event.target as HTMLElement).closest('button,input,a')) return;
       const step = 64; const viewport = api?.getViewport(); if (!viewport) return;
@@ -121,8 +135,8 @@ export default function GardenCanvas({ projection, selectedId, scopeId, isLight,
       nodesDraggable={false} nodesConnectable={false} nodesFocusable={false} edgesFocusable={false}
       elementsSelectable={false} deleteKeyCode={null} selectionKeyCode={null}
       zoomOnDoubleClick={false} minZoom={.08} maxZoom={1.75} zoomOnPinch panOnDrag
-      defaultViewport={initialViewport} fitView={!initialViewport}
-      fitViewOptions={{ nodes: initialFitNodes, padding: .14, minZoom: projection.atlas ? .08 : .9, maxZoom: 1 }}
+      defaultViewport={startingViewport} fitView={!startingViewport}
+      fitViewOptions={{ nodes: initialFitNodes, padding: macro ? .06 : .14, minZoom: macro ? .7 : projection.atlas ? .08 : .9, maxZoom: 1 }}
       onMoveEnd={(_, viewport) => rememberViewport(projection.key, viewport)}
       onNodeMouseEnter={(_, node) => setHovered(node.id)}
       onNodeMouseLeave={() => setHovered(null)}

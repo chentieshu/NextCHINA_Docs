@@ -93,9 +93,11 @@ for (const width of [320,390,768,1024,1280,1440,1920]) for (const theme of ['lig
   });
 }
 
-test('root immediately reads a document; search replaces the current document in the same shell', async ({page}) => {
+test('root opens the macro graph; search reads documents in the same titlebar-free shell', async ({page}) => {
   await page.goto('/');
-  await expect(page.locator('.ws-scroll .markdown-body')).toBeVisible();
+  await expect(page.locator('.garden-canvas')).toHaveAttribute('data-layout','ready');
+  await expect(page.locator('.ws-macro-home')).toHaveAttribute('data-density','macro');
+  await expect(page.locator('.ws-reading-header,.ws-tab-header')).toHaveCount(0);
   await expect(page.getByRole('button',{name:'进入文档',exact:true})).toHaveCount(0);
   const shell = await page.locator('.workspace').elementHandle();
   await searchDoc(page,'Token 与分词');
@@ -180,6 +182,7 @@ test('one global knowledge network is independent of the current document',async
 test('graph module failure leaves the explorer and reading available',async({page})=>{
   await page.route(/layout\.worker/,route=>route.abort());
   await page.goto(at('branch:llm:math/tokenization',true));
+  await page.getByRole('button',{name:'知识关联',exact:true}).click();
   await expect(page.getByRole('button',{name:'用列表继续阅读'})).toBeVisible();
   await page.getByRole('button',{name:'用列表继续阅读'}).click();
   await expect(page.locator('.ws-scroll .markdown-body')).toBeVisible();

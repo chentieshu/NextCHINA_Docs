@@ -2,12 +2,14 @@ import ELK from 'elkjs/lib/elk-api.js';
 import workerAsset from '../../generated/garden-worker.json' with { type: 'json' };
 import type { KnowledgeNode } from './domain';
 import type { Projection } from './projection';
+import { isMacroProjection, macroGridLayout, MACRO_CARD } from './macroLayout';
 export const CARD_WIDTH = 240;
 export const CARD_HEIGHT = 124;
 export type Positions = { id: string; x: number; y: number }[];
 const cache = new Map<string, Positions>();
 
-export function nodeSize(node: KnowledgeNode): { width: number; height: number } {
+export function nodeSize(node: KnowledgeNode, compact = false): { width: number; height: number } {
+  if (compact) return MACRO_CARD;
   if (node.kind === 'group' || node.kind === 'path') return { width: 200, height: 72 };
   if (node.kind === 'domain') return { width: 220, height: 96 };
   if (node.kind === 'concept') return { width: 196, height: 88 };
@@ -17,6 +19,7 @@ export function nodeSize(node: KnowledgeNode): { width: number; height: number }
 
 export function layoutGraph(projection: Projection, signal: AbortSignal): Promise<Positions> {
   if (signal.aborted) return Promise.reject(new DOMException('Cancelled', 'AbortError'));
+  if (isMacroProjection(projection.key)) return Promise.resolve(macroGridLayout(projection.nodes));
   const signature = JSON.stringify([
     workerAsset.hash, projection.key,
     projection.nodes.map(node => [node.id, node.kind]),

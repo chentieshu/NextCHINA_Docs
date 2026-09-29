@@ -27,7 +27,7 @@
 .ws-graph-legend { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 12px 8px; font-size: 11px; }
 .ws-graph-legend button[aria-pressed="true"] { background: var(--ui-soft); }
 .ws-graph-body { min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(0,1fr); }
-.ws-graph-pane[data-inspector="true"] .ws-graph-body { grid-template-columns: minmax(0,1fr) min(260px,32%); }
+.ws-graph-pane:not(.ws-macro-home)[data-inspector="true"] .ws-graph-body { grid-template-columns: minmax(0,1fr) min(260px,32%); }
 .ws-graph-inspector { min-width: 0; overflow: auto; border-left: 1px solid var(--ui-border); padding: 16px 16px 20px; overscroll-behavior: contain; }
 .ws-graph-kicker { font-size: 10px; color: var(--ui-muted); margin: 0; }
 .ws-graph-inspector h2 { font-size: 16px; font-weight: 650; line-height: 1.4; margin: 6px 0 10px; overflow-wrap: anywhere; }
@@ -38,6 +38,23 @@
 .ws-macro-index { list-style: none; margin: 0; padding: 0; }
 .ws-macro-index button { width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--ui-border); border-radius: 0; padding: 7px 0; margin-top: 0; font-size: 12px; line-height: 1.55; }
 @media (max-width: 1023px) {
-  .ws-graph-pane[data-inspector="true"] .ws-graph-body { grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(0,1fr) minmax(160px,36%); }
+  .ws-graph-pane:not(.ws-macro-home)[data-inspector="true"] .ws-graph-body { grid-template-columns: minmax(0,1fr); grid-template-rows: minmax(0,1fr) minmax(160px,36%); }
   .ws-graph-inspector { border-left: 0; border-top: 1px solid var(--ui-border); }
 }
+/* Compact macro cards preserve readable labels instead of scaling full cards
+   down to a few pixels. Details and resources live in the node inspector. */
+.garden-canvas[data-density="macro"] .garden-node { border-style: solid; border-radius: 8px; }
+.garden-canvas[data-density="macro"] .garden-node[data-kind="domain"] { background: var(--ui-soft); }
+.garden-canvas[data-density="macro"] .garden-node-bottom,
+.garden-canvas[data-density="macro"] .garden-node-kicker > span { display: none; }
+.garden-canvas[data-density="macro"] .garden-node-main { height: 100%; padding: 7px 10px; gap: 0; border-radius: 8px; justify-content: center; }
+.garden-canvas[data-density="macro"] .garden-node-kicker { font-size: 10px; line-height: 12px; }
+.garden-canvas[data-density="macro"] .garden-node-main strong { margin-top: 4px; height: auto; font-size: 17px; line-height: 1.25; }
+.workspace .ws-macro-home[data-density="macro"] .garden-canvas-legend { display: block; }
+
+/* Full knowledge cards have small fixed heights. Reserve a visible title row
+   instead of allowing flexbox to shrink it to zero; full text is in the inspector. */
+.garden-canvas[data-density="knowledge"] .garden-node-main { flex: 1; gap: 0; padding: 7px 10px 3px; }
+.garden-canvas[data-density="knowledge"] .garden-node-kicker { flex-shrink: 0; line-height: 12px; }
+.garden-canvas[data-density="knowledge"] .garden-node-main strong { flex-shrink: 0; height: auto; min-height: 20px; margin-top: 4px; display: block; white-space: nowrap; text-overflow: ellipsis; line-height: 20px; }
+.garden-canvas[data-density="knowledge"] .garden-node-bottom { flex-shrink: 0; }

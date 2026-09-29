@@ -11,16 +11,23 @@ import { useOverlayFocus, useTheme } from './useWorkspace';
 import { Explorer } from './Explorer';
 import { WorkspaceContent, RelatedContent, currentDocument } from './Content';
 import '../../styles/workspace.css';
+import '../../styles/atlas.css';
+import '../../styles/obsidian.css';
 const WorkspaceGraph = lazy(() => import('./WorkspaceGraph'));
 const model = buildExplorer([...DOC_CHAPTERS, ...ESSAY_CHAPTERS]);
 const scrollPositions = new Map<string, number>();
 
 export default function Workspace() {
   const [legacyRoute, navigate] = useAppRoute();
-  // Home and old graph links are two URLs for the SAME global view. The bare
-  // home URL stays bare; article deep links retain their canonical reader.
+  // The selected canonical node belongs in the URL, not in a second local graph.
+  // Old scope-specific graph links resolve to the one root map WITH their focus.
   const route = useMemo(() => {
-    if (legacyRoute.kind === 'home' || (legacyRoute.kind === 'garden' && legacyRoute.display === 'graph')) return folderRoute('root:ai', true);
+    if (legacyRoute.kind === 'home') return folderRoute('root:ai', true);
+    if (legacyRoute.kind === 'garden' && legacyRoute.display === 'graph') {
+      const id = legacyRoute.nodeId && byId.has(legacyRoute.nodeId) ? legacyRoute.nodeId
+        : legacyRoute.scopeId !== 'root:ai' && byId.has(legacyRoute.scopeId) ? legacyRoute.scopeId : null;
+      return { ...folderRoute('root:ai', true), nodeId: id };
+    }
     if (legacyRoute.kind !== 'garden') return legacyRoute;
     const selected = legacyRoute.nodeId && byId.has(legacyRoute.nodeId) ? legacyRoute.nodeId : legacyRoute.scopeId;
     const node = byId.get(selected);
@@ -41,7 +48,9 @@ export default function Workspace() {
   const graphView = isGraphRoute(route);
   const title = graphView ? 'AI 宏观关系图' : routeTitle(route, model);
   const article = currentDocument(route, model);
-  const mobileSidebar = mobile && sidebarOpen, modalRelated = !wide && relatedOpen;
+  const back = route.kind === 'article' && route.returnTo ? readRoute(route.returnTo) : null;
+  const mapReturn = back && isGraphRoute(back) ? back : null;
+  const mobileSidebar = mobile && sidebarOpen, modalRelated = !wide && relatedOpen && !graphView;
   const modal = mobileSidebar || modalRelated;
   useOverlayFocus(mobileSidebar, sidebar, () => setSidebarOpen(false));
   useOverlayFocus(modalRelated, related, () => setRelatedOpen(false));
@@ -60,7 +69,10 @@ export default function Workspace() {
   const open = (next: AppRoute) => {
     setRelatedOpen(false);
     if (mobile && (next.kind === 'home' || next.kind === 'article' || isGraphRoute(next))) setSidebarOpen(false);
-    navigate(next);
+    // Continue-reading links retain the originating map node through the reader.
+    const target = next.kind === 'article' && route.kind === 'article' && mapReturn
+      ? { ...next, returnTo: routeUrl(mapReturn) } : next;
+    navigate(target);
   };
   const searchAll = () => { setRelatedOpen(false); setSidebarOpen(true); setSearchMode(true); };
   useEffect(() => {
@@ -78,17 +90,16 @@ export default function Workspace() {
     if (url.origin !== window.location.origin || url.pathname !== window.location.pathname || !['article','garden'].includes(url.searchParams.get('view') ?? '')) return;
     event.preventDefault(); open(readRoute(url.search));
   };
-  // Recovery must open an actual document, never loop back into a failed home graph.
   const previousDocument = useRef<AppRoute>(documentRoute('overview'));
   useEffect(() => { if (!graphView) previousDocument.current = route; }, [route, graphView]);
-  return <div id="nextchina-docs-root" className="workspace" data-theme={light ? 'light' : 'dark'} data-sidebar={sidebarOpen} data-related={relatedOpen && wide} data-view={graphView ? 'graph' : 'read'}>
+  return <div id="nextchina-docs-root" className="workspace" data-theme={light ? 'light' : 'dark'} data-sidebar={sidebarOpen} data-related={relatedOpen && wide && !graphView} data-view={graphView ? 'graph' : 'read'}>
     <nav className="ws-ribbon" aria-label="工作区工具" inert={modal}>
       <button type="button" className="ws-mark" aria-label="返回首页" title="NextCHINA · 宏观关系图" onClick={() => open({ kind: 'home' })}>N</button>
       <button type="button" aria-label={sidebarOpen ? '收起文档侧栏' : '打开文档侧栏'} title="文档目录" aria-expanded={sidebarOpen} aria-controls="workspace-sidebar" onClick={() => { setRelatedOpen(false); setSidebarOpen(value => !value); }}>{sidebarOpen ? <PanelLeftClose /> : <PanelLeftOpen />}</button>
       <button type="button" aria-label="搜索全部文档" title="全库搜索 · Ctrl / ⌘ K" onClick={searchAll}><Search /></button>
       <button type="button" aria-label="打开全局知识网络" title="首页 · 宏观关系图" aria-pressed={graphView} onClick={() => open({ kind: 'home' })}><Network /></button>
       <button type="button" aria-label="阅读" title="返回阅读；首次打开阅读指南" aria-pressed={!graphView} onClick={() => graphView && open(previousDocument.current)}><BookOpen /></button>
-      <button type="button" aria-label="显示关联资料" title="关联资料" aria-expanded={relatedOpen} onClick={() => { if (!wide) setSidebarOpen(false); setRelatedOpen(value => !value); }}><PanelRightOpen /></button>
+      {!graphView && <button type="button" aria-label="显示关联资料" title="关联资料" aria-expanded={relatedOpen} onClick={() => { if (!wide) setSidebarOpen(false); setRelatedOpen(value => !value); }}><PanelRightOpen /></button>}
       <div className="ws-ribbon-history"><button type="button" aria-label="后退" title="后退" onClick={() => window.history.back()}><ArrowLeft /></button><button type="button" aria-label="前进" title="前进" onClick={() => window.history.forward()}><ArrowRight /></button></div>
       <div className="ws-ribbon-bottom"><button type="button" aria-label={light ? '切换为暗黑模式' : '切换为明亮模式'} title="切换主题" onClick={toggleTheme}>{light ? <Moon /> : <Sun />}</button></div>
     </nav>
@@ -97,11 +108,14 @@ export default function Workspace() {
       <Explorer model={model} route={route} onOpen={open} searchMode={searchMode} onSearchMode={setSearchMode} mobile={mobile} onClose={() => setSidebarOpen(false)} />
     </aside>
     <div className="ws-main" inert={modal}>
-      {graphView ? <main className="ws-graph-slot" aria-label="AI 全局知识网络"><LazyBoundary label="全局知识网络" fallbackAction={() => open(previousDocument.current)}><Suspense fallback={<div className="ws-empty" role="status">正在加载宏观关系图，文档目录仍可使用…</div>}><WorkspaceGraph model={model} isLight={light} onOpen={open} /></Suspense></LazyBoundary></main>
-        : <main ref={scroll} className="ws-scroll" id="workspace-reader" tabIndex={-1} aria-label="文档阅读区" onScroll={event => { scrollPositions.set(currentKey, event.currentTarget.scrollTop); if (scrollPositions.size > 100) scrollPositions.delete(scrollPositions.keys().next().value!); }} onClick={handleLink}><WorkspaceContent route={route} model={model} isLight={light} onOpen={open} /></main>}
+      {graphView ? <main className="ws-graph-slot" aria-label="AI 全局知识网络"><LazyBoundary label="全局知识网络" fallbackAction={() => open(previousDocument.current)}><Suspense fallback={<div className="ws-empty" role="status">正在加载宏观关系图，文档目录仍可使用…</div>}><WorkspaceGraph model={model} isLight={light} selectedId={route.nodeId} onOpen={open} /></Suspense></LazyBoundary></main>
+        : <main ref={scroll} className="ws-scroll" id="workspace-reader" tabIndex={-1} aria-label="文档阅读区" onScroll={event => { scrollPositions.set(currentKey, event.currentTarget.scrollTop); if (scrollPositions.size > 100) scrollPositions.delete(scrollPositions.keys().next().value!); }} onClick={handleLink}>
+          {mapReturn && <button type="button" className="atlas-return" aria-label="返回知识地图" onClick={() => open(mapReturn)}><ArrowLeft />返回知识地图{mapReturn.nodeId && ` · ${byId.get(mapReturn.nodeId)?.label ?? '原节点'}`}</button>}
+          <WorkspaceContent route={route} model={model} isLight={light} onOpen={open} />
+        </main>}
       <footer className="ws-status"><span>{graphView ? 'AI 宏观关系图' : article ? '阅读模式' : '目录'} · {model.documents.size} 篇文档</span><span>{graphView ? '全站共用一张知识网' : '从侧栏选择文档 · 单篇阅读'}</span></footer>
     </div>
     {modalRelated && <div className="ws-scrim" aria-hidden="true" onClick={() => setRelatedOpen(false)} />}
-    {relatedOpen && <aside ref={related} className="ws-related" role={modalRelated ? 'dialog' : 'complementary'} aria-modal={modalRelated || undefined} aria-label="关联资料"><header><strong>关联资料</strong><button type="button" aria-label="关闭关联资料" onClick={() => setRelatedOpen(false)}><X /></button></header><RelatedContent route={route} model={model} onOpen={open} /></aside>}
+    {relatedOpen && !graphView && <aside ref={related} className="ws-related" role={modalRelated ? 'dialog' : 'complementary'} aria-modal={modalRelated || undefined} aria-label="关联资料"><header><strong>关联资料</strong><button type="button" aria-label="关闭关联资料" onClick={() => setRelatedOpen(false)}><X /></button></header><RelatedContent route={route} model={model} onOpen={open} /></aside>}
   </div>;
 }

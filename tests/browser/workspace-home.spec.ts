@@ -1,112 +1,64 @@
 import { test, expect, type Page } from '@playwright/test';
-import { globalKnowledgeProjection } from '../../src/features/workspace/model';
-import { macroOverviewProjection } from '../../src/features/workspace/macroOverview';
-import { macroGridLayout, MACRO_CARD } from '../../src/features/garden/macroLayout';
+import { graph } from '../../src/features/garden/data';
+import { buildKnowledgeIndex } from '../../src/features/workspace/knowledgeIndex';
+const index = buildKnowledgeIndex(graph);
+const displayNodes = graph.nodes.filter(n => !['root','group','path','document'].includes(n.kind));
+async function ready(page: Page) { await expect(page.locator('.og-network-host')).toHaveAttribute('data-layout','ready'); }
+async function choose(page: Page, text: string) { const search = page.getByRole('searchbox',{name:'搜索知识网络',exact:true}); await search.fill(text); await search.press('ArrowDown'); await page.keyboard.press('Enter'); }
 
-async function ready(page: Page) {
-  await expect(page.locator('.garden-canvas')).toHaveAttribute('data-layout', 'ready');
-  await expect(page.locator('.ws-reading-header,.ws-tab-header,[role="tab"]')).toHaveCount(0);
-  await expect(page.locator('.workspace')).toHaveCount(1);
-}
-
-test('macro overview reuses canonical domains and hubs without promoting concept prerequisites', () => {
-  const source = globalKnowledgeProjection();
-  const macro = macroOverviewProjection(source);
-  const ids = new Set(macro.nodes.map(node => node.id));
-  expect(macro.nodes.map(node => node.id).sort()).toEqual(source.nodes.filter(node => ['domain','hub'].includes(node.kind)).map(node => node.id).sort());
-  expect(macro.nodes.every(node => source.nodes.includes(node))).toBe(true);
-  const positions = macroGridLayout(macro.nodes);
-  expect(new Set(positions.map(point => `${point.x}:${point.y}`)).size).toBe(macro.nodes.length);
-  expect(Math.max(...positions.map(point => point.x + MACRO_CARD.width))).toBeLessThanOrEqual(1148);
-  expect(macro.nodes.length).toBeGreaterThan(0);
-  expect(macro.nodes.length).toBeLessThan(source.nodes.length);
-  expect(macro.index).toBe(source.index);
-  expect(new Set(macro.edges.map(edge => edge.id)).size).toBe(macro.edges.length);
-  for (const edge of macro.edges) {
-    expect(ids.has(edge.source) && ids.has(edge.target)).toBe(true);
-    expect(edge.source).not.toBe(edge.target);
-    if (edge.type === 'recommended_before') expect(source.edges.some(original => original.type === edge.type && original.source === edge.source && original.target === edge.target)).toBe(true);
-  }
+test('all source semantic edges remain in the canonical bidirectional index', () => {
+  expect(index.issues).toEqual([]);
+  const ids = graph.edges.filter(e => e.type !== 'browse_child').map(e => e.id).sort();
+  expect(index.relations.map(r => r.edge.id).sort()).toEqual(ids);
+  expect([...index.internal,...index.bundles.flatMap(b => b.relations)].map(r => r.edge.id).sort()).toEqual(ids);
+  for (const row of index.relations) for (const id of [row.edge.source,row.edge.target]) expect(index.adjacency.get(id)?.some(r=>r.edge.id===row.edge.id)).toBe(true);
+  expect(index.relations.filter(r=>r.role==='before').length).toBe(graph.edges.filter(e=>e.type==='recommended_before').length);
 });
-
-for (const width of [320,390,768,1440,1920]) for (const theme of ['light','dark']) {
-  test(`macro homepage fits ${width}px ${theme}`, async ({page}) => {
-    const errors: string[] = [];
-    page.on('pageerror', error => errors.push(error.message));
-    await page.setViewportSize({width, height: 900});
-    await page.addInitScript(value => localStorage.setItem('nextchina-theme', value), theme);
-    await page.goto('/');
-    await ready(page);
-    await expect(page.getByRole('heading', {name:'宏观关系图', exact:true})).toBeVisible();
-    await expect(page.locator('.ws-macro-home')).toHaveAttribute('data-density','macro');
-    await expect(page.locator('.ws-macro-home')).toHaveAttribute('data-inspector','false');
-    const bounds = await page.evaluate(() => {
-      const box = document.querySelector('.garden-canvas')!.getBoundingClientRect();
-      return {width: document.documentElement.scrollWidth, height: document.documentElement.scrollHeight, viewport: innerWidth, viewHeight: innerHeight, canvasWidth: box.width, canvasHeight: box.height};
-    });
-    expect(bounds.width).toBeLessThanOrEqual(bounds.viewport + 1);
-    expect(bounds.height).toBeLessThanOrEqual(bounds.viewHeight + 1);
-    expect(bounds.canvasWidth).toBeGreaterThan(200);
-    expect(bounds.canvasHeight).toBeGreaterThan(250);
-    const card = page.locator('.garden-node').first();
-    await expect(card).toBeVisible();
-    const effectiveFont = await card.evaluate(node => {
-      const scale = node.getBoundingClientRect().width / (node as HTMLElement).offsetWidth;
-      return parseFloat(getComputedStyle(node.querySelector('strong')!).fontSize) * scale;
-    });
-    expect(effectiveFont).toBeGreaterThanOrEqual(11.5);
-    const dock = await page.locator('.ws-ribbon').boundingBox();
-    if (width < 960) {
-      expect(dock!.y).toBeGreaterThan(800);
-      await page.getByRole('button',{name:'打开文档侧栏',exact:true}).click();
-      await expect(page.getByRole('dialog',{name:'文档侧栏'})).toBeVisible();
-      await page.keyboard.press('Escape');
-      await expect(page.getByRole('button',{name:'打开文档侧栏',exact:true})).toBeFocused();
-    } else expect(dock!.x).toBe(0);
-    if ([390,1440].includes(width)) await page.screenshot({path:`test-results/macro-home-${width}-${theme}.png`});
-    expect(errors).toEqual([]);
+for (const width of [320,390,768,1024,1440,1920]) for (const theme of ['dark','light']) {
+  test(`network rather than cards, ${width}px ${theme}`,async({page})=>{
+    await page.setViewportSize({width,height:900});
+    await page.addInitScript(value=>localStorage.setItem('nextchina-theme',value),theme);
+    await page.goto('/');await ready(page);
+    await expect(page.locator('.kg-node')).toHaveCount(displayNodes.length);
+    await expect(page.locator('.atlas-area,.atlas-board,.ws-macro-heading,[role="tab"]')).toHaveCount(0);
+    const bounds=await page.evaluate(()=>({w:document.documentElement.scrollWidth,h:document.documentElement.scrollHeight,vw:innerWidth,vh:innerHeight}));
+    expect(bounds.w).toBeLessThanOrEqual(bounds.vw+1);expect(bounds.h).toBeLessThanOrEqual(bounds.vh+1);
+    if ([390,1440].includes(width)) await page.screenshot({path:`test-results/obsidian-${width}-${theme}.png`});
   });
 }
 
-test('graph search, relation index and reading share one shell', async ({page}) => {
-  await page.goto('/');
-  await ready(page);
-  const shell = await page.locator('.workspace').elementHandle();
-  const search = page.getByRole('searchbox',{name:'搜索知识网络'});
-  await search.fill('Softmax');
-  await search.press('ArrowDown');
-  await page.keyboard.press('Enter');
-  await expect(page.getByRole('heading',{name:/Softmax/})).toBeVisible();
-  await expect(page.locator('.ws-macro-home')).toHaveAttribute('data-density','knowledge');
-  await ready(page);
-  await expect(page.locator('.garden-node[data-active="true"]')).toBeVisible();
-  const selectedTitle = page.locator('.garden-node[data-active="true"] .garden-node-main strong');
-  await expect(selectedTitle).toBeVisible();
-  await expect(selectedTitle).toContainText('Softmax');
-  expect((await selectedTitle.boundingBox())!.height).toBeGreaterThanOrEqual(16);
-  await page.screenshot({path:'test-results/macro-node-selected.png'});
-  await page.getByRole('button',{name:'回到全貌',exact:true}).click();
-  await expect(page.locator('.ws-macro-home')).toHaveAttribute('data-density','macro');
-  await page.getByRole('button',{name:'显示全部知识关联'}).click();
-  await expect(page.getByRole('complementary',{name:'全部知识关联'})).toBeVisible();
-  await page.getByRole('button',{name:'关闭关系索引'}).click();
-  await expect(page.locator('.ws-macro-home')).toHaveAttribute('data-inspector','false');
-  await page.getByRole('button',{name:'阅读',exact:true}).click();
-  await expect(page.locator('[data-document="overview"] .markdown-body')).toBeVisible();
-  expect(await shell?.evaluate(node => node.isConnected)).toBe(true);
-  await page.goBack();
-  await ready(page);
-  await page.reload();
-  await ready(page);
+test('hover, selection, note reading and return retain the same canonical graph',async({page})=>{
+  await page.goto('/');await ready(page);
+  const svg=await page.locator('.kg-svg').elementHandle();
+  await choose(page,'Softmax');
+  await expect(page.locator('.og-inspector h2')).toContainText('Softmax');
+  await expect(page.locator('.kg-node[data-active="true"]')).toHaveAttribute('data-node-id','concept:softmax');
+  expect(await svg?.evaluate(el=>el.isConnected)).toBe(true);
+  const count=await page.locator('.kg-node').count();
+  await page.reload();await ready(page);await expect(page.locator('.og-inspector h2')).toContainText('Softmax');
+  await page.locator('.og-read-button').click();await expect(page.locator('.markdown-body')).toBeVisible();
+  await page.getByRole('button',{name:'返回知识地图',exact:true}).click();await ready(page);
+  await expect(page.locator('.og-inspector h2')).toContainText('Softmax');await expect(page.locator('.kg-node')).toHaveCount(count);
 });
 
-test('macro home survives a failed detail worker and retains a reading exit', async ({page}) => {
-  await page.route(/layout\.worker/, route => route.abort());
-  await page.goto('/');
-  await ready(page);
-  await page.getByRole('button',{name:'知识关联',exact:true}).click();
-  await expect(page.getByRole('button',{name:'用列表继续阅读'})).toBeVisible();
-  await page.getByRole('button',{name:'用列表继续阅读'}).click();
-  await expect(page.locator('[data-document="overview"] .markdown-body')).toBeVisible();
-  await expect(page.locator('.ws-reading-header,[role="tab"]')).toHaveCount(0);
+test('native pan and zoom do not mutate nodes or relationships',async({page})=>{
+  await page.goto('/');await ready(page);
+  const count=await page.locator('.kg-node').count();
+  const zoom=await page.locator('.og-network-host').getAttribute('data-zoom');
+  await page.getByRole('button',{name:'放大图谱',exact:true}).click();
+  await expect(page.locator('.og-network-host')).not.toHaveAttribute('data-zoom',zoom!);
+  await page.getByRole('button',{name:'图谱设置',exact:true}).click();
+  await page.getByLabel('只显示有资料的节点',{exact:true}).check();
+  await expect(page.locator('.kg-node')).toHaveCount(count);
+  expect(await page.locator('.kg-node:visible').count()).toBeLessThan(count);
+  await page.getByRole('button',{name:'恢复默认显示',exact:true}).click();
+  await expect(page.locator('.kg-node:visible')).toHaveCount(count);
+});
+
+test('mobile note dialog traps focus and can be closed',async({page})=>{
+  await page.setViewportSize({width:390,height:844});await page.goto('/');await ready(page);await choose(page,'Softmax');
+  await expect(page.getByRole('dialog',{name:'知识节点简报'})).toBeVisible();
+  await page.keyboard.press('Tab');expect(await page.locator('.og-inspector').evaluate(e=>e.contains(document.activeElement))).toBe(true);
+  await page.keyboard.press('Escape');await expect(page.getByRole('dialog',{name:'知识节点简报'})).toHaveCount(0);
+  await page.getByRole('button',{name:'打开文档侧栏',exact:true}).click();await expect(page.getByRole('dialog',{name:'文档侧栏'})).toBeVisible();
 });

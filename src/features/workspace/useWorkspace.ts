@@ -21,7 +21,7 @@ export function useOverlayFocus(open: boolean, ref: RefObject<HTMLElement | null
   }, [open, ref]);
 }
 export function useTheme() {
-  const [light, setLight] = useState(() => { try { return localStorage.getItem('nextchina-theme') !== 'dark'; } catch { return true; } });
+  const [light, setLight] = useState(() => { try { return localStorage.getItem('nextchina-theme') === 'light'; } catch { return false; } });
   useEffect(() => {
     const theme = light ? 'light' : 'dark';
     document.documentElement.dataset.theme = theme; document.body.dataset.theme = theme; document.documentElement.style.colorScheme = theme;

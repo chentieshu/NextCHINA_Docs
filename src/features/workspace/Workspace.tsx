@@ -19,7 +19,8 @@ const scrollPositions = new Map<string, number>();
 export default function Workspace() {
   const [legacyRoute, navigate] = useAppRoute();
   const route = useMemo(() => {
-    if (legacyRoute.kind !== 'garden' || legacyRoute.display === 'graph') return legacyRoute;
+    if (legacyRoute.kind === 'garden' && legacyRoute.display === 'graph') return folderRoute('root:ai', true);
+    if (legacyRoute.kind !== 'garden') return legacyRoute;
     const selected = legacyRoute.nodeId && byId.has(legacyRoute.nodeId) ? legacyRoute.nodeId : legacyRoute.scopeId;
     const node = byId.get(selected);
     if (node?.embeddedArticleId) return documentRoute(node.embeddedArticleId, selected);
@@ -45,7 +46,7 @@ export default function Workspace() {
   useEffect(() => { setSidebarOpen(!mobile); setRelatedOpen(false); }, [mobile]);
   useEffect(() => { document.documentElement.dataset.workspace = 'true'; return () => { delete document.documentElement.dataset.workspace; }; }, []);
   useEffect(() => { document.title = `${title} · NextCHINA`; }, [title]);
-  // The only reading scroll owner. Tabs retain position; browser history and old links stay valid.
+  // The only reading scroll owner. Browser history and old links stay valid.
   useLayoutEffect(() => {
     const element = scroll.current;
     if (!element) return;

@@ -20,9 +20,9 @@ export default function GraphSettings({ index, settings, stats, selectedId, onCh
   return <div className="og-settings-content">
     <p className="og-panel-intro">只调整你看到的图，不改变知识内容。设置会保存在当前浏览器。</p>
     <div className="og-preset-row" role="group" aria-label="常用图谱视图">
-      <button type="button" onClick={() => onChange({ ...settings, detail: 'all', onlyResources: false, groups: null, focusNeighbors: false })}>全部知识</button>
-      <button type="button" onClick={() => onChange({ ...settings, detail: 'overview', onlyResources: false, groups: null, focusNeighbors: false })}>领域与专题</button>
-      <button type="button" onClick={() => onChange({ ...settings, detail: 'all', onlyResources: true, groups: null, focusNeighbors: false })}>有资料可读</button>
+      <button type="button" aria-pressed={settings.detail === 'all' && !settings.onlyResources && settings.groups === null && !settings.focusNeighbors} onClick={() => onChange({ ...settings, detail: 'all', onlyResources: false, groups: null, focusNeighbors: false })}>全部知识</button>
+      <button type="button" aria-pressed={settings.detail === 'overview' && !settings.onlyResources && settings.groups === null && !settings.focusNeighbors} onClick={() => onChange({ ...settings, detail: 'overview', onlyResources: false, groups: null, focusNeighbors: false })}>领域与专题</button>
+      <button type="button" aria-pressed={settings.detail === 'all' && settings.onlyResources && settings.groups === null && !settings.focusNeighbors} onClick={() => onChange({ ...settings, detail: 'all', onlyResources: true, groups: null, focusNeighbors: false })}>有资料可读</button>
     </div>
     <section className="og-setting-section"><h3>显示范围</h3>
       <label className="og-setting"><span>只显示有资料的节点<small>有直接绑定资料，不等于已经完成讲解。</small></span><input type="checkbox" aria-label="只显示有资料的节点" checked={settings.onlyResources} onChange={e => change('onlyResources', e.target.checked)} /></label>

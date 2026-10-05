@@ -1,6 +1,6 @@
 import type { GardenGraph, KnowledgeNode, KnowledgeEdge } from '../garden/domain';
 
-export type RelationRole = 'related' | 'before' | 'reference';
+export type RelationRole = 'related' | 'before' | 'reference' | 'semantic';
 export interface IndexedRelation { edge: KnowledgeEdge; role: RelationRole; }
 export interface RelationBundle { id: string; source: string; target: string; relations: IndexedRelation[]; }
 export interface ReadingResource { articleId: string; coverage: string; fromId: string; scope: 'own' | 'reference' | 'descendant'; }
@@ -44,10 +44,10 @@ export function buildKnowledgeIndex(graph: GardenGraph) {
     edgeIds.add(edge.id);
     if (!byId.has(edge.source) || !byId.has(edge.target)) { issues.push(`悬空关系：${edge.id}`); continue; }
     if (edge.type === 'browse_child') continue;
-    const owner = byId.get(edge.source)!;
-    // Use explicit reference fields, never a regex over human-facing reason text.
-    const reference = owner.conceptRefs?.includes(edge.target) || owner.hubRefs?.includes(edge.target);
-    relations.push({ edge, role: edge.type === 'recommended_before' ? 'before' : reference ? 'reference' : 'related' });
+    const role: RelationRole = edge.type === 'recommended_before' ? 'before'
+      : edge.type === 'references' || edge.type === 'represents' ? 'reference'
+      : edge.type === 'related' ? 'related' : 'semantic';
+    relations.push({ edge, role });
   }
   const adjacency = new Map<string, IndexedRelation[]>();
   for (const relation of relations) for (const id of new Set([relation.edge.source, relation.edge.target])) {

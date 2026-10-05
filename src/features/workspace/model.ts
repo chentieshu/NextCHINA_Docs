@@ -97,7 +97,7 @@ function hostingHub(articleId: string, model: ExplorerModel) {
   return context ? ancestors(context).find(node => node.kind === 'hub') ?? byId.get(context) : undefined;
 }
 
-const citeEdge = (edge: KnowledgeEdge) => /共享知识引用|相关专题入口/.test(edge.reason ?? '');
+const citeEdge = (edge: KnowledgeEdge) => edge.type === 'references' || edge.type === 'represents';
 function knowledgeIndex(): MacroIndexEntry[] {
   const label = (id: string) => byId.get(id)?.label ?? id;
   const index: MacroIndexEntry[] = [];

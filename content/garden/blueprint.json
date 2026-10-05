@@ -1066,6 +1066,12 @@
   },
   "relations": [
     {
+      "source": "concept:gradient",
+      "target": "concept:sgd",
+      "type": "recommended_before",
+      "reason": "先理解参数的局部变化率，再看随机样本如何估计经验目标的梯度；这是阅读顺序建议，不是唯一学习路线。"
+    },
+    {
       "source": "concept:derivative",
       "target": "concept:chain-rule",
       "type": "recommended_before",

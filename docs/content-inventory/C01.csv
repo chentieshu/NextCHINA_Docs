@@ -31,6 +31,6 @@ concept:norm-distance,范数与距离,concept,C01,llm-tensor-shapes,llm-tensor-s
 concept:numerical-stability,数值稳定性,concept,C01,llm-softmax-temperature,llm-softmax-temperature,bound-needs-review,true
 concept:random-variable,随机变量,concept,C01,llm-conditional-probability,llm-conditional-probability,bound-needs-review,true
 concept:regularization,正则化,concept,C01,,,missing,false
-concept:sgd,随机梯度下降,concept,C01,,,missing,false
+concept:sgd,随机梯度下降,concept,C01,llm-training-loop,llm-training-loop,bound-needs-review,true
 concept:statistical-inference,统计推断,concept,C01,statistical-inference-confidence-interval,statistical-inference-confidence-interval,bound-needs-review,true
 concept:vector,向量,concept,C01,llm-tensor-shapes,llm-tensor-shapes,bound-needs-review,true

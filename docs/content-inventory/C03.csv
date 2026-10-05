@@ -28,7 +28,7 @@ concept:federated-learning,联邦学习,concept,C03,,,missing,false
 concept:few-shot,少样本学习,concept,C03,,,missing,false
 concept:in-context-learning,上下文学习,concept,C03,,,missing,false
 concept:labeling,标注,concept,C03,,,missing,false
-concept:learning-rate,学习率,concept,C03,,,missing,false
+concept:learning-rate,学习率,concept,C03,llm-training-loop,llm-training-loop,bound-needs-review,true
 concept:lora,低秩适配,concept,C03,,,missing,false
 concept:loss-objective,目标函数,concept,C03,llm-training-loop,llm-training-loop,bound-needs-review,true
 concept:mdp,马尔可夫决策过程,concept,C03,,,missing,true

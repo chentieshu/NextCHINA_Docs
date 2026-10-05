@@ -739,7 +739,143 @@ for bad in [lambda: distribution([]), lambda: distribution([0.2, 0.2]),
   tokenization: 'for bad in ["", "中文"]:\n    try: encode_toy(bad)\n    except ValueError: pass\n    else: raise AssertionError("invalid text accepted")',
   softmax: 'for values, t in [([], 1), ([float("nan")], 1), ([1], 0), ([1], -1)]:\n    try: softmax(values, t)\n    except ValueError: pass\n    else: raise AssertionError("invalid softmax input accepted")',
   attention: 'for q, k, v in [([], [], []), ([[1, 2]], [[1]], [[1, 2]]), ([[float("nan")]], [[1]], [[1]])]:\n    try: attention(q, k, v)\n    except ValueError: pass\n    else: raise AssertionError("invalid attention input accepted")',
-  training: 'assert abs(probabilities(updated)[0] - 0.598687660112452) < 1e-12',
+  training: `assert abs(probabilities(updated)[0] - 0.598687660112452) < 1e-12
+# Append after the article's marked training example in the repository test.
+# Fraction oracles derive the loss from the two records, not quad_loss's shortcut.
+from fractions import Fraction
+from itertools import product
+
+assert (h, target, rate) == (2.0, 0, 0.1)
+assert weights == [0.0, 0.0] and gradients == [-1.0, 1.0]
+assert updated == [0.1, -0.1]
+assert abs(probabilities(updated)[0] - 0.598687660112452) < 1e-12
+assert abs(loss(weights) - math.log(2)) < 1e-12
+assert abs(loss(updated) - 0.5130152523999526) < 1e-12
+
+quad_test_labels = (Fraction(0), Fraction(2))
+quad_test_thetas = tuple(map(Fraction, (-2, 0, 1, 3))) + (Fraction(-1, 2), Fraction(1, 2), Fraction(3, 2))
+quad_test_rates = tuple(map(Fraction, (0, 1, 2))) + (Fraction(1, 4), Fraction(1, 2), Fraction(3, 2), Fraction(5, 2))
+quad_test_batches = ((0,), (1,)) + tuple(product((0, 1), repeat=2))
+quad_test_cases = 0
+for quad_t in quad_test_thetas:
+    quad_reference_loss = sum((quad_t - y)**2 / 2 for y in quad_test_labels) / 2
+    assert quad_loss(float(quad_t)) == float(quad_reference_loss)
+    assert quad_gradient(float(quad_t)) == float(quad_t - 1)
+    for quad_ids in quad_test_batches:
+        quad_reference_g = quad_t - sum(quad_test_labels[i] for i in quad_ids) / len(quad_ids)
+        assert quad_gradient(float(quad_t), quad_ids) == float(quad_reference_g)
+        assert quad_gradient(float(quad_t), tuple(reversed(quad_ids))) == float(quad_reference_g)
+        quad_input_ids = list(quad_ids)
+        assert quad_gradient(float(quad_t), quad_input_ids) == float(quad_reference_g)
+        assert quad_input_ids == list(quad_ids)
+        for quad_eta in quad_test_rates:
+            quad_reference_next = quad_t - quad_eta * quad_reference_g
+            quad_reference_next_loss = sum((quad_reference_next - y)**2 / 2 for y in quad_test_labels) / 2
+            quad_observed_next = quad_step(float(quad_t), float(quad_eta), quad_ids)
+            assert quad_observed_next == float(quad_reference_next)
+            assert quad_loss(quad_observed_next) == float(quad_reference_next_loss)
+            quad_test_cases += 1
+assert quad_test_cases == 294
+
+# Conditional moments at fixed theta: one draw, two independent draws, census.
+for quad_t in quad_test_thetas:
+    quad_singles = [quad_gradient(float(quad_t), (i,)) for i in (0, 1)]
+    quad_pairs_checked = [quad_gradient(float(quad_t), ids) for ids in product((0, 1), repeat=2)]
+    quad_full = float(quad_t - 1)
+    assert sum(quad_singles) / 2 == sum(quad_pairs_checked) / 4 == quad_full
+    assert sum((g - quad_full)**2 for g in quad_singles) / 2 == 1
+    assert sum((g - quad_full)**2 for g in quad_pairs_checked) / 4 == 1/2
+    assert quad_gradient(float(quad_t), (0, 1)) == quad_gradient(float(quad_t), (1, 0)) == quad_full
+    for quad_eta in quad_test_rates:
+        # E[F(theta')] = 1/2 + (1-eta)^2*(theta-1)^2/2 + eta^2/(2*b).
+        # This reference follows by expanding the quadratic and averaging the noise.
+        for quad_size, quad_batches in ((1, ((0,), (1,))), (2, tuple(product((0, 1), repeat=2)))):
+            quad_expected = Fraction(1, 2) + (1-quad_eta)**2*(quad_t-1)**2/2 + quad_eta**2/(2*quad_size)
+            quad_observed = sum(quad_loss(quad_step(float(quad_t), float(quad_eta), ids)) for ids in quad_batches) / len(quad_batches)
+            assert quad_observed == float(quad_expected)
+assert quad_loss(1) == 1/2
+assert sum(quad_loss(quad_step(1, 0.5, (i,))) for i in (0, 1)) / 2 == 5/8
+assert sum(quad_loss(quad_step(1, 0.5, ids)) for ids in product((0, 1), repeat=2)) / 4 == 9/16
+# Taking both records at the same theta is not updating after each record.
+assert quad_step(1, 0.5) == 1
+assert quad_step(quad_step(1, 0.5, (0,)), 0.5, (1,)) == 1.25
+assert quad_step(quad_step(1, 0.5, (1,)), 0.5, (0,)) == 0.75
+
+# Full-gradient recurrence, including stable oscillation and boundary behavior.
+for quad_eta in quad_test_rates:
+    quad_t = 0.0
+    for quad_k in range(1, 9):
+        quad_t = quad_step(quad_t, float(quad_eta))
+        assert quad_t == float(1 - (1 - quad_eta)**quad_k)
+    assert quad_step(1, float(quad_eta)) == 1
+for quad_eta in (0.25, 0.5, 1, 1.5):
+    assert quad_loss(quad_step(0, quad_eta)) < quad_loss(0)
+assert quad_step(0, 0) == 0
+assert quad_loss(quad_step(0, 2)) == quad_loss(0)
+assert quad_loss(quad_step(0, 2.5)) > quad_loss(0)
+
+# Mean/sum differ by two here. Compare direct sum-gradient updates with the API.
+for quad_eta in quad_test_rates:
+    quad_sum_t = Fraction(0)
+    quad_mean_t = 0.0
+    for quad_k in range(4):
+        quad_sum_g = sum(quad_sum_t - y for y in quad_test_labels)
+        quad_sum_t -= (quad_eta / 2) * quad_sum_g
+        quad_mean_t = quad_step(quad_mean_t, float(quad_eta))
+        assert quad_mean_t == float(quad_sum_t)
+assert abs(1 - 2 * Fraction(3, 4)) < 1
+assert abs(1 - 2 * Fraction(1)) == 1
+assert abs(1 - 2 * Fraction(5, 4)) > 1
+
+# A non-dyadic finite-difference check uses a tolerance, not exact float equality.
+for quad_t in (-1.3, 0.2, 0.7, 1.1, 2.4):
+    quad_epsilon = 1e-5
+    quad_difference = (quad_loss(quad_t + quad_epsilon) - quad_loss(quad_t - quad_epsilon)) / (2 * quad_epsilon)
+    assert math.isclose(quad_difference, quad_gradient(quad_t), rel_tol=1e-9, abs_tol=1e-9)
+
+# Independent arithmetic for the prose clipping example; no added public API.
+quad_clip_inputs = (Fraction(1, 2), Fraction(-3, 2))
+quad_clip_first = sum(max(Fraction(-1), min(g, Fraction(1))) for g in quad_clip_inputs) / 2
+quad_mean_first = max(Fraction(-1), min(sum(quad_clip_inputs) / 2, Fraction(1)))
+assert quad_clip_first == Fraction(-1, 4) != Fraction(-1, 2) == quad_mean_first
+
+quad_clip_cycle = [Fraction(0)]
+for quad_k in range(4):
+    quad_t = quad_clip_cycle[-1]
+    quad_clipped_full = max(Fraction(-1), min(quad_t - 1, Fraction(1)))
+    quad_clip_cycle.append(quad_t - 3 * quad_clipped_full)
+assert quad_clip_cycle == [0, 3, 0, 3, 0]
+
+quad_invalid_calls = []
+for quad_bad in (True, False, None, "1", 1+0j, Fraction(1, 2), float("nan"), float("inf"), -float("inf"), 10**400):
+    quad_invalid_calls += [lambda v=quad_bad: quad_finite(v),
+                           lambda v=quad_bad: quad_loss(v),
+                           lambda v=quad_bad: quad_gradient(v),
+                           lambda v=quad_bad: quad_step(v, 0.5),
+                           lambda v=quad_bad: quad_step(1, v)]
+for quad_bad_ids in (None, (), [], [0, 1, 0], "01", {0, 1}, iter((0, 1)), [True], [False], [0.0], [1.0], [-1], [2], [0, None], [float("nan")]):
+    quad_invalid_calls += [lambda ids=quad_bad_ids: quad_gradient(1, ids),
+                           lambda ids=quad_bad_ids: quad_step(1, 0.5, ids)]
+quad_invalid_calls += [lambda: quad_step(1, -0.1), lambda: quad_step(1, -1),
+                       lambda: quad_loss(1e308), lambda: quad_loss(-1e308),
+                       lambda: quad_step(1e308, 1e308)]
+for quad_call in quad_invalid_calls:
+    try:
+        quad_call()
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("invalid quadratic-example input or overflow accepted")
+# Valid numeric/shape boundaries, repeated IDs, and zero learning rate.
+assert quad_step(3, 0, [0]) == 3
+assert quad_step(3, -0.0, [1]) == 3
+assert quad_gradient(0, [0]) == quad_gradient(0, [0, 0]) == 0
+assert quad_gradient(2, [1]) == quad_gradient(2, [1, 1]) == 0
+assert quad_finite(1e308) == 1e308 and quad_gradient(1e308) == 1e308
+assert quad_loss(1e150) > 0 and math.isfinite(quad_loss(1e150))
+assert abs(probabilities(updated)[0] - 0.598687660112452) < 1e-12
+print(f"training regression: {quad_test_cases} Fraction update cases, conditional moments, learning-rate boundaries, {len(quad_invalid_calls)} rejections; legacy classifier preserved")
+`,
   'kv-cache': 'for lengths in [[], [-1], [1.5]]:\n    try: cache_bytes(32, 8, 128, 2, lengths)\n    except ValueError: pass\n    else: raise AssertionError("invalid cache dimensions accepted")'
 };
 const temp = mkdtempSync(path.join(tmpdir(), 'nextchina-knowledge-'));

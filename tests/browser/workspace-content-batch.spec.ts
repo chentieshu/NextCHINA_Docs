@@ -8,6 +8,8 @@ const statisticsArticleId = 'statistical-inference-confidence-interval';
 const dataSplitArticleId = 'train-validation-test-data-leakage';
 const metricsArticleId = 'classification-accuracy-precision-recall-f1';
 const naiveBayesArticleId = 'supervised-learning-naive-bayes';
+const trainingArticleId = 'llm-training-loop';
+const trainingTitle = '一次训练更新：从目标、损失到参数变化';
 const naiveBayesTitle = '监督学习怎样从标注样本得到分类器？朴素贝叶斯实算';
 const metricsTitle = '准确率90%，为什么仍漏掉全部目标？精确率、召回率与 F1';
 const dataSplitTitle = '训练、验证与测试：模型没见过答案，评估就可信吗？';
@@ -180,7 +182,44 @@ test('content inventory distinguishes full network candidates from default map a
   expect(inventory.nodes.filter((node: { id: string }) => node.id === 'root:ai')).toHaveLength(1);
 });
 
+test('training expansion adds only SGD and learning rate to the existing independent unit', () => {
+  const articles = JSON.parse(readFileSync('content/articles.json', 'utf8')).articles;
+  const matches = articles.filter((article: { id: string }) => article.id === trainingArticleId);
+  expect(matches).toHaveLength(1);
+  expect(matches[0].title).toBe(trainingTitle);
+  const unit = matches[0].knowledgeUnit;
+  expect(unit.exampleId).toBe('training');
+  expect(unit.reviewStatus).toBe('needs-independent-review');
+  expect(unit.conceptIds).toEqual(['concept:loss-objective', 'concept:backpropagation', 'concept:gradient', 'concept:sgd', 'concept:learning-rate']);
+  expect(unit.placements).toEqual([{ hubId: 'hub:llm', path: 'training/loop' }]);
+  expect(unit.relatedResourceIds).toEqual(['arena-text', 'aa-intelligence']);
+  expect(graph.nodes.filter(node => node.kind === 'concept' && node.articleBindings.some(ref => ref.articleId === trainingArticleId)).map(node => node.id).sort()).toEqual([...unit.conceptIds].sort());
+  for (const id of unit.conceptIds) {
+    const nodes = graph.nodes.filter(node => node.id === id);
+    expect(nodes).toHaveLength(1);
+    expect(nodes[0].articleBindings).toEqual([{ articleId: trainingArticleId, coverage: 'explanation' }]);
+    expect(nodes[0].contentStatus).toBe('outline');
+    expect(nodes[0].evidenceStatus).toBe('not-reviewed');
+  }
+  const branch = graph.nodes.find(node => node.id === 'branch:llm:training/loop')!;
+  expect(branch.parentId).toBe('branch:llm:training');
+  expect(branch.embeddedArticleId).toBe(trainingArticleId);
+  expect(branch.conceptRefs).toEqual(['concept:backpropagation', 'concept:loss-objective', 'concept:sgd', 'concept:learning-rate']);
+  expect(inventory.originalScope.originalModelNodeIds).toContain(branch.id);
+  const refs = graph.edges.filter(edge => edge.source === branch.id && edge.type === 'references');
+  expect(refs.map(edge => edge.target).sort()).toEqual([...branch.conceptRefs!].sort());
+  const teaching = graph.edges.filter(edge => edge.source === 'concept:gradient' && edge.target === 'concept:sgd');
+  expect(teaching).toHaveLength(1);
+  expect(teaching[0].type).toBe('recommended_before');
+  expect(teaching[0].assertionStatus).toBe('editorial');
+  expect(teaching[0].reason).toContain('阅读顺序建议');
+  expect(graph.nodes.some(node => node.id === 'concept:gradient-descent')).toBe(false);
+  expect(inventory.summary.independentlyReviewedNodes).toBe(0);
+});
+
 const units = [
+  { article: trainingArticleId, concept: 'concept:sgd', branch: 'branch:llm:training/loop' },
+  { article: trainingArticleId, concept: 'concept:learning-rate', branch: 'branch:llm:training/loop' },
   { article: naiveBayesArticleId, concept: 'concept:supervised-learning', branch: 'branch:ai-overview:orientation/naive-bayes' },
   { article: naiveBayesArticleId, concept: 'concept:naive-bayes', branch: 'branch:ai-overview:orientation/naive-bayes' },
   { article: metricsArticleId, concept: 'concept:accuracy-f1', branch: 'branch:llm:rankings/metrics' },
@@ -238,6 +277,14 @@ for (const width of [390, 1440]) for (const unit of units) {
       await expect(article.locator('.markdown-body')).toContainText('320/401');
       await expect(article.locator('.markdown-body')).toContainText('needs-independent-review');
     }
+    if (unit.article === trainingArticleId) {
+      await expect(article.locator('h1')).toHaveText(trainingTitle);
+      await expect(article.locator('.markdown-body h2').filter({ hasText: 'SGD 的随机性来自哪一步' })).toBeVisible();
+      await expect(article.locator('.markdown-body h2').filter({ hasText: '学习率为什么有范围' })).toBeVisible();
+      await expect(article.locator('.markdown-body')).toContainText('0.693147 0.513015');
+      await expect(article.locator('.md-codeblock pre')).toContainText('def probabilities(w):');
+      await expect(article.locator('.md-codeblock pre')).toContainText('def quad_step(');
+    }
     await expect(article.locator('.katex-error')).toHaveCount(0);
     expect(await article.locator('.markdown-body a[href^="https://"]').count()).toBeGreaterThanOrEqual(2);
     expect(await article.locator('.markdown-body a[href^="?view=garden"]').count()).toBeGreaterThanOrEqual(2);
@@ -258,7 +305,7 @@ for (const width of [390, 1440]) for (const unit of units) {
       await page.screenshot({ path: testInfo.outputPath(`derivatives-${width}.png`) });
     }
     expect(errors).toEqual([]);
-    if (unit.article === 'llm-tensor-shapes') await page.screenshot({ path: `test-results/content-batch-${width}.png` });
+    if (unit.article === 'llm-tensor-shapes') await page.screenshot({ path: testInfo.outputPath(`content-batch-${width}.png`) });
   });
 }
 
@@ -422,5 +469,77 @@ for (const width of [390, 1440]) test(`AI overview keeps its folder and reuses c
   await expect(naiveBayes.locator('h1')).toHaveText(naiveBayesTitle);
   await expect(page.locator('[data-document]')).toHaveCount(1);
   await expect(page.getByRole('tab')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+for (const width of [390, 1440]) test(`training sampling and learning-rate sections preserve the old branch and history / ${width}px`, async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => {
+    // External requests are deliberately blocked below; report application errors.
+    if (message.type() === 'error' && !/net::ERR_/.test(message.text())) errors.push(message.text());
+  });
+  await page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+  await page.setViewportSize({ width, height: 900 });
+  await page.goto('/?view=garden&scope=branch:llm:training/loop');
+  const article = page.locator(`[data-document="${trainingArticleId}"]`);
+  await expect(article.locator('h1')).toHaveText(trainingTitle);
+  await page.reload();
+  await expect(article.locator('.markdown-body')).toBeVisible();
+  // Embedded branch links canonicalize to the article and retain the old branch
+  // in the return route, including after reload.
+  const params = new URL(page.url()).searchParams;
+  expect(params.get('view')).toBe('article');
+  expect(params.get('article')).toBe(trainingArticleId);
+  const returnParams = new URLSearchParams(params.get('return') ?? '');
+  expect(returnParams.get('view')).toBe('garden');
+  expect(returnParams.get('scope')).toBe('branch:llm:training/loop');
+  expect(returnParams.get('display')).toBe('list');
+  for (const heading of ['一个完整数值更新', 'SGD 的随机性来自哪一步', 'mini-batch 能减少什么', '学习率为什么有范围', '梯度裁剪的一个边界提醒']) {
+    await expect(article.locator('.markdown-body h2').filter({ hasText: heading })).toBeVisible();
+  }
+  const formulas = await article.locator('.katex annotation').allTextContents();
+  expect(formulas.some(tex => tex.includes('\\mathbb E_I[g_I(\\theta)]'))).toBe(true);
+  expect(formulas.some(tex => tex.includes('\\operatorname{Var}(\\bar g)'))).toBe(true);
+  expect(formulas.some(tex => tex.replaceAll('&', '').includes("e'=(1-\\eta)e"))).toBe(true);
+  await expect(article.locator('.katex-error')).toHaveCount(0);
+  const keyFormulaOverflow = await article.locator('.katex-display').evaluateAll(displays => displays.filter(display => {
+    const tex = display.querySelector('annotation')?.textContent ?? '';
+    return tex.includes('\\ell_i(\\theta)&=') || tex.includes("\\theta'&=") || tex.includes('P(I_t=i\\mid\\mathcal H_t)');
+  }).map(display => display.scrollWidth - display.clientWidth));
+  expect(keyFormulaOverflow).toHaveLength(3);
+  for (const overflow of keyFormulaOverflow) expect(overflow).toBeLessThanOrEqual(1);
+  await expect(article.locator('.md-codeblock')).toHaveCount(1);
+  await expect(article.locator('.md-codeblock pre')).toContainText('assert updated == [0.1, -0.1]');
+  await expect(article.locator('.md-codeblock pre')).toContainText('def quad_gradient(');
+  await expect(article.locator('.md-table-region')).toHaveCount(5);
+  await article.locator('.markdown-body h2').filter({ hasText: 'SGD 的随机性来自哪一步' }).scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath(`training-sampling-${width}.png`) });
+  await article.locator('.md-diagram').scrollIntoViewIfNeeded();
+  await expect(article.locator('.md-diagram')).toHaveAttribute('data-status', 'ready');
+  await expect(article.locator('.md-mermaid svg')).toBeVisible();
+  await expect(article.locator('.md-mermaid-error')).toHaveCount(0);
+  const overflow = await article.locator('.markdown-body').evaluate(body => {
+    const frame = body.getBoundingClientRect();
+    return [...body.querySelectorAll('.md-codeblock, .md-table-region, .katex-display, .md-diagram')].filter(element => {
+      const rect = element.getBoundingClientRect();
+      return rect.left < frame.left - 1 || rect.right > frame.right + 1;
+    }).map(element => element.className);
+  });
+  expect(overflow).toEqual([]);
+  expect(await page.locator('.ws-scroll').evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1);
+  await article.locator('.markdown-body h2').filter({ hasText: '学习率为什么有范围' }).scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath(`training-learning-rate-${width}.png`) });
+  await article.locator('.markdown-body a[href="?view=garden&scope=branch:llm:math/probability"]').first().click();
+  await expect(page.locator(`[data-document="${probabilityArticleId}"] h1`)).toHaveText(probabilityTitle);
+  await page.goBack();
+  await expect(article.locator('h1')).toHaveText(trainingTitle);
+  await page.goForward();
+  await expect(page.locator(`[data-document="${probabilityArticleId}"] h1`)).toHaveText(probabilityTitle);
+  await page.goBack();
+  await expect(article.locator('.markdown-body')).toBeVisible();
+  await expect(page.locator('[data-document]')).toHaveCount(1);
+  await expect(page.getByRole('tab')).toHaveCount(0);
+  await expect(article.locator('.ws-evidence')).toContainText('程序验证不等于专家复核');
   expect(errors).toEqual([]);
 });

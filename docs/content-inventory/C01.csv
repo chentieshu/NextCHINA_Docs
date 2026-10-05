@@ -1,6 +1,7 @@
 id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
 branch:llm:math,表示与数学,branch,C01,,,navigation,false
 branch:llm:math/derivatives,梯度、链式法则与自动微分,branch,C01,llm-derivatives,llm-derivatives,bound-needs-review,true
+branch:llm:math/floating-point,浮点数、舍入误差与比较容差,branch,C01,floating-point-rounding,floating-point-rounding,bound-needs-review,true
 branch:llm:math/objectives,负对数似然、交叉熵、困惑度与可比条件,branch,C01,llm-entropy-cross-entropy,llm-entropy-cross-entropy,bound-needs-review,true
 branch:llm:math/probability,条件概率、自回归分解与最大似然,branch,C01,llm-conditional-probability,llm-conditional-probability,bound-needs-review,true
 branch:llm:math/representations,Token Embedding、隐藏状态与上下文,branch,C01,,,navigation,false
@@ -21,7 +22,7 @@ concept:dot-product,点积,concept,C01,llm-tensor-shapes,llm-tensor-shapes,bound
 concept:eigen-svd,特征分解与 SVD,concept,C01,,,missing,false
 concept:entropy,熵,concept,C01,llm-entropy-cross-entropy,llm-entropy-cross-entropy,bound-needs-review,true
 concept:expectation-variance,期望与方差,concept,C01,llm-conditional-probability,llm-conditional-probability,bound-needs-review,true
-concept:floating-point,浮点数与舍入误差,concept,C01,,,missing,false
+concept:floating-point,浮点数与舍入误差,concept,C01,floating-point-rounding,floating-point-rounding,bound-needs-review,true
 concept:gradient,梯度,concept,C01,llm-training-loop,llm-training-loop,bound-needs-review,true
 concept:kl-divergence,KL 散度,concept,C01,llm-entropy-cross-entropy,llm-entropy-cross-entropy,bound-needs-review,true
 concept:matrix-multiplication,矩阵乘法,concept,C01,llm-tensor-shapes,llm-tensor-shapes,bound-needs-review,true

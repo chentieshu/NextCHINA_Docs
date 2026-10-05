@@ -57,6 +57,7 @@
         {"id":"tokenization","label":"Token、分词、字节与特殊符号","conceptRefs":["concept:tokenization"]},
         {"id":"representations","label":"Token Embedding、隐藏状态与上下文","conceptRefs":["concept:token-embedding"]},
         {"id":"tensor-shapes","label":"向量、张量形状、矩阵乘法与批次","conceptRefs":["concept:matrix-tensor","concept:matrix-multiplication"]},
+        {"id":"floating-point","label":"浮点数、舍入误差与比较容差","conceptRefs":["concept:floating-point"]},
         {"id":"probability","label":"条件概率、自回归分解与最大似然","conceptRefs":["concept:conditional-probability","concept:autoregression"]},
         {"id":"softmax","label":"Logits、Softmax、温度与数值稳定性","conceptRefs":["concept:logits","concept:softmax","concept:numerical-stability"]},
         {"id":"objectives","label":"负对数似然、交叉熵、困惑度与可比条件","conceptRefs":["concept:cross-entropy"]},

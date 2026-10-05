@@ -462,6 +462,50 @@
         ],
         "relatedResourceIds": []
       }
+    },
+    {
+      "id": "floating-point-rounding",
+      "file": "content/models/foundations/floating-point-rounding.md",
+      "space": "models",
+      "category": "foundations",
+      "categoryName": "AI 基础原理",
+      "title": "浮点数与舍入：存下的数、算出的数与显示的数",
+      "subtitle": "用精确分数追踪 0.1、加法顺序与接近零的容差，解释误差从哪里来",
+      "date": "2026-10-05",
+      "tags": [
+        "浮点数",
+        "舍入误差",
+        "Python",
+        "数值计算"
+      ],
+      "excerpt": "用精确分数拆分输入表示与加法舍入误差，再检查求和顺序、局部间距与零附近的容差；一个标准库实验明确输入、平台与失败边界。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "floating-point-rounding",
+        "conceptIds": [
+          "concept:floating-point"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "math/floating-point"
+          }
+        ],
+        "sourceUrls": [
+          "https://docs.python.org/3.14/tutorial/floatingpoint.html",
+          "https://docs.python.org/3.14/library/fractions.html",
+          "https://docs.python.org/3.14/library/math.html",
+          "https://docs.python.org/3.14/library/sys.html",
+          "https://docs.python.org/3.12/library/functions.html#sum",
+          "https://peps.python.org/pep-0485/",
+          "https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html"
+        ],
+        "relatedResourceIds": [
+          "llm-softmax-temperature",
+          "llm-derivatives"
+        ]
+      }
     }
   ]
 }

@@ -7,6 +7,7 @@ import remarkMath from 'remark-math';
 // Test-only dispatch, not graph metadata or a factual/scientific classification.
 // The array is intentional: duplicate registrations must not silently overwrite.
 export const exampleChecks = [
+  ['floating-point-rounding', 'floating-point-rounding', 'python'],
   ['llm-tokenization', 'tokenization', 'python'],
   ['llm-softmax-temperature', 'softmax', 'python'],
   ['llm-attention-calculation', 'attention', 'python'],

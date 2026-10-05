@@ -989,3 +989,240 @@ for (const width of [390, 1440]) test(`learning signals direct and leaf readers 
   }
   expect(errors).toEqual([]);
 });
+
+const floatingPointId = 'floating-point-rounding';
+const floatingPointConcept = 'concept:floating-point';
+const floatingPointBranch = 'branch:llm:math/floating-point';
+const floatingPointTitle = '浮点数与舍入：存下的数、算出的数与显示的数';
+const floatingPointSources = [
+  'https://docs.python.org/3.14/tutorial/floatingpoint.html',
+  'https://docs.python.org/3.14/library/fractions.html',
+  'https://docs.python.org/3.14/library/math.html',
+  'https://docs.python.org/3.14/library/sys.html',
+  'https://docs.python.org/3.12/library/functions.html#sum',
+  'https://peps.python.org/pep-0485/',
+  'https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html',
+];
+const floatingPointMarkdown = readFileSync('content/models/foundations/floating-point-rounding.md', 'utf8');
+const floatingPointCode = [...floatingPointMarkdown.matchAll(/^```python\n(# nextchina-example: floating-point-rounding\n[\s\S]*?)^```/gm)].map(match => match[1]);
+
+test('floating point binds only its canonical concept and one math leaf with a scoped reading edge', () => {
+  const articles = JSON.parse(readFileSync('content/articles.json', 'utf8')).articles;
+  const matches = articles.filter((article: { id: string }) => article.id === floatingPointId);
+  expect(matches).toHaveLength(1);
+  expect(matches[0].title).toBe(floatingPointTitle);
+  expect(matches[0].category).toBe('foundations');
+  const unit = matches[0].knowledgeUnit;
+  expect(Object.keys(unit).sort()).toEqual(['kind', 'reviewStatus', 'exampleId', 'conceptIds', 'placements', 'sourceUrls', 'relatedResourceIds'].sort());
+  expect(unit.kind).toBe('independent-explanation');
+  expect(unit.reviewStatus).toBe('needs-independent-review');
+  expect(unit.exampleId).toBe(floatingPointId);
+  expect(unit.conceptIds).toEqual([floatingPointConcept]);
+  expect(unit.placements).toEqual([{ hubId: 'hub:llm', path: 'math/floating-point' }]);
+  expect(unit.sourceUrls).toEqual(floatingPointSources);
+  expect(unit.relatedResourceIds).toEqual(['llm-softmax-temperature', 'llm-derivatives']);
+  expect(floatingPointCode).toHaveLength(1);
+  expect([...floatingPointMarkdown.matchAll(/^```python$/gm)]).toHaveLength(1);
+  expect([...floatingPointMarkdown.matchAll(/nextchina-example:/g)]).toHaveLength(1);
+  const canonical = graph.nodes.filter(node => node.id === floatingPointConcept);
+  expect(canonical).toHaveLength(1);
+  expect(canonical[0].kind).toBe('concept');
+  expect(canonical[0].parentId).toBe('topic:optimization');
+  expect(canonical[0].articleBindings).toEqual([{ articleId: floatingPointId, coverage: 'explanation' }]);
+  expect(canonical[0].contentStatus).toBe('outline');
+  expect(canonical[0].evidenceStatus).toBe('not-reviewed');
+  expect(graph.nodes.filter(node => node.kind === 'concept' && node.articleBindings.some(ref => ref.articleId === floatingPointId)).map(node => node.id)).toEqual([floatingPointConcept]);
+  const leaf = graph.nodes.find(node => node.id === floatingPointBranch)!;
+  expect(leaf.parentId).toBe('branch:llm:math');
+  expect(leaf.embeddedArticleId).toBe(floatingPointId);
+  expect(leaf.conceptRefs).toEqual([floatingPointConcept]);
+  const incident = graph.edges.filter(edge => edge.source === leaf.id || edge.target === leaf.id);
+  expect(incident.map(edge => edge.type).sort()).toEqual(['browse_child', 'references']);
+  expect(incident.find(edge => edge.type === 'references')?.target).toBe(floatingPointConcept);
+  const teaching = graph.edges.filter(edge => edge.source === floatingPointConcept && edge.target === 'concept:numerical-stability');
+  expect(teaching).toHaveLength(1);
+  expect(teaching[0].type).toBe('recommended_before');
+  expect(teaching[0].assertionStatus).toBe('editorial');
+  expect(teaching[0].routeId).toBeUndefined();
+  expect(teaching[0].reason).toContain('不是所有稳定算法的逻辑必要条件');
+  expect(teaching[0].scope).toContain('教学阅读次序');
+  expect(graph.nodes.find(node => node.id === 'branch:llm:math')!.embeddedArticleId).toBeUndefined();
+  expect(graph.nodes.find(node => node.id === 'branch:llm:math/softmax')!.embeddedArticleId).toBe('llm-softmax-temperature');
+  expect(graph.nodes.find(node => node.id === 'branch:llm:math/derivatives')!.embeddedArticleId).toBe('llm-derivatives');
+  expect(inventory.originalScope.originalModelNodeIds).toContain(floatingPointConcept);
+  expect(inventory.originalScope.originalModelNodeIds).toHaveLength(603);
+  expect(inventory.originalScope.missingOriginalNodeIds).toEqual([]);
+  expect(inventory.summary.independentlyReviewedNodes).toBe(0);
+});
+
+async function checkFloatingPointReader(page: Page) {
+  const article = page.locator(`[data-document="${floatingPointId}"]`);
+  await expect(article.locator('h1')).toHaveText(floatingPointTitle);
+  const body = article.locator('.markdown-body');
+  await expect(body).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+  for (const heading of [
+    '1. 同一个“0.1”，先分清四层',
+    '3. 给 0.1 + 0.2 做一张精确账单',
+    '3.1 输入已经发生了近似',
+    '3.2 加法还会产生自己的一笔舍入',
+    '3.3 与 float(0.3) 比较，是另一个问题',
+    '3.4 显示可以换，已经存下的数没有换',
+    '4. 顺序能改变结果，减法不一定是肇事者',
+    '5. fsum 能改进哪一层？',
+    '6. ULP、epsilon 和容差不是同一个量',
+    '接近零时，先说清允许多大的绝对差',
+    '7. 边界必须写进合同',
+    '8. 可运行实验：审核存储值，不猜测原始意图',
+    '来源、版本与核验范围',
+  ]) await expect(body.getByRole('heading', { name: heading, exact: true })).toBeVisible();
+  for (const text of [
+    '显示更多位没有创造更多计算精度', '不能把上方间距 2 误用到两侧',
+    'Python 3.12 已更换浮点求和算法', '不是整个程序的误差保证',
+    '极端边界仍会舍入', '不要据此推断所有极端输入的程序结果都与精确分数判据一致',
+    '循环先溢出时整次拒绝', '不默默重排、不钳位到最大值',
+    'CPython 3.12.14（Clang 22.1.3）与 CPython 3.13.5（GCC 14.2.0）',
+    '阅读的 3.14 文档不等于实测了 3.14', '不是对整个解释器、数学库或硬件的 IEEE 符合性认证',
+  ]) await expect(body).toContainText(text);
+  await expect(article.locator('.ws-evidence')).toContainText('程序验证不等于专家复核');
+  await expect(body.locator('.katex-error, .md-mermaid-error')).toHaveCount(0);
+  const formulas = await body.locator('.katex annotation').allTextContents();
+  for (const fragment of ['E_{\\mathrm{in}}=S-T', 'E_{\\mathrm{op}}=C-S', 'E_{\\mathrm{total}}=C-T', '180143985094819840', '36028797018963968', '22517998136852480', '|a-b|\\le\\max(rM,t)']) {
+    expect(formulas.some(tex => tex.includes(fragment))).toBe(true);
+  }
+  await expect(body.locator('.md-codeblock')).toHaveCount(1);
+  await expect(body.locator('pre code')).toHaveCount(1);
+  expect((await body.locator('pre code').textContent())?.trimEnd()).toBe(floatingPointCode[0].trimEnd());
+  for (const url of floatingPointSources) {
+    const links = body.locator(`a[href="${url}"]`);
+    expect(await links.count()).toBeGreaterThan(0);
+    await expect(links.first()).toBeVisible();
+    expect((await links.first().textContent())?.trim().length).toBeGreaterThan(0);
+  }
+  await expect(article.locator('[data-related-resource]')).toHaveCount(2);
+  for (const id of ['llm-softmax-temperature', 'llm-derivatives']) await expect(article.locator(`[data-related-resource="${id}"]`)).toBeVisible();
+  const geometry = await body.evaluate(element => {
+    const frame = element.getBoundingClientRect();
+    const round = (n: number) => Math.round(n * 100) / 100;
+    return {
+      body: { width: round(frame.width), overflow: element.scrollWidth - element.clientWidth },
+      formulas: [...element.querySelectorAll<HTMLElement>('.katex-display')].map(display => {
+        const rect = display.getBoundingClientRect();
+        const ink = display.querySelector('.katex-html')!.getBoundingClientRect();
+        return { tex: display.querySelector('annotation')!.textContent, width: round(rect.width), inkWidth: round(ink.width),
+          overflow: display.scrollWidth - display.clientWidth,
+          leftEscape: round(Math.max(0, frame.left - ink.left)), rightEscape: round(Math.max(0, ink.right - frame.right)) };
+      }),
+      escapedFrames: [...element.querySelectorAll('p, li, h2, h3, .md-codeblock, .katex-display')].filter(item => {
+        const rect = item.getBoundingClientRect(); return rect.left < frame.left - 1 || rect.right > frame.right + 1;
+      }).map(item => ({ tag: item.tagName, text: item.textContent?.slice(0, 100) })),
+    };
+  });
+  expect(geometry.body.overflow).toBeLessThanOrEqual(1);
+  expect(geometry.escapedFrames).toEqual([]);
+  for (const formula of geometry.formulas) {
+    expect(formula.overflow, formula.tex ?? '').toBeLessThanOrEqual(1);
+    expect(formula.leftEscape, formula.tex ?? '').toBeLessThanOrEqual(1);
+    expect(formula.rightEscape, formula.tex ?? '').toBeLessThanOrEqual(1);
+  }
+  expect(await page.locator('.ws-scroll').evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1);
+  await expect(page.locator('[data-document]')).toHaveCount(1);
+  await expect(page.getByRole('tab')).toHaveCount(0);
+  return { article, geometry };
+}
+
+for (const width of [390, 1440]) test(`floating point canonical reading preserves exact accounting and map history / ${width}px`, async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error' && !/net::ERR_/.test(message.text())) errors.push(message.text()); });
+  await page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+  await page.setViewportSize({ width, height: 900 });
+  await page.goto(`/?view=garden&scope=root:ai&node=${floatingPointConcept}&display=graph`);
+  await expect(page.locator('.og-network-host')).toHaveAttribute('data-layout', 'ready');
+  await expect(page.locator('.kg-node[data-active="true"]')).toHaveAttribute('data-node-id', floatingPointConcept);
+  await expect(page.locator('.og-note-badges')).toContainText('有独立讲解资料');
+  await page.locator('.og-read-button').click();
+  const { geometry } = await checkFloatingPointReader(page);
+  await testInfo.attach(`floating-point-geometry-${width}`, { body: JSON.stringify(geometry, null, 2), contentType: 'application/json' });
+  await page.reload();
+  await checkFloatingPointReader(page);
+  await page.goBack();
+  await expect(page.locator('.kg-node[data-active="true"]')).toHaveAttribute('data-node-id', floatingPointConcept);
+  await page.goForward();
+  await checkFloatingPointReader(page);
+  await page.getByRole('button', { name: '返回知识地图', exact: true }).click();
+  await expect(page.locator('.og-network-host')).toHaveAttribute('data-layout', 'ready');
+  await expect(page.locator('.kg-node[data-active="true"]')).toHaveAttribute('data-node-id', floatingPointConcept);
+  await expect(page.locator('[data-document]')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+for (const width of [390, 1440]) test(`floating point direct and new-leaf readers retain sources, copy, onward resources and math siblings / ${width}px`, async ({ page, context }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error' && !/net::ERR_/.test(message.text())) errors.push(message.text()); });
+  await page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.setViewportSize({ width, height: 900 });
+  await page.goto(`/?view=article&article=${floatingPointId}`);
+  const { article, geometry } = await checkFloatingPointReader(page);
+  await testInfo.attach(`floating-point-direct-geometry-${width}`, { body: JSON.stringify(geometry, null, 2), contentType: 'application/json' });
+  await page.reload();
+  await checkFloatingPointReader(page);
+  await article.getByRole('button', { name: '复制代码', exact: true }).click();
+  await expect(article.getByRole('button', { name: '复制代码', exact: true })).toContainText('已复制');
+  expect((await page.evaluate(() => navigator.clipboard.readText())).trimEnd()).toBe(floatingPointCode[0].trimEnd());
+  const wrap = article.getByRole('button', { name: '换行', exact: true });
+  await wrap.click();
+  await expect(article.locator('.md-codeblock')).toHaveAttribute('data-wrap', 'true');
+  expect(await article.locator('pre').evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1);
+  await wrap.click();
+  await expect(article.locator('.md-codeblock')).toHaveAttribute('data-wrap', 'false');
+  for (const [branch, target] of [
+    ['branch:llm:math/softmax', 'llm-softmax-temperature'],
+    ['branch:llm:math/derivatives', 'llm-derivatives'],
+    ['branch:llm:math/tensor-shapes', 'llm-tensor-shapes'],
+  ]) {
+    await article.locator(`.markdown-body a[href="?view=garden&scope=${branch}"]`).click();
+    await expect(page.locator(`[data-document="${target}"] .markdown-body`)).toBeVisible();
+    await expect(page.locator(`[data-document="${target}"] .md-codeblock`)).toHaveCount(1);
+    await page.reload();
+    await expect(page.locator(`[data-document="${target}"] .markdown-body`)).toBeVisible();
+    await page.goBack();
+    await checkFloatingPointReader(page);
+    await page.goForward();
+    await expect(page.locator(`[data-document="${target}"] .markdown-body`)).toBeVisible();
+    await page.goBack();
+    await checkFloatingPointReader(page);
+  }
+  for (const target of ['llm-softmax-temperature', 'llm-derivatives']) {
+    await article.locator(`[data-related-resource="${target}"]`).click();
+    await expect(page.locator(`[data-document="${target}"] .markdown-body`)).toBeVisible();
+    await page.goBack();
+    await checkFloatingPointReader(page);
+  }
+  await page.goto(`/?view=garden&scope=${floatingPointBranch}`);
+  await checkFloatingPointReader(page);
+  await page.reload();
+  await checkFloatingPointReader(page);
+  await page.goto('/?view=garden&scope=branch:llm:math');
+  const parent = page.locator('[data-folder="branch:llm:math"]');
+  await expect(parent).toBeVisible();
+  const entries = await parent.locator('[data-folder-entry]').evaluateAll(elements => elements.map(element => element.getAttribute('data-folder-entry')));
+  const tensorIndex = entries.indexOf('branch:llm:math/tensor-shapes');
+  expect(tensorIndex).toBeGreaterThanOrEqual(0);
+  expect(entries.slice(tensorIndex, tensorIndex + 3)).toEqual(['branch:llm:math/tensor-shapes', floatingPointBranch, 'branch:llm:math/probability']);
+  for (const [entry, target] of [[floatingPointBranch, floatingPointId], ['branch:llm:math/softmax', 'llm-softmax-temperature'], ['branch:llm:math/derivatives', 'llm-derivatives']]) {
+    await parent.locator(`[data-folder-entry="${entry}"]`).click();
+    await expect(page.locator(`[data-document="${target}"] .markdown-body`)).toBeVisible();
+    await page.reload();
+    await expect(page.locator(`[data-document="${target}"] .markdown-body`)).toBeVisible();
+    await page.goBack();
+    await expect(parent).toBeVisible();
+    await page.goForward();
+    await expect(page.locator(`[data-document="${target}"] .markdown-body`)).toBeVisible();
+    await page.goBack();
+    await expect(parent).toBeVisible();
+  }
+  expect(errors).toEqual([]);
+});

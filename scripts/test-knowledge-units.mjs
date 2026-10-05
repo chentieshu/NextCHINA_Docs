@@ -17,6 +17,236 @@ const graph = attachTopicHubs(base, repositoryRoot, publishedArticleIds);
 const byId = new Map(graph.nodes.map(node => [node.id, node]));
 const results = [];
 const negatives = {
+  'floating-point-rounding': String.raw`# Independent assertions appended directly to the extracted article example.
+# No imports of an implementation file, shared paths, runpy or stdout oracle.
+from decimal import Decimal
+from itertools import permutations, product
+from types import SimpleNamespace
+
+
+def _expect_value_error(call, contains=None):
+    try:
+        call()
+    except ValueError as exc:
+        if contains is not None:
+            assert contains in str(exc)
+    else:
+        raise AssertionError("Invalid input or overflowing path accepted")
+
+
+# Integer/fraction oracles derived independently from the binary64 grid.
+x, y, z = 0.1, 0.2, 0.3
+fx = Fraction(3602879701896397, 2**55)
+fy = Fraction(3602879701896397, 2**54)
+fz = Fraction(5404319552844595, 2**54)
+fxy = Fraction(1351079888211149, 2**52)
+assert Fraction.from_float(x) == fx
+assert Fraction.from_float(y) == fy
+assert Fraction.from_float(z) == fz
+assert Fraction.from_float(x + y) == fxy
+assert fx + fy == Fraction(10808639105689191, 2**55)
+assert fx - Fraction(1, 10) == Fraction(1, 5 * 2**55)
+assert fy - Fraction(1, 5) == Fraction(1, 5 * 2**54)
+assert representation_error == Fraction(3, 5 * 2**55)
+assert operation_error == Fraction(1, 2**55)
+assert total_error == Fraction(1, 5 * 2**52)
+assert total_error == representation_error + operation_error
+assert fxy - fz == Fraction(1, 2**54)
+assert fxy - fz != total_error
+assert (x + y) != z
+assert x.as_integer_ratio() == (3602879701896397, 2**55)
+assert repr(x) == "0.1"
+assert format(x, ".17g") == "0.10000000000000001"
+assert float(repr(x)) == float(format(x, ".17g")) == x
+before = Fraction.from_float(x + y)
+assert format(x + y, ".1f") == "0.3"
+assert Fraction.from_float(x + y) == before
+assert round(x, 1) + round(y, 1) != round(z, 1)
+assert round(x + y, 1) == z
+assert Fraction.from_float(round(x + y, 1)) != Fraction(3, 10)
+
+# Finite dyadic families have small exact intermediate numerators.
+dyadics = [(n, d) for n in range(-4, 5) for d in (1, 2, 4, 8)]
+for n, d in dyadics:
+    v = n / d
+    assert Fraction.from_float(v) == Fraction(n, d)
+    assert finite_float(v) is v
+    assert float(Fraction(*v.as_integer_ratio())) == v
+pair_count = 0
+for (n1, d1), (n2, d2) in product(dyadics, repeat=2):
+    expected = Fraction(n1, d1) + Fraction(n2, d2)
+    row = sum_audit([n1 / d1, n2 / d2])
+    assert row["exact_stored_sum"] == expected
+    assert Fraction.from_float(row["sequential"]) == expected
+    assert Fraction.from_float(row["fsum"]) == expected
+    assert row["sequential_error"] == row["fsum_error"] == 0
+    pair_count += 1
+assert pair_count == 1296
+p, q, r = 0.125, 0.25, 0.375
+assert p + q == r
+assert sum_audit((p, q, -r))["exact_stored_sum"] == 0
+
+# Enumerate ALL permutations; only the two leading +big/1 orders lose the 1.
+Q = float(2**53)
+loop_oracle = {
+    (Q, 1.0, -Q): 0.0,
+    (1.0, Q, -Q): 0.0,
+    (Q, -Q, 1.0): 1.0,
+    (1.0, -Q, Q): 1.0,
+    (-Q, Q, 1.0): 1.0,
+    (-Q, 1.0, Q): 1.0,
+}
+for values in permutations((Q, 1.0, -Q)):
+    row = sum_audit(values)
+    expected_loop = loop_oracle[values]
+    assert row["exact_stored_sum"] == Fraction(1)
+    assert row["sequential"] == expected_loop
+    assert row["fsum"] == 1.0
+    assert row["sequential_error"] == Fraction(int(expected_loop) - 1)
+    assert row["fsum_error"] == Fraction(0)
+one = 1.0
+assert (Q + one) - Q == 0.0
+assert Q + (one - Q) == 1.0
+assert math.ulp(Q) == 2.0
+assert math.nextafter(Q, math.inf) - Q == 2.0
+assert Q - math.nextafter(Q, -math.inf) == 1.0
+assert math.ulp(one) == sys.float_info.epsilon == 2.0**-52
+half = math.ldexp(one, -53)
+next_one = math.nextafter(one, math.inf)
+assert one + half == one
+assert next_one + half == math.nextafter(next_one, math.inf)
+row = sum_audit([x, y, -z])
+assert row["exact_stored_sum"] == Fraction(1, 2**55)
+assert Fraction.from_float(row["sequential"]) == Fraction(1, 2**54)
+assert Fraction.from_float(row["fsum"]) == Fraction(1, 2**55)
+assert row["sequential_error"] == Fraction(1, 2**55)
+assert row["fsum_error"] == 0
+
+# Tolerance truth values, including exact dyadic boundaries.
+assert within_tolerance(x + y, z, rel_tol=1e-15, abs_tol=0.0)
+resid = (x + y) - z
+assert not within_tolerance(resid, 0.0, rel_tol=1e-15, abs_tol=0.0)
+assert within_tolerance(resid, 0.0, rel_tol=0.0, abs_tol=1e-16)
+assert not within_tolerance(1e-12, 0.0, rel_tol=0.0, abs_tol=1e-16)
+assert within_tolerance(1.0, 1.0, rel_tol=0.0, abs_tol=0.0)
+assert not within_tolerance(one, next_one, rel_tol=0.0, abs_tol=0.0)
+boundary = math.ldexp(one, -40)
+assert within_tolerance(boundary, 0.0, rel_tol=0.0, abs_tol=boundary)
+assert within_tolerance(-boundary, 0.0, rel_tol=0.0, abs_tol=boundary)
+assert not within_tolerance(math.nextafter(boundary, math.inf), 0.0,
+                            rel_tol=0.0, abs_tol=boundary)
+assert within_tolerance(8.0, 7.0, rel_tol=0.125, abs_tol=0.0)
+assert not within_tolerance(8.0, math.nextafter(7.0, -math.inf),
+                            rel_tol=0.125, abs_tol=0.0)
+# All arithmetic in these threshold products/differences is exact dyadic.
+for av, bv in product((-2.0, -1.0, 0.0, 1.0, 2.0), repeat=2):
+    for rt, at in product((0.0, 0.125, 0.5), (0.0, 0.25, 1.0)):
+        af, bf = Fraction.from_float(av), Fraction.from_float(bv)
+        limit = max(Fraction.from_float(rt) * max(abs(af), abs(bf)),
+                    Fraction.from_float(at))
+        expected = abs(af - bf) <= limit
+        assert within_tolerance(av, bv, rel_tol=rt, abs_tol=at) == expected
+        assert within_tolerance(bv, av, rel_tol=rt, abs_tol=at) == expected
+
+# Accepted boundaries and explicit signed-zero policy.
+zero = 0.0
+negzero = -zero
+tiny = math.ulp(zero)
+assert finite_float(negzero) is negzero
+assert math.copysign(1.0, finite_float(negzero)) == -1.0
+assert within_tolerance(negzero, zero, rel_tol=0.0, abs_tol=-0.0)
+assert Fraction.from_float(tiny) == Fraction(1, 2**1074)
+assert tiny / 2.0 == zero
+assert math.copysign(1.0, -tiny / 2.0) == -1.0
+assert math.nextafter(sys.float_info.min, 0.0) < sys.float_info.min
+assert Fraction.from_float(sys.float_info.min) == Fraction(1, 2**1022)
+for values, expected in [([tiny], Fraction(1, 2**1074)),
+                         ([-tiny], Fraction(-1, 2**1074)),
+                         ([tiny, -tiny], Fraction(0)),
+                         ([negzero], Fraction(0)),
+                         ((0.5,), Fraction(1, 2)),
+                         ([1.0] * 32, Fraction(32))]:
+    row = sum_audit(values)
+    assert row["exact_stored_sum"] == expected
+    assert Fraction.from_float(row["sequential"]) == expected
+    assert Fraction.from_float(row["fsum"]) == expected
+    assert row["sequential_error"] == row["fsum_error"] == 0
+# Sums start at +0.0 and Fraction has one rational zero; no sign preservation.
+assert math.copysign(1.0, sequential_sum([negzero])) == 1.0
+maximum = sys.float_info.max
+assert sequential_sum([maximum]) == maximum
+assert math.isinf(maximum + maximum)
+_expect_value_error(lambda: sequential_sum([maximum, maximum, -maximum]),
+                    "Sequential intermediate")
+_expect_value_error(lambda: sum_audit([maximum, maximum, -maximum]),
+                    "Sequential intermediate")
+# Reordering makes the intermediate finite; the exact input sum is unchanged.
+assert sum_audit([maximum, -maximum, maximum])["sequential"] == maximum
+small_for_max = math.ldexp(1.0, 969)
+assert sequential_sum([maximum, small_for_max, small_for_max]) == maximum
+_expect_value_error(lambda: sum_audit([maximum, small_for_max, small_for_max]),
+                    "fsum")
+
+class FloatChild(float):
+    pass
+
+class ListChild(list):
+    pass
+
+class TupleChild(tuple):
+    pass
+
+class PretendFloat:
+    def __float__(self):
+        raise AssertionError("Implicit conversion must not be attempted")
+
+bad_scalars = [None, True, False, 1, 0, 10**400, 1 + 0j, "1.0",
+               Fraction(1, 2), Decimal("0.5"), FloatChild(1.0),
+               PretendFloat(), float("nan"), math.inf, -math.inf]
+for bad in bad_scalars:
+    _expect_value_error(lambda bad=bad: finite_float(bad))
+    _expect_value_error(lambda bad=bad: sequential_sum([bad]))
+    _expect_value_error(lambda bad=bad: sum_audit([bad]))
+    _expect_value_error(lambda bad=bad: within_tolerance(
+        bad, 0.0, rel_tol=0.0, abs_tol=0.0))
+    _expect_value_error(lambda bad=bad: within_tolerance(
+        0.0, bad, rel_tol=0.0, abs_tol=0.0))
+    _expect_value_error(lambda bad=bad: within_tolerance(
+        0.0, 0.0, rel_tol=bad, abs_tol=0.0))
+    _expect_value_error(lambda bad=bad: within_tolerance(
+        0.0, 0.0, rel_tol=0.0, abs_tol=bad))
+for bad in [None, [], (), "1.0", {1.0}, {"x": 1.0}, iter([1.0]),
+            (v for v in [1.0]), [1.0] * 33, ListChild([1.0]),
+            TupleChild((1.0,))]:
+    _expect_value_error(lambda bad=bad: sequential_sum(bad))
+    _expect_value_error(lambda bad=bad: sum_audit(bad))
+for bad in (-0.125, 1.0, 2.0):
+    _expect_value_error(lambda bad=bad: within_tolerance(
+        1.0, 1.0, rel_tol=bad, abs_tol=0.0))
+_expect_value_error(lambda: within_tolerance(0.0, 0.0,
+                                           rel_tol=0.0, abs_tol=-0.125))
+
+# Exercise the explicit platform-rejection paths, restoring process state.
+saved_info = sys.float_info
+try:
+    for key, wrong in (("rounds", 0), ("mant_dig", 24),
+                       ("epsilon", 2.0**-51)):
+        info = {name: getattr(saved_info, name) for name in (
+            "radix", "mant_dig", "max_exp", "min_exp", "rounds",
+            "epsilon", "min", "max")}
+        info[key] = wrong
+        sys.float_info = SimpleNamespace(**info)
+        try:
+            _require_binary64()
+        except RuntimeError:
+            pass
+        else:
+            raise AssertionError("Unsupported platform silently accepted")
+finally:
+    sys.float_info = saved_info
+_require_binary64()
+print("PASS: exact errors, 1296 dyadic pairs, 6 orders, tolerances and rejections")
+`,
   'supervised-learning-naive-bayes': `
 # Independent count/product, symmetry and boundary checks for the fitted model.
 from collections import Counter

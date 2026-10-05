@@ -23,6 +23,7 @@ import entropyCrossEntropy from '../../content/models/llm/entropy-cross-entropy.
 
 import learningSignals from '../../content/models/foundations/unsupervised-self-supervised-learning.md?raw';
 import aiMlDlBoundaries from '../../content/models/foundations/ai-ml-dl-boundaries.md?raw';
+import floatingPoint from '../../content/models/foundations/floating-point-rounding.md?raw';
 import derivatives from '../../content/models/llm/derivatives.md?raw';
 
 const contentById: Record<string, string> = {
@@ -47,6 +48,7 @@ const contentById: Record<string, string> = {
   'supervised-learning-naive-bayes': supervisedNaiveBayes,
   'llm-entropy-cross-entropy': entropyCrossEntropy,
   'llm-derivatives': derivatives,
+  'floating-point-rounding': floatingPoint,
   'unsupervised-self-supervised-learning': learningSignals,
   'ai-ml-dl-boundaries': aiMlDlBoundaries
 };

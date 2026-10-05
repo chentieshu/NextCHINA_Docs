@@ -1813,6 +1813,13 @@
       "target": "concept:naive-bayes",
       "type": "recommended_before",
       "reason": "先区分带标签样本、学习算法、拟合参数与输入预测，再用朴素贝叶斯观察一个具体的监督分类过程；这一阅读次序不把算法的条件独立假设推广到所有监督学习。"
+    },
+    {
+      "source": "concept:floating-point",
+      "target": "concept:numerical-stability",
+      "type": "recommended_before",
+      "reason": "先区分浮点表示、运算舍入与显示，再理解等价公式为何可能产生不同数值结果；这是阅读建议，不是所有稳定算法的逻辑必要条件。",
+      "scope": "浮点数基础到既有数值稳定性单元的教学阅读次序。"
     }
   ],
   "articleBindings": [

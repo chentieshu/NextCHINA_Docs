@@ -726,7 +726,7 @@ for (const width of [390, 1440]) test(`AI boundaries direct and leaf readers pre
   const parent = page.locator('[data-folder="branch:ai-overview:orientation"]');
   await expect(parent.locator('h1')).toHaveText('基础与认识');
   await expect(page.locator('[data-document]')).toHaveCount(0);
-  await expect(parent.locator('.ws-folder-rows button')).toHaveCount(3);
+  await expect(parent.locator('.ws-folder-rows button')).toHaveCount(4);
   await parent.locator(`[data-folder-entry="${aiBoundariesBranch}"]`).click();
   await checkAiBoundaryReader(page);
   await page.goBack();
@@ -745,5 +745,247 @@ for (const width of [390, 1440]) test(`AI boundaries direct and leaf readers pre
   await expect(parent).toBeVisible();
   await page.goForward();
   await expect(overview.locator('.markdown-body')).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+// The second nonnumeric family has its own fixture/stage/reading assertions.
+// It does not weaken the numeric readers or inherit the first pilot's answer key.
+const learningSignalsId = 'unsupervised-self-supervised-learning';
+const learningSignalsTitle = '没有人工标签，也有训练目标吗？无监督与自监督的信号从哪里来';
+const learningSignalsBranch = 'branch:ai-overview:orientation/learning-signals';
+const learningSignalsConcepts = ['concept:unsupervised-learning', 'concept:self-supervised-learning'];
+const learningSignalsSources = [
+  'https://artint.info/3e/html/ArtInt3e.Ch7.S2.html',
+  'https://artint.info/3e/html/ArtInt3e.Ch10.S3.html',
+  'https://arxiv.org/abs/1810.04805v2',
+  'https://arxiv.org/html/1810.04805v2',
+  'https://proceedings.mlr.press/v119/chen20j.html',
+  'https://proceedings.mlr.press/v119/chen20j/chen20j.pdf',
+  'https://developers.google.com/machine-learning/glossary#self-supervised-learning',
+  'https://scikit-learn.org/1.9/common_pitfalls.html#data-leakage',
+];
+const learningSignalCases = ['A：后来观测到的答案也能监督拟合', 'B：没有任务类别，也能精确优化一个目标',
+  'C：目标由原句提供，仍可能无法唯一猜中', 'D：同源配对不是语义真值',
+  'E：冻结编码器，线性头仍在学习', 'F：无标签特征也受评价协议约束'];
+
+test('learning signals owns exactly two original concepts and one sibling leaf without new semantic edges', () => {
+  const articles = JSON.parse(readFileSync('content/articles.json', 'utf8')).articles;
+  const matches = articles.filter((article: { id: string }) => article.id === learningSignalsId);
+  expect(matches).toHaveLength(1);
+  const unit = matches[0].knowledgeUnit;
+  expect(matches[0].title).toBe(learningSignalsTitle);
+  expect(unit.exampleId).toBe(learningSignalsId);
+  expect(unit.conceptIds).toEqual(learningSignalsConcepts);
+  expect(unit.placements).toEqual([{ hubId: 'hub:ai-overview', path: 'orientation/learning-signals' }]);
+  expect(unit.reviewStatus).toBe('needs-independent-review');
+  expect(unit.sourceUrls).toEqual(learningSignalsSources);
+  expect(unit.relatedResourceIds).toEqual([]);
+  expect(Object.keys(unit).sort()).toEqual(['kind', 'reviewStatus', 'exampleId', 'conceptIds', 'placements', 'sourceUrls', 'relatedResourceIds'].sort());
+  expect(graph.nodes.filter(node => node.kind === 'concept' && node.articleBindings.some(ref => ref.articleId === learningSignalsId)).map(node => node.id).sort()).toEqual([...learningSignalsConcepts].sort());
+  for (const id of learningSignalsConcepts) {
+    const nodes = graph.nodes.filter(node => node.id === id);
+    expect(nodes).toHaveLength(1);
+    expect(nodes[0].kind).toBe('concept');
+    expect(nodes[0].parentId).toBe('topic:learning-paradigms');
+    expect(nodes[0].articleBindings).toEqual([{ articleId: learningSignalsId, coverage: 'explanation' }]);
+    expect(nodes[0].embeddedArticleId).toBeUndefined();
+    expect(nodes[0].contentStatus).toBe('outline');
+    expect(nodes[0].evidenceStatus).toBe('not-reviewed');
+    expect(inventory.originalScope.originalModelNodeIds).toContain(id);
+    expect(graph.edges.filter(edge => edge.source === id || edge.target === id).map(edge => edge.type).sort()).toEqual(['browse_child', 'references']);
+  }
+  const branch = graph.nodes.find(node => node.id === learningSignalsBranch)!;
+  expect(branch.kind).toBe('branch');
+  expect(branch.parentId).toBe('branch:ai-overview:orientation');
+  expect(branch.embeddedArticleId).toBe(learningSignalsId);
+  expect(branch.conceptRefs).toEqual(learningSignalsConcepts);
+  expect(inventory.originalScope.addedNodeIds).toContain(branch.id);
+  const incident = graph.edges.filter(edge => edge.source === branch.id || edge.target === branch.id);
+  expect(incident).toHaveLength(3);
+  expect(incident.filter(edge => edge.type === 'browse_child').map(edge => [edge.source, edge.target])).toEqual([['branch:ai-overview:orientation', branch.id]]);
+  expect(incident.filter(edge => edge.type === 'references').map(edge => edge.target).sort()).toEqual([...learningSignalsConcepts].sort());
+  expect(graph.nodes.find(node => node.id === 'branch:ai-overview:orientation')!.articleBindings).toEqual([{ articleId: 'overview', coverage: 'overview' }]);
+  expect(graph.nodes.find(node => node.id === aiBoundariesBranch)!.embeddedArticleId).toBe(aiBoundariesArticleId);
+  expect(graph.nodes.find(node => node.id === 'branch:ai-overview:orientation/naive-bayes')!.embeddedArticleId).toBe(naiveBayesArticleId);
+  expect(inventory.originalScope.originalModelNodeIds).toHaveLength(603);
+  expect(inventory.originalScope.missingOriginalNodeIds).toEqual([]);
+  expect(inventory.summary.independentlyReviewedNodes).toBe(0);
+});
+
+async function checkLearningSignalsReader(page: Page) {
+  const article = page.locator(`[data-document="${learningSignalsId}"]`);
+  await expect(article.locator('h1')).toHaveText(learningSignalsTitle);
+  const body = article.locator('.markdown-body');
+  await expect(body).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+  await expect(body.locator('blockquote').first().locator('strong').first()).toHaveText('本页解决的问题');
+  await expect(article.locator('.ws-evidence')).toContainText('包含来源、教学假设、示例与限制');
+  await expect(article.locator('.ws-evidence')).not.toContainText('可运行');
+  await expect(body).toContainText('组成一个观察案例族，不是真实模型测评，也不是六次已执行实验');
+  for (const name of learningSignalCases) await expect(article.getByRole('heading', { name, exact: true })).toBeVisible();
+  await expect(body).toContainText('看不到 ID、原中间词、文件位置');
+  await expect(body).toContainText('随机性不带来源信息');
+  await expect(body).toContainText('不证明真实 SimCLR 必然丢失颜色');
+  await expect(body).toContainText('测试文本是否影响过预训练仍是未知');
+  await expect(body).toContainText('至少日志证实的那些测试文档已被使用');
+  await expect(body).toContainText('传导式任务');
+  await expect(body).toContainText('needs-independent-review');
+  const tables = article.locator('.md-table-region');
+  await expect(tables).toHaveCount(4);
+  await expect(tables.nth(0).locator('th')).toHaveCount(6);
+  await expect(tables.nth(1).locator('tbody tr')).toHaveCount(7);
+  await expect(tables.nth(1)).toContainText('{A,B} 与 {C,D}');
+  await expect(tables.nth(2).locator('tbody tr')).toHaveCount(2);
+  await expect(tables.nth(2)).toContainText('包裹 [MASK] 送达');
+  await expect(tables.nth(3).locator('tbody tr')).toHaveCount(4);
+  for (const stage of ['U 上预训练', 'Ltrain 上拟合', 'Ldev 上选择', 'Ltest 上计分']) await expect(tables.nth(3)).toContainText(stage);
+  const formulas = await body.locator('.katex annotation').allTextContents();
+  for (const fragment of ['\\mu_S=', 'J=\\sum', '\\subseteq S', 'L(p)=', 'p(1-p)=']) expect(formulas.some(tex => tex.includes(fragment))).toBe(true);
+  await expect(body.locator('.katex-display')).toHaveCount(4);
+  await expect(body.locator('.md-codeblock, pre, .katex-error, .md-mermaid-error')).toHaveCount(0);
+  const formulaOverflow = await body.locator('.katex-display').evaluateAll(displays => displays.map(display => display.scrollWidth - display.clientWidth));
+  for (const overflow of formulaOverflow) expect(overflow).toBeLessThanOrEqual(1);
+  const escapedFrames = await body.evaluate(element => {
+    const frame = element.getBoundingClientRect();
+    return [...element.querySelectorAll('.katex-display, .md-table-region')].filter(item => {
+      const rect = item.getBoundingClientRect(); return rect.left < frame.left - 1 || rect.right > frame.right + 1;
+    }).map(item => item.className);
+  });
+  expect(escapedFrames).toEqual([]);
+  for (const url of learningSignalsSources) {
+    const links = body.locator(`a[href="${url}"]`);
+    expect(await links.count()).toBeGreaterThan(0);
+    await expect(links.first()).toBeVisible();
+    expect((await links.first().textContent())?.trim().length).toBeGreaterThan(0);
+  }
+  await expect(page.locator('[data-document]')).toHaveCount(1);
+  await expect(page.getByRole('tab')).toHaveCount(0);
+  expect(await page.locator('.ws-scroll').evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1);
+  expect(await body.evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1);
+  return article;
+}
+
+for (const width of [390, 1440]) for (const concept of learningSignalsConcepts) {
+  test(`learning signals canonical route preserves fixtures and history / ${concept} / ${width}px`, async ({ page }, testInfo) => {
+    const errors: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    page.on('console', message => { if (message.type() === 'error' && !/net::ERR_/.test(message.text())) errors.push(message.text()); });
+    await page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(`/?view=garden&scope=root:ai&node=${concept}&display=graph`);
+    await expect(page.locator('.og-network-host')).toHaveAttribute('data-layout', 'ready');
+    await expect(page.locator('.kg-node[data-active="true"]')).toHaveAttribute('data-node-id', concept);
+    await expect(page.locator('.og-note-badges')).toContainText('有独立讲解资料');
+    await page.locator('.og-read-button').click();
+    await checkLearningSignalsReader(page);
+    await page.reload();
+    await checkLearningSignalsReader(page);
+    await page.goBack();
+    await expect(page.locator('.kg-node[data-active="true"]')).toHaveAttribute('data-node-id', concept);
+    await page.goForward();
+    await checkLearningSignalsReader(page);
+    await page.screenshot({ path: testInfo.outputPath(`learning-signals-${concept.split(':')[1]}-${width}.png`) });
+    await page.getByRole('button', { name: '返回知识地图', exact: true }).click();
+    await expect(page.locator('.og-network-host')).toHaveAttribute('data-layout', 'ready');
+    await expect(page.locator('.kg-node[data-active="true"]')).toHaveAttribute('data-node-id', concept);
+    await expect(page.locator('[data-document]')).toHaveCount(0);
+    expect(errors).toEqual([]);
+  });
+}
+
+for (const width of [390, 1440]) test(`learning signals direct and leaf readers keep onward links, backlinks and all siblings / ${width}px`, async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error' && !/net::ERR_/.test(message.text())) errors.push(message.text()); });
+  await page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+  await page.setViewportSize({ width, height: 900 });
+  await page.goto(`/?view=article&article=${learningSignalsId}`);
+  const article = await checkLearningSignalsReader(page);
+  await page.reload();
+  await checkLearningSignalsReader(page);
+  for (const [index, name] of learningSignalCases.entries()) {
+    const heading = article.getByRole('heading', { name, exact: true });
+    await heading.scrollIntoViewIfNeeded();
+    await expect(heading).toBeInViewport();
+    await page.screenshot({ path: testInfo.outputPath(`learning-signals-case-${'ABCDEF'[index]}-${width}.png`) });
+  }
+  for (const [index, table] of (await article.locator('.md-table-region').all()).entries()) {
+    await table.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: testInfo.outputPath(`learning-signals-table-${index}-${width}.png`) });
+  }
+  for (const [index, formula] of (await article.locator('.katex-display').all()).entries()) {
+    await formula.scrollIntoViewIfNeeded();
+    await expect(formula).toBeInViewport();
+    await page.screenshot({ path: testInfo.outputPath(`learning-signals-math-${index}-${width}.png`) });
+  }
+  await article.getByRole('heading', { name: '参考解析：保留成立的部分，修改证据改变的部分', exact: true }).scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath(`learning-signals-exercise-${width}.png`) });
+  await article.getByRole('heading', { name: '来源、版本与验证边界', exact: true }).scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath(`learning-signals-sources-${width}.png`) });
+  for (const [branch, target] of [
+    ['branch:ai-overview:orientation/naive-bayes', naiveBayesArticleId],
+    ['branch:llm:training/loop', trainingArticleId],
+    ['branch:llm:training/samples', dataSplitArticleId],
+    [aiBoundariesBranch, aiBoundariesArticleId],
+    ['branch:llm:math/objectives', 'llm-entropy-cross-entropy'],
+  ]) {
+    await article.locator(`.markdown-body a[href="?view=garden&scope=${branch}"]`).first().click();
+    await expect(page.locator(`[data-document="${target}"] .markdown-body`)).toBeVisible();
+    await page.reload();
+    await expect(page.locator(`[data-document="${target}"] .markdown-body`)).toBeVisible();
+    if (target !== aiBoundariesArticleId) await expect(page.locator(`[data-document="${target}"] .md-codeblock`)).toHaveCount(1);
+    await page.goBack();
+    await checkLearningSignalsReader(page);
+    await page.goForward();
+    await expect(page.locator(`[data-document="${target}"] .markdown-body`)).toBeVisible();
+    await page.goBack();
+    await checkLearningSignalsReader(page);
+  }
+  for (const concept of ['concept:clustering', 'concept:contrastive-learning']) {
+    await article.locator(`.markdown-body a[href="?view=garden&scope=${concept}"]`).click();
+    await expect(page.locator(`[data-folder="${concept}"]`)).toBeVisible();
+    await expect(page.locator('[data-document]')).toHaveCount(0);
+    await page.goBack();
+    await checkLearningSignalsReader(page);
+  }
+  for (const source of [aiBoundariesArticleId, dataSplitArticleId]) {
+    await page.goto(`/?view=article&article=${source}`);
+    await page.locator(`[data-document="${source}"] .markdown-body a[href="?view=garden&scope=${learningSignalsBranch}"]`).click();
+    await checkLearningSignalsReader(page);
+    await page.goBack();
+    await expect(page.locator(`[data-document="${source}"] .markdown-body`)).toBeVisible();
+    await page.goForward();
+    await checkLearningSignalsReader(page);
+  }
+  await page.goto(`/?view=garden&scope=${learningSignalsBranch}`);
+  await checkLearningSignalsReader(page);
+  await page.reload();
+  await checkLearningSignalsReader(page);
+  const params = new URL(page.url()).searchParams;
+  expect(params.get('view')).toBe('article');
+  expect(params.get('article')).toBe(learningSignalsId);
+  const returnParams = new URLSearchParams(params.get('return') ?? '');
+  expect(returnParams.get('scope')).toBe(learningSignalsBranch);
+  expect(returnParams.get('display')).toBe('list');
+  await page.goto('/?view=garden&scope=branch:ai-overview:orientation');
+  const parent = page.locator('[data-folder="branch:ai-overview:orientation"]');
+  await expect(parent.locator('h1')).toHaveText('基础与认识');
+  await expect(parent.locator('.ws-folder-rows button')).toHaveCount(4);
+  for (const [entry, target] of [
+    [learningSignalsBranch, learningSignalsId], [aiBoundariesBranch, aiBoundariesArticleId],
+    ['branch:ai-overview:orientation/naive-bayes', naiveBayesArticleId],
+    ['file:branch:ai-overview:orientation:overview', 'overview'],
+  ]) {
+    await parent.locator(`[data-folder-entry="${entry}"]`).click();
+    await expect(page.locator(`[data-document="${target}"] .markdown-body`)).toBeVisible();
+    await page.reload();
+    await expect(page.locator(`[data-document="${target}"] .markdown-body`)).toBeVisible();
+    await page.goBack();
+    await expect(parent).toBeVisible();
+    await page.goForward();
+    await expect(page.locator(`[data-document="${target}"] .markdown-body`)).toBeVisible();
+    await page.goBack();
+    await expect(parent).toBeVisible();
+  }
   expect(errors).toEqual([]);
 });

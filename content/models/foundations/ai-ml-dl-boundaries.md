@@ -157,6 +157,8 @@ McCarthy 把人工智能表述为制造智能机器，尤其是智能计算机�
 
 ## 6. 接下来读什么
 
+- [无监督与自监督：训练信号从哪里来](?view=garden&scope=branch:ai-overview:orientation/learning-signals)：沿具体阶段追踪外供目标、原词与同源关系，分清学得状态和评价证据
+
 - [监督学习与朴素贝叶斯](?view=garden&scope=branch:ai-overview:orientation/naive-bayes)：看带标签资料怎样通过计数与估计形成预测器，亲手区分训练与预测。本页不替代那里的概率计算
 - [训练循环：前向、损失、梯度与更新](?view=garden&scope=branch:llm:training/loop)：已具备相应数学前置知识后，继续看一次参数更新具体做什么，以及训练损失与泛化为何需要分开
 

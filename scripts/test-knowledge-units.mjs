@@ -6,7 +6,9 @@ import path from 'node:path';
 import { loadGarden, repositoryRoot } from './validate-garden.mjs';
 import { attachTopicHubs, branchId } from './build-topic-hubs.mjs';
 import { readKnowledgeUnits } from './knowledge-units.mjs';
-import { validateExampleChecks, checkObservableCase, testExampleContract } from './knowledge-example-contract.mjs';
+import { validateExampleChecks, checkObservableCase, testExampleContract, testPilotMarkdownVisibility } from './knowledge-example-contract.mjs';
+
+import { checkLearningSignalsCase, testLearningSignalsContract } from './learning-signals-case-contract.mjs';
 
 const units = readKnowledgeUnits(repositoryRoot);
 assert.ok(units.length > 0, 'No independent units');
@@ -899,7 +901,8 @@ try {
     assert.ok(links.length >= 2, 'Independent pages need onward reading links');
     for (const [, link] of links) assert.ok(byId.has(new URLSearchParams(link.slice(1)).get('scope')), `Broken knowledge link: ${link}`);
     if (exampleKinds.get(article.id) === 'observable-case') {
-      observableCaseResults.push(checkObservableCase(article, markdown));
+      observableCaseResults.push(article.id === 'ai-ml-dl-boundaries'
+        ? checkObservableCase(article, markdown) : checkLearningSignalsCase(article, markdown));
       continue;
     }
     const blocks = [...markdown.matchAll(/^```python\r?\n(# nextchina-example: ([a-z0-9-]+)\r?\n[\s\S]*?)^```\s*$/gm)];
@@ -934,9 +937,14 @@ try {
   const pilot = units.find(article => article.id === 'ai-ml-dl-boundaries');
   const exampleContractNegativeCases = testExampleContract(units, Object.keys(negatives),
     readFileSync(path.join(repositoryRoot, pilot.file), 'utf8'));
+  const pilotVisibilityNegativeCases = testPilotMarkdownVisibility(pilot,
+    readFileSync(path.join(repositoryRoot, pilot.file), 'utf8'));
+  const learningSignals = units.find(article => article.id === 'unsupervised-self-supervised-learning');
+  const learningSignalsContract = testLearningSignalsContract(units, Object.keys(negatives),
+    readFileSync(path.join(repositoryRoot, learningSignals.file), 'utf8'));
   const report = { status: 'pass', independentArticles: units.length, runnableExamples: results.length,
     metadataNegativeCases: mutations.length, attentionMatchesGardenFixture: true, results,
-    observableCaseFamilies: observableCaseResults.length, observableCaseResults, exampleContractNegativeCases,
+    observableCaseFamilies: observableCaseResults.length, observableCaseResults, exampleContractNegativeCases, pilotVisibilityNegativeCases, learningSignalsContract,
     externalModelCalls: 0, commercialMeasurements: false, expertReview: false };
   mkdirSync(path.join(repositoryRoot, 'test-results'), { recursive: true });
   writeFileSync(path.join(repositoryRoot, 'test-results/knowledge-units.json'), JSON.stringify(report, null, 2));

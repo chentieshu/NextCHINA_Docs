@@ -1,4 +1,8 @@
 import assert from 'node:assert/strict';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
 
 // Test-only dispatch, not graph metadata or a factual/scientific classification.
 // The array is intentional: duplicate registrations must not silently overwrite.
@@ -16,7 +20,8 @@ export const exampleChecks = [
   ['train-validation-test-data-leakage', 'train-validation-test-data-leakage', 'python'],
   ['classification-accuracy-precision-recall-f1', 'classification-accuracy-precision-recall-f1', 'python'],
   ['supervised-learning-naive-bayes', 'supervised-learning-naive-bayes', 'python'],
-  ['ai-ml-dl-boundaries', 'ai-ml-dl-boundaries', 'observable-case']
+  ['ai-ml-dl-boundaries', 'ai-ml-dl-boundaries', 'observable-case'],
+  ['unsupervised-self-supervised-learning', 'unsupervised-self-supervised-learning', 'observable-case']
 ];
 const pilotId = 'ai-ml-dl-boundaries';
 const sourceUrls = [
@@ -40,8 +45,8 @@ export function validateExampleChecks(units, pythonIds, registrations = exampleC
     if (kind === 'python') assert.ok(numeric.has(exampleId), `Missing numeric checks: ${exampleId}`);
     else {
       assert.ok(!numeric.has(exampleId), `Cannot reassign numeric example: ${exampleId}`);
-      assert.equal(articleId, pilotId, 'Unknown observable-case article');
-      assert.equal(exampleId, pilotId, 'Unknown observable-case example');
+      const exactPairs = [[pilotId, pilotId], ['unsupervised-self-supervised-learning', 'unsupervised-self-supervised-learning']];
+      assert.ok(exactPairs.some(([article, example]) => articleId === article && exampleId === example), 'Unknown observable-case article/example pair');
     }
     byArticle.set(articleId, entry); byExample.set(exampleId, entry);
   }
@@ -58,7 +63,7 @@ export function validateExampleChecks(units, pythonIds, registrations = exampleC
   return new Map(registrations.map(([articleId, , kind]) => [articleId, kind]));
 }
 
-function section(text, heading) {
+export function section(text, heading) {
   const headings = [...text.matchAll(/^#{1,6} .+$/gm)];
   const hits = headings.filter(match => match[0] === heading);
   assert.equal(hits.length, 1, `Expected exactly one section: ${heading}`);
@@ -68,37 +73,76 @@ function section(text, heading) {
   assert.ok(body, `Empty section: ${heading}`);
   return body;
 }
-function visibleMarkdown(text) {
+export function visibleMarkdown(text) {
   return text.replace(/<!--[\s\S]*?(?:-->|$)/g, '').replace(/(?<!`)(`+)(?!`)[\s\S]*?(?<!`)\1(?!`)/g, '').replace(/\r\n/g, '\n');
 }
-function inlineLinks(text) {
-  // The pilot uses ordinary text-labelled inline links, not image/escaped/code syntax.
-  const imageAlts = [...text.matchAll(/!\[/g)].map(image => {
-    let end = image.index + 2, depth = 1;
-    while (end < text.length && depth) {
-      if (text[end] === '\\') { end += 2; continue; }
-      if (text[end] === '[') depth++;
-      if (text[end] === ']') depth--;
-      end++;
+// Use the existing CommonMark/GFM/math parser stack, not Markdown-looking text
+// inside inert HTML, indented code, image alt text, or a math expression.
+const linkParser = unified().use(remarkParse).use(remarkGfm).use(remarkMath);
+function proseLinks(text) {
+  const links = [];
+  const excluded = new Set(['code', 'inlineCode', 'html', 'image', 'imageReference', 'math', 'inlineMath']);
+  const prose = node => excluded.has(node.type) || node.type === 'link' || node.type === 'linkReference' ? ''
+    : node.type === 'text' ? node.value : (node.children ?? []).map(prose).join('');
+  const label = node => node.type === 'text' ? node.value
+    : excluded.has(node.type) ? '' : (node.children ?? []).map(label).join('');
+  function visit(node, paragraph) {
+    if (excluded.has(node.type)) return;
+    const context = node.type === 'paragraph' ? node : paragraph;
+    if (node.type === 'link') {
+      const textLabel = label(node).trim();
+      if (context && /\p{L}|\p{N}/u.test(textLabel)) links.push({ url: node.url, label: textLabel, claim: /\p{L}|\p{N}/u.test(prose(context)) });
+      return;
     }
-    return [image.index, end];
-  });
-  return [...text.matchAll(/(?<![!\\])\[([^\[\]\\\n]+)\]\(([^\s)]+)\)/g)]
-    .filter(link => !imageAlts.some(([start, end]) => link.index >= start && link.index < end));
+    for (const child of node.children ?? []) visit(child, context);
+  }
+  visit(linkParser.parse(text));
+  return links;
 }
-function hasProse(text) { return /\p{L}|\p{N}/u.test(text.replace(/^ {0,3}#{1,6} .+$/gm, '').replace(/\[[^\]\n]+\]\([^)]*\)/g, '')); }
-function numberedSteps(text, count) {
+export function inlineLinks(text) {
+  // Keep the existing small tuple interface for the two exact case checkers.
+  return proseLinks(text).map(link => [null, link.label, link.url]);
+}
+export function assertCaseMarkdown(text) {
+  // Check full-page parsing before slices can discard a surrounding HTML, code,
+  // or math context. These exact cases permit ordinary headings, bold fields,
+  // GFM tables and real math, but no raw HTML or block code.
+  const headingOffsets = [], fieldOffsets = [], tableRanges = [];
+  function visit(node) {
+    assert.ok(node.type !== 'html' && node.type !== 'code', 'Observable cases do not support HTML or code blocks');
+    const start = node.position?.start.offset;
+    if (node.type === 'heading' && /^#{1,6} /.test(text.slice(start))) headingOffsets.push(start);
+    if (node.type === 'strong' && (start === 0 || text[start - 1] === '\n')) fieldOffsets.push(start);
+    if (node.type === 'table') tableRanges.push([start, node.position.end.offset]);
+    for (const child of node.children ?? []) visit(child);
+  }
+  visit(linkParser.parse(text));
+  assert.deepEqual(headingOffsets, [...text.matchAll(/^#{1,6} .+$/gm)].map(match => match.index), 'Heading text must render as actual headings');
+  assert.deepEqual(fieldOffsets, [...text.matchAll(/^\*\*[^*\n]+\*\*/gm)].map(match => match.index), 'Field labels must render as actual strong text');
+  for (const row of text.matchAll(/^\|.*\|$/gm)) assert.ok(tableRanges.some(([start, end]) => row.index >= start && row.index + row[0].length <= end), 'Fixture row must render in a real table');
+}
+export function hasProse(text) {
+  // ATX/setext headings, raw HTML, images, links and block code are not a filled
+  // prose field. Inline code/math can legitimately hold a fixture cell value.
+  const excluded = new Set(['heading', 'html', 'code', 'image', 'imageReference', 'link', 'linkReference']);
+  function meaningful(node) {
+    if (excluded.has(node.type)) return false;
+    if (['text', 'inlineCode', 'math', 'inlineMath'].includes(node.type)) return /\p{L}|\p{N}/u.test(node.value);
+    return (node.children ?? []).some(meaningful);
+  }
+  return meaningful(linkParser.parse(text));
+}
+export function numberedSteps(text, count) {
   const steps = [...text.matchAll(/^(\d+)\. (.+)$/gm)];
   assert.deepEqual(steps.map(step => Number(step[1])), Array.from({ length: count }, (_, i) => i + 1), 'Missing/duplicate numbered step or question');
   for (const step of steps) assert.ok(hasProse(step[2].replace(/^\*\*[^*]+\*\*/, '')), 'Empty step or question');
 }
-function adjacentSource(text, url) {
-  // Actual inline links in prose, not a bare URL, hidden comment or bibliography-only occurrence.
-  assert.ok(text.split(/\n\s*\n/).some(paragraph =>
-    inlineLinks(paragraph).some(link => link[2] === url) && hasProse(paragraph)), `Missing claim-adjacent source link: ${url}`);
+export function adjacentSource(text, url) {
+  assert.ok(proseLinks(text).some(link => link.url === url && link.claim), `Missing claim-adjacent source link: ${url}`);
 }
 
 export function checkObservableCase(article, rawMarkdown) {
+  assertCaseMarkdown(rawMarkdown);
   assert.equal(article.id, pilotId);
   const unit = article.knowledgeUnit;
   assert.equal(unit.exampleId, pilotId);
@@ -169,10 +213,10 @@ export function testExampleContract(units, pythonIds, markdown) {
     ['overlapping kinds', rows => rows.push([rows[0][0], rows[0][1], 'observable-case'])],
     ['duplicate article', rows => rows.push([rows[0][0], 'unknown', 'python'])],
     ['duplicate example', rows => rows.push(['unknown', rows[0][1], 'python'])],
-    ['unknown case', rows => rows.at(-1)[0] = 'unknown'],
-    ['unknown case example', rows => rows.at(-1)[1] = 'unknown'],
+    ['unknown case', rows => rows.find(row => row[0] === pilotId)[0] = 'unknown'],
+    ['unknown case example', rows => rows.find(row => row[0] === pilotId)[1] = 'unknown'],
     ['numeric reassignment', rows => rows[0][2] = 'observable-case'],
-    ['case as Python', rows => rows.at(-1)[2] = 'python'],
+    ['case as Python', rows => rows.find(row => row[0] === pilotId)[2] = 'python'],
     ['wrong numeric pair', rows => [rows[0][1], rows[1][1]] = [rows[1][1], rows[0][1]]]
   ]) {
     const rows = structuredClone(exampleChecks); mutate(rows);
@@ -247,4 +291,29 @@ export function testExampleContract(units, pythonIds, markdown) {
     rejects(label, () => checkObservableCase(pilot, changed));
   }
   return negativeCases;
+}
+
+// Supplemental renderer-visibility regressions for the original exact pilot;
+// its pre-existing 77 contract outcomes remain separately reported.
+export function testPilotMarkdownVisibility(article, markdown) {
+  const edits = [];
+  for (const [kind, pattern] of [
+    ['source', /\[[^\]\n]+\]\(https:\/\/[^\s)]+\)/g],
+    ['onward', /\[[^\]\n]+\]\(\?view=garden[^\s)]+\)/g]
+  ]) for (const [syntax, wrap] of [
+    ['indented code', link => `\n\n    citation ${link}\n\n`],
+    ['HTML block', link => `\n\n<div>\ncitation ${link}\n</div>\n\n`],
+    ['HTML attribute', link => `\n\n<div data-source="${link}">citation</div>\n\n`],
+    ['math', link => `$${link}$`]
+  ]) edits.push([`${kind} ${syntax}`, text => text.replace(pattern, wrap)]);
+  for (const tag of ['script', 'pre', 'style', 'textarea']) edits.push([`whole-page ${tag}`, text => text.replace(/^## 1\./m, `<${tag}>\n## 1.`) + `\n</${tag}>\n`]);
+  edits.push(['whole-page math', text => text.replace(/^## 1\./m, () => '$$$\n## 1.') + '\n$$$\n']);
+  for (const placeholder of ['\nPlaceholder\n-----\n\n', '\n<div>Placeholder</div>\n\n', '\n\n    Placeholder\n\n']) {
+    edits.push(['non-prose field', text => text.replace(/(\*\*先问：\*\*)[^\n]+/, '$1' + placeholder)]);
+  }
+  for (const [label, mutate] of edits) {
+    const changed = mutate(markdown); assert.notEqual(changed, markdown, `Mutation did not apply: ${label}`);
+    assert.throws(() => checkObservableCase(article, changed), undefined, label);
+  }
+  return edits.length;
 }

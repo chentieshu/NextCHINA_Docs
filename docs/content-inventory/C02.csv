@@ -1,6 +1,7 @@
 id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
 branch:ai-overview:orientation,基础与认识,branch,C02,overview,,navigation,true
 branch:ai-overview:orientation/ai-ml-dl,AI、机器学习与深度学习的边界,branch,C02,ai-ml-dl-boundaries,ai-ml-dl-boundaries,bound-needs-review,true
+branch:ai-overview:orientation/learning-signals,无监督与自监督：训练信号从哪里来,branch,C02,unsupervised-self-supervised-learning,unsupervised-self-supervised-learning,bound-needs-review,true
 branch:ai-overview:orientation/naive-bayes,监督学习：用朴素贝叶斯训练分类器,branch,C02,supervised-learning-naive-bayes,supervised-learning-naive-bayes,bound-needs-review,true
 branch:llm:orientation,基础与认识,branch,C02,llm-how-it-works,,navigation,true
 branch:llm:orientation/definition,LLM、语言建模与模型边界,branch,C02,,,navigation,false

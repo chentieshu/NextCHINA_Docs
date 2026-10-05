@@ -42,7 +42,8 @@
     "hub:ai-overview": [
       {"id":"orientation","label":"基础与认识","children":[
         {"id":"ai-ml-dl","label":"AI、机器学习与深度学习的边界","conceptRefs":["concept:artificial-intelligence","concept:machine-learning","concept:deep-learning"]},
-        {"id":"naive-bayes","label":"监督学习：用朴素贝叶斯训练分类器","conceptRefs":["concept:supervised-learning","concept:naive-bayes"]}
+        {"id":"naive-bayes","label":"监督学习：用朴素贝叶斯训练分类器","conceptRefs":["concept:supervised-learning","concept:naive-bayes"]},
+        {"id":"learning-signals","label":"无监督与自监督：训练信号从哪里来","conceptRefs":["concept:unsupervised-learning","concept:self-supervised-learning"]}
       ]}
     ],
     "hub:llm": [

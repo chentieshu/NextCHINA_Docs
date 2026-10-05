@@ -418,6 +418,50 @@
         ],
         "relatedResourceIds": []
       }
+    },
+    {
+      "id": "unsupervised-self-supervised-learning",
+      "file": "content/models/foundations/unsupervised-self-supervised-learning.md",
+      "space": "models",
+      "category": "foundations",
+      "categoryName": "AI 基础原理",
+      "title": "没有人工标签，也有训练目标吗？无监督与自监督的信号从哪里来",
+      "subtitle": "从坐标分组、遮盖原词与同源配对，追踪拟合状态和评价边界",
+      "date": "2026-10-05",
+      "tags": [
+        "无监督学习",
+        "自监督学习",
+        "训练信号",
+        "观察案例",
+        "评价边界"
+      ],
+      "excerpt": "用六份虚构档案追踪训练信号的来源，手算四点分组与单参数遮盖预测，区分预训练、监督分类头、开发集选择和封存测试，并随审计证据修改结论。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "unsupervised-self-supervised-learning",
+        "conceptIds": [
+          "concept:unsupervised-learning",
+          "concept:self-supervised-learning"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:ai-overview",
+            "path": "orientation/learning-signals"
+          }
+        ],
+        "sourceUrls": [
+          "https://artint.info/3e/html/ArtInt3e.Ch7.S2.html",
+          "https://artint.info/3e/html/ArtInt3e.Ch10.S3.html",
+          "https://arxiv.org/abs/1810.04805v2",
+          "https://arxiv.org/html/1810.04805v2",
+          "https://proceedings.mlr.press/v119/chen20j.html",
+          "https://proceedings.mlr.press/v119/chen20j/chen20j.pdf",
+          "https://developers.google.com/machine-learning/glossary#self-supervised-learning",
+          "https://scikit-learn.org/1.9/common_pitfalls.html#data-leakage"
+        ],
+        "relatedResourceIds": []
+      }
     }
   ]
 }

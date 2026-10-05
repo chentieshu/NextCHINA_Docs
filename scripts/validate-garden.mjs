@@ -68,6 +68,25 @@ export function buildGardenModel(blueprint, publishedArticleIds) {
     relationKeys.add(key);
     edges.push({ ...relation, id: key, assertionStatus: 'editorial' });
   }
+  // Explicit global teaching prerequisites remain a DAG. Route-local teaching edges are compiled later
+  // and keep routeId, so different pedagogical routes may legitimately order the same concepts differently.
+  const prerequisites = edges.filter(edge => edge.type === 'recommended_before');
+  const indegree = new Map(nodes.map(node => [node.id, 0]));
+  const next = new Map(nodes.map(node => [node.id, []]));
+  for (const edge of prerequisites) {
+    indegree.set(edge.target, indegree.get(edge.target) + 1);
+    next.get(edge.source).push(edge.target);
+  }
+  const queue = nodes.filter(node => indegree.get(node.id) === 0).map(node => node.id);
+  let processed = 0;
+  for (let index = 0; index < queue.length; index++) {
+    processed++;
+    for (const target of next.get(queue[index])) {
+      indegree.set(target, indegree.get(target) - 1);
+      if (indegree.get(target) === 0) queue.push(target);
+    }
+  }
+  assert.equal(processed, nodes.length, 'Recommended-prerequisite graph contains a cycle');
   const boundArticles = new Set();
   for (const binding of blueprint.articleBindings) {
     assert.ok(publishedArticleIds.has(binding.articleId), `Unknown article: ${binding.articleId}`);

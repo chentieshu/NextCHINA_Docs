@@ -1424,19 +1424,94 @@
       "source": "concept:decoding",
       "target": "concept:temperature",
       "type": "uses",
-      "reason": "温度调节解码分布的尖锐程度。"
+      "reason": "温度调节解码分布的尖锐程度。",
+      "scope": "启用温度缩放的 token 采样解码，温度 T>0；Transformers v4.56.0 的温度设置在 do_sample=True 时生效，T=1 不改变分布。",
+      "provenance": "primary-source-review",
+      "asOf": "2026-10-05",
+      "evidence": {
+        "checkedAt": "2026-10-05",
+        "reviewStatus": "source-checked-needs-independent-review",
+        "sources": [
+          {
+            "url": "https://arxiv.org/html/1904.09751v2",
+            "title": "The Curious Case of Neural Text Degeneration (arXiv:1904.09751v2, 2020-02-14)",
+            "locator": "§3.3 Sampling with Temperature; equation (4)",
+            "supportNote": "温度通过 logits/T 进入 Softmax，改变采样分布的集中程度。"
+          },
+          {
+            "url": "https://huggingface.co/docs/transformers/v4.56.0/en/internal/generation_utils",
+            "title": "Hugging Face Transformers: Utilities for Generation (v4.56.0)",
+            "locator": "TemperatureLogitsWarper",
+            "supportNote": "官方接口说明温度调节采样，并明确要求 do_sample=True 才影响生成。"
+          }
+        ]
+      }
     },
     {
       "source": "concept:decoding",
       "target": "concept:top-k-sampling",
       "type": "uses",
-      "reason": "Top-k 是常见的候选截断采样策略。"
+      "reason": "Top-k 是常见的候选截断采样策略。",
+      "scope": "启用 top-k 截断的 token 随机采样解码；保留高概率候选后采样。该操作是可选策略，不是每种解码的必经阶段。 阈值式实现遇到并列分数时可能保留超过 k 项，本条不保证每次恰好保留 k 个。",
+      "provenance": "primary-source-review",
+      "asOf": "2026-10-05",
+      "evidence": {
+        "checkedAt": "2026-10-05",
+        "reviewStatus": "source-checked-needs-independent-review",
+        "sources": [
+          {
+            "url": "https://arxiv.org/html/1904.09751v2",
+            "title": "The Curious Case of Neural Text Degeneration (arXiv:1904.09751v2, 2020-02-14)",
+            "locator": "§3.2 Top-k Sampling",
+            "supportNote": "该方法从最高概率的 k 个候选中按重新归一化的概率抽样。"
+          },
+          {
+            "url": "https://huggingface.co/docs/transformers/v4.56.0/en/internal/generation_utils",
+            "title": "Hugging Face Transformers: Utilities for Generation (v4.56.0)",
+            "locator": "TopKLogitsWarper; do_sample=True/top_k=2 example",
+            "supportNote": "版本化官方实现文档提供 top-k 过滤与采样用例。"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/huggingface/transformers/v4.56.0/src/transformers/generation/logits_process.py",
+            "title": "Transformers logits processors (v4.56.0)",
+            "locator": "TopKLogitsWarper.__call__",
+            "supportNote": "按第 k 个分数作严格小于阈值的过滤，等于阈值的并列候选也会保留，因此候选数可能超过 k。"
+          }
+        ]
+      }
     },
     {
       "source": "concept:decoding",
       "target": "concept:top-p-sampling",
       "type": "uses",
-      "reason": "Top-p 是常见的核采样策略。"
+      "reason": "Top-p 是常见的核采样策略。",
+      "scope": "本条限定启用核采样且 0<p<1 的 token 随机采样配置，按累计概率质量选取候选后抽样；该范围不是所有实现的完整有效区间。Transformers v4.56.0 还接受 p=0 并保留最少候选，边界与组合顺序需按具体实现解释。",
+      "provenance": "primary-source-review",
+      "asOf": "2026-10-05",
+      "evidence": {
+        "checkedAt": "2026-10-05",
+        "reviewStatus": "source-checked-needs-independent-review",
+        "sources": [
+          {
+            "url": "https://arxiv.org/html/1904.09751v2",
+            "title": "The Curious Case of Neural Text Degeneration (arXiv:1904.09751v2, 2020-02-14)",
+            "locator": "§3.1 Nucleus Sampling; equations (2)–(3)",
+            "supportNote": "作者定义动态核候选集，使其概率质量达到 p，再重归一化并采样。"
+          },
+          {
+            "url": "https://huggingface.co/docs/transformers/v4.56.0/en/internal/generation_utils",
+            "title": "Hugging Face Transformers: Utilities for Generation (v4.56.0)",
+            "locator": "TopPLogitsWarper; top_p parameter and sampling example",
+            "supportNote": "官方文档提供 top-p 过滤及其采样接口。"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/huggingface/transformers/v4.56.0/src/transformers/generation/logits_process.py",
+            "title": "Transformers logits processors (v4.56.0)",
+            "locator": "TopPLogitsWarper.__init__ and __call__",
+            "supportNote": "该版本校验 p 的闭区间并保留 min_tokens_to_keep；本条仅论证声明的采样范围，不推广边界约定。"
+          }
+        ]
+      }
     },
     {
       "source": "concept:q-learning",
@@ -1448,13 +1523,49 @@
       "source": "concept:q-learning",
       "target": "concept:bellman-equation",
       "type": "uses",
-      "reason": "Q-learning 的更新来自 Bellman 最优性关系。"
+      "reason": "Q-learning 的更新来自 Bellman 最优性关系。",
+      "scope": "经典一步 Q-learning 的动作价值更新采用即时奖励与下一状态最大动作价值构成的 Bellman 最优性目标；这是采样式更新，不等于每步精确求解方程，也不是任意 Bellman 方程都定义 Q-learning。",
+      "provenance": "primary-source-review",
+      "asOf": "2026-10-05",
+      "evidence": {
+        "checkedAt": "2026-10-05",
+        "reviewStatus": "source-checked-needs-independent-review",
+        "sources": [
+          {
+            "url": "https://www.gatsby.ucl.ac.uk/~dayan/papers/cjch.pdf",
+            "title": "Q-learning",
+            "locator": "Watkins & Dayan (1992), §2, pp.280–281, update surrounding equations (1)–(2)",
+            "supportNote": "任务与更新说明以最优动作价值和下一状态的最佳估计进行增量更新。"
+          },
+          {
+            "url": "https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf",
+            "title": "Human-level control through deep reinforcement learning",
+            "locator": "Mnih et al., Nature 518 (2015), Methods: Algorithm; continuation before Training algorithm for deep Q-networks; PDF pp.6–7",
+            "supportNote": "Methods 从 Bellman 最优动作价值关系推导误差更新，并明确说明逐步单样本更新可恢复 Q-learning。"
+          }
+        ]
+      }
     },
     {
       "source": "concept:dqn",
       "target": "concept:q-learning",
       "type": "uses",
-      "reason": "DQN 用神经网络近似 Q-learning 的动作价值函数。"
+      "reason": "DQN 用神经网络近似 Q-learning 的动作价值函数。",
+      "scope": "Mnih 等（2015）的经典 DQN：以神经网络近似动作价值，使用带经验回放及目标网络的 Q-learning 更新。此关系不附带表格型 Q-learning 的收敛保证。",
+      "provenance": "primary-source-review",
+      "asOf": "2026-10-05",
+      "evidence": {
+        "checkedAt": "2026-10-05",
+        "reviewStatus": "source-checked-needs-independent-review",
+        "sources": [
+          {
+            "url": "https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf",
+            "title": "Human-level control through deep reinforcement learning",
+            "locator": "Mnih et al., Nature 518, 529–533 (2015), Methods: Training algorithm for deep Q-networks; Algorithm 1; PDF p.7",
+            "supportNote": "作者明确在回放样本上执行 Q-learning 更新，并以独立目标网络生成 Q-learning 目标。"
+          }
+        ]
+      }
     },
     {
       "source": "concept:ppo",
@@ -1467,27 +1578,91 @@
       "target": "concept:embedding-model",
       "type": "uses",
       "reason": "向量型 RAG 通常使用嵌入模型建立检索表示。",
-      "scope": "向量检索型 RAG"
+      "scope": "采用学习到的稠密向量进行检索的 RAG；具体一手实例为 Lewis 等的 DPR 双编码器 RAG，查询与文档由 BERT 编码器产生表示。",
+      "provenance": "primary-source-review",
+      "asOf": "2026-10-05",
+      "evidence": {
+        "checkedAt": "2026-10-05",
+        "reviewStatus": "source-checked-needs-independent-review",
+        "sources": [
+          {
+            "url": "https://arxiv.org/html/2005.11401v4",
+            "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks (arXiv:2005.11401v4, 2021-04-12)",
+            "locator": "§2.2 Retriever: DPR; bi-encoder formula; §2.4 Training",
+            "supportNote": "该 RAG 的 DPR 检索器使用 BERT 查询/文档编码器生成稠密表示；训练中保留文档编码器与索引、更新查询编码器。"
+          }
+        ]
+      }
     },
     {
       "source": "concept:rag",
       "target": "concept:reranker",
       "type": "uses",
       "reason": "RAG 可使用重排器提高候选证据排序质量。",
-      "scope": "采用重排阶段的 RAG"
+      "scope": "具有初始检索后重排阶段的 RAG；具体实例为 Anthropic 的 Contextual Retrieval 加重排流程。性能收益只适用于所报告条件，需另行评测。",
+      "provenance": "primary-source-review",
+      "asOf": "2026-10-05",
+      "evidence": {
+        "checkedAt": "2026-10-05",
+        "reviewStatus": "source-checked-needs-independent-review",
+        "sources": [
+          {
+            "url": "https://www.anthropic.com/engineering/contextual-retrieval",
+            "title": "Introducing Contextual Retrieval (Anthropic, 2024-09-19)",
+            "locator": "Further boosting performance with Reranking, steps 1–4; Performance improvements; Methodology",
+            "supportNote": "该流程将检索候选与查询交给重排模型评分，选择子集供生成使用；作者报告其测试配置中的检索收益。"
+          }
+        ]
+      }
     },
     {
       "source": "concept:agent",
       "target": "concept:tool-calling",
       "type": "uses",
       "reason": "可执行型 Agent 使用工具调用把模型决策连接到外部能力。",
-      "scope": "工具型 Agent"
+      "scope": "通过工具/API 与外部环境交互的 LLM Agent；来源描述其自主选择工具并基于工具结果迭代的实现模式，不覆盖所有 agent 定义。",
+      "provenance": "primary-source-review",
+      "asOf": "2026-10-05",
+      "evidence": {
+        "checkedAt": "2026-10-05",
+        "reviewStatus": "source-checked-needs-independent-review",
+        "sources": [
+          {
+            "url": "https://www.anthropic.com/engineering/building-effective-agents",
+            "title": "Building effective agents (Anthropic, published 2024-12-19; live page checked 2026-10-05)",
+            "locator": "What are agents?; Agents; Appendix 2: Prompt engineering your tools",
+            "supportNote": "作者描述由 LLM 控制工具使用并读取环境反馈的 agent；工具定义和 tool-use 请求把模型输出连接到外部服务/API。"
+          }
+        ]
+      }
     },
     {
       "source": "concept:differential-privacy",
       "target": "concept:membership-inference",
       "type": "mitigates",
-      "reason": "差分隐私可降低训练数据成员关系被推断的风险，但不是绝对消除。"
+      "reason": "差分隐私可降低训练数据成员关系被推断的风险，但不是绝对消除。",
+      "scope": "发布机制 M 对单条记录加入/删除的相邻关系满足整体 (ε,δ)-DP。对固定相邻 D（含目标记录）、D′（不含）及同一检验 A，令 TPR=P[A(M(D))=1]、FPR=P[A(M(D′))=1]，则 TPR≤exp(ε)·FPR+δ；这是定义与后处理的限定推论。强度取决于隐私预算、相邻关系及覆盖全部发布的会计；记录级不自动等于用户级。DP-SGD 还须满足裁剪、噪声、采样与会计条件，不表示消除推断或已审计任何具体实现。",
+      "provenance": "primary-source-review",
+      "asOf": "2026-10-05",
+      "evidence": {
+        "checkedAt": "2026-10-05",
+        "reviewStatus": "source-checked-needs-independent-review",
+        "sources": [
+          {
+            "url": "https://www.cis.upenn.edu/~aaroth/Papers/privacybook.pdf",
+            "title": "The Algorithmic Foundations of Differential Privacy",
+            "locator": "Dwork & Roth (2014), §2.3, Definition 2.4 and Proposition 2.1, printed pp.17–19; §2.3.1",
+            "supportNote": "定义约束相邻数据集的输出概率，后处理保留该约束；将成员检验视为后处理可得所列 TPR/FPR 界。"
+          },
+          {
+            "url": "https://arxiv.org/pdf/1607.00133v2",
+            "title": "Deep Learning with Differential Privacy",
+            "locator": "Abadi et al., arXiv:1607.00133v2 (2016-10-24), §2.1 Definition 1; §3.1 Algorithm 1 and privacy-accounting discussion",
+            "supportNote": "论文采用单条记录存在/不存在的相邻关系；DP-SGD 组合逐样本裁剪、加噪、采样及整体隐私会计，不能只靠名称推定保证。"
+          }
+        ],
+        "derivation": "所列成员检验界由 DP 定义与后处理性质推出；来源中的 DP-SGD 仅作机制与会计条件示例。"
+      }
     },
     {
       "source": "concept:gan",
@@ -1566,6 +1741,36 @@
       "target": "concept:loss-objective",
       "type": "recommended_before",
       "reason": "先亲算分类交叉熵，再阅读训练循环如何聚合损失；损失目标并不限于交叉熵。"
+    },
+    {
+      "source": "concept:conditional-probability",
+      "target": "concept:bayes-rule",
+      "type": "recommended_before",
+      "reason": "先理解联合与条件概率，再用同一联合概率的两种分解推导贝叶斯更新；不把反向条件当作同一个量。"
+    },
+    {
+      "source": "concept:random-variable",
+      "target": "concept:expectation-variance",
+      "type": "recommended_before",
+      "reason": "先给随机结果定义有意义的数值映射，再计算按概率加权的期望与方差；类别编号本身没有大小含义。"
+    },
+    {
+      "source": "concept:bayes-rule",
+      "target": "concept:naive-bayes",
+      "type": "recommended_before",
+      "reason": "先理解先验、似然与后验，再学习朴素贝叶斯怎样另加给定类别的条件独立假设；本路线不自动证明该假设。"
+    },
+    {
+      "source": "concept:expectation-variance",
+      "target": "concept:value-function",
+      "type": "recommended_before",
+      "reason": "在有限回合的强化学习阅读路线中，先理解回报的条件期望与波动，再进入价值函数；不是把最佳轨迹当作平均回报。"
+    },
+    {
+      "source": "concept:expectation-variance",
+      "target": "concept:confidence-interval",
+      "type": "recommended_before",
+      "reason": "先区分分布方差与估计量的抽样误差，再学习置信区间及其假设；知道方差本身不自动给出有效区间。"
     }
   ],
   "articleBindings": [

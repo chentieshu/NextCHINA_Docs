@@ -9,7 +9,7 @@ branch:llm:math/tensor-shapes,向量、张量形状、矩阵乘法与批次,bran
 branch:llm:math/tokenization,Token、分词、字节与特殊符号,branch,C01,llm-tokenization,llm-tokenization,bound-needs-review,true
 concept:adamw,AdamW,concept,C01,,,missing,false
 concept:autodiff,自动微分,concept,C01,llm-derivatives,llm-derivatives,bound-needs-review,true
-concept:bayes-rule,贝叶斯规则,concept,C01,,,missing,false
+concept:bayes-rule,贝叶斯规则,concept,C01,llm-conditional-probability,llm-conditional-probability,bound-needs-review,true
 concept:big-o,算法复杂度,concept,C01,,,missing,false
 concept:chain-rule,链式法则,concept,C01,llm-derivatives,llm-derivatives,bound-needs-review,true
 concept:compression,压缩与表示,concept,C01,,,missing,false
@@ -20,7 +20,7 @@ concept:derivative,导数,concept,C01,llm-derivatives,llm-derivatives,bound-need
 concept:dot-product,点积,concept,C01,llm-tensor-shapes,llm-tensor-shapes,bound-needs-review,true
 concept:eigen-svd,特征分解与 SVD,concept,C01,,,missing,false
 concept:entropy,熵,concept,C01,llm-entropy-cross-entropy,llm-entropy-cross-entropy,bound-needs-review,true
-concept:expectation-variance,期望与方差,concept,C01,,,missing,false
+concept:expectation-variance,期望与方差,concept,C01,llm-conditional-probability,llm-conditional-probability,bound-needs-review,true
 concept:floating-point,浮点数与舍入误差,concept,C01,,,missing,false
 concept:gradient,梯度,concept,C01,llm-training-loop,llm-training-loop,bound-needs-review,true
 concept:kl-divergence,KL 散度,concept,C01,llm-entropy-cross-entropy,llm-entropy-cross-entropy,bound-needs-review,true

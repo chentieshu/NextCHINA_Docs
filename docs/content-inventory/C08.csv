@@ -29,7 +29,7 @@ concept:mcts,蒙特卡洛树搜索,concept,C08,,,missing,false
 concept:mlp,多层感知机,concept,C08,,,missing,false
 concept:moe,混合专家,concept,C08,llm-how-it-works,,missing,true
 concept:multi-agent-decision,多智能体决策,concept,C08,,,missing,false
-concept:naive-bayes,朴素贝叶斯,concept,C08,,,missing,false
+concept:naive-bayes,朴素贝叶斯,concept,C08,,,missing,true
 concept:neuro-symbolic,神经符号方法,concept,C08,,,missing,false
 concept:pca,主成分分析,concept,C08,,,missing,false
 concept:random-forest,随机森林,concept,C08,,,missing,false

@@ -47,4 +47,4 @@ concept:synthetic-data,合成数据,concept,C03,,,missing,false
 concept:train-validation-test,训练、验证与测试集,concept,C03,,,missing,false
 concept:transfer-learning,迁移学习,concept,C03,,,missing,false
 concept:unsupervised-learning,无监督学习,concept,C03,,,missing,false
-concept:value-function,价值函数,concept,C03,,,missing,false
+concept:value-function,价值函数,concept,C03,,,missing,true

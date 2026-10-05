@@ -8,6 +8,43 @@ export const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
 const readJSON = (root, file) => JSON.parse(readFileSync(path.join(root, file), 'utf8'));
 const slug = value => typeof value === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
 const text = value => typeof value === 'string' && value.trim().length > 0;
+const record = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+const calendarDate = value => {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
+};
+
+/** Validate optional source-check metadata, not the truth or scholarly review of an assertion. */
+function validateRelationEvidence(relation) {
+  if (!Object.hasOwn(relation, 'evidence')) return;
+  const label = `${relation.type}:${relation.source}>${relation.target}`;
+  const { evidence } = relation;
+  assert.ok(record(evidence), `Relation evidence must be an object: ${label}`);
+  assert.ok(calendarDate(evidence.checkedAt), `Relation evidence checkedAt must be a valid YYYY-MM-DD date: ${label}`);
+  assert.equal(evidence.reviewStatus, 'source-checked-needs-independent-review', `Relation evidence reviewStatus must retain pending independent review: ${label}`);
+  assert.ok(text(relation.scope), `Relation evidence requires a nonempty scope: ${label}`);
+  assert.ok(text(relation.provenance), `Relation evidence requires nonempty provenance: ${label}`);
+  assert.ok(calendarDate(relation.asOf) && relation.asOf === evidence.checkedAt, `Relation evidence asOf must match checkedAt: ${label}`);
+  assert.ok(Array.isArray(evidence.sources) && evidence.sources.length > 0, `Relation evidence requires nonempty sources: ${label}`);
+  const sourceUrls = new Set();
+  for (const source of evidence.sources) {
+    assert.ok(record(source), `Relation evidence source must be an object: ${label}`);
+    assert.ok(text(source.url) && /^https:\/\//i.test(source.url) && source.url === source.url.trim(), `Relation evidence source requires an HTTPS URL: ${label}`);
+    let url;
+    try { url = new URL(source.url); } catch { /* The assertion below supplies the relation context. */ }
+    assert.ok(url?.protocol === 'https:' && url.hostname && !url.username && !url.password,
+      `Relation evidence source requires an HTTPS URL without credentials: ${label}`);
+    assert.ok(!sourceUrls.has(url.href), `Duplicate relation evidence source URL: ${label}`);
+    sourceUrls.add(url.href);
+    for (const field of ['title', 'locator', 'supportNote']) {
+      assert.ok(text(source[field]), `Relation evidence source requires nonempty ${field}: ${label}`);
+    }
+  }
+  if (Object.hasOwn(evidence, 'derivation')) {
+    assert.ok(text(evidence.derivation), `Relation evidence derivation must be a nonempty string: ${label}`);
+  }
+}
 
 /** Canonical knowledge data, with no dependency on a canvas library or positions. */
 export function buildGardenModel(blueprint, publishedArticleIds) {
@@ -62,6 +99,7 @@ export function buildGardenModel(blueprint, publishedArticleIds) {
     assert.ok(byId.has(relation.source) && byId.has(relation.target), `Dangling relation: ${JSON.stringify(relation)}`);
     assert.notEqual(relation.source, relation.target, 'Self relation');
     assert.ok(text(relation.reason), 'Every relationship needs an editorial reason');
+    validateRelationEvidence(relation);
     const ends = relation.type === 'related' ? [relation.source, relation.target].sort() : [relation.source, relation.target];
     const key = `${relation.type}:${ends.join('>')}`;
     assert.ok(!relationKeys.has(key), `Duplicate relation: ${key}`);

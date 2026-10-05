@@ -95,18 +95,176 @@ for bad in [lambda: matmul([], [[1]]), lambda: matrix_shape([[]]),
     except ValueError: pass
     else: raise AssertionError("invalid shape or number accepted")`,
   'conditional-probability': `
-assert math.isclose(conditional(0.2, 0.3), 2/3)
+from fractions import Fraction
+import random
+
+# Independent rational oracles; do not reuse the example's normalization or
+# local-offset algorithm to calculate the expected answers.
+def exact_bayes(prior, likelihood):
+    ps = [Fraction(p) for p in prior]
+    total = sum(ps)
+    joints = [p * Fraction(ell) / total for p, ell in zip(ps, likelihood)]
+    evidence = sum(joints)
+    return [q / evidence for q in joints], evidence
+
+def exact_moments(values, weights):
+    ps = [Fraction(p) for p in weights]
+    total = sum(ps)
+    xs = [Fraction(x) for x in values]
+    mean = sum(p*x for p, x in zip(ps, xs)) / total
+    variance = sum(p*x*x for p, x in zip(ps, xs)) / total - mean*mean
+    return mean, variance
+
+def close_vector(actual, expected):
+    assert len(actual) == len(expected)
+    assert all(math.isclose(a, float(e), rel_tol=2e-14, abs_tol=1e-15)
+               for a, e in zip(actual, expected)), (actual, expected)
+
+rng = random.Random(20261005)
+for _ in range(1000):
+    cuts = sorted([0, 64] + [rng.randrange(65) for _ in range(3)])
+    prior = [(b-a)/64 for a, b in zip(cuts, cuts[1:])]
+    likelihood = [rng.randrange(33)/32 for _ in prior]
+    if not any(p*ell for p, ell in zip(prior, likelihood)):
+        likelihood[prior.index(max(prior))] = 1.0
+    values = [rng.randrange(-1024, 1025)/8 for _ in prior]
+    expected_post, expected_evidence = exact_bayes(prior, likelihood)
+    posterior, evidence = bayes_update(prior, likelihood)
+    close_vector(posterior, expected_post)
+    assert evidence == float(expected_evidence)
+    assert all(0 <= p <= 1 for p in posterior)
+    assert math.isclose(math.fsum(posterior), 1, rel_tol=0, abs_tol=3e-16)
+    assert all(p != 0 or q == 0 for p, q in zip(prior, posterior))
+    # Common likelihood scaling changes evidence, not the posterior.
+    scaled_post, scaled_evidence = bayes_update(prior, [ell/4 for ell in likelihood])
+    assert scaled_post == posterior and scaled_evidence == evidence/4
+    assert bayes_update(prior, [0.5]*len(prior)) == (prior, 0.5)
+    # Dyadic fixtures have exactly representable first and second moments.
+    expected_mean, expected_variance = exact_moments(values, prior)
+    actual = weighted_moments(values, prior)
+    assert actual == (float(expected_mean), float(expected_variance)), (values, prior, actual)
+    assert actual[1] >= 0
+    order = list(range(len(prior)))
+    rng.shuffle(order)
+    assert weighted_moments([values[i] for i in order], [prior[i] for i in order]) == actual
+    reordered_post, reordered_evidence = bayes_update([prior[i] for i in order], [likelihood[i] for i in order])
+    assert reordered_post == [posterior[i] for i in order] and reordered_evidence == evidence
+    # Splitting one outcome into equal-mass copies is the same distribution.
+    assert weighted_moments(values + values, [p/2 for p in prior]*2) == actual
+    for scale in (-2, 0, 0.5, 3):
+        translated = [scale*x + 2**20 for x in values]
+        assert weighted_moments(translated, prior) == (float(scale*expected_mean + 2**20), float(scale**2*expected_variance))
+
+# Legacy conditional and chain-score behavior remains independently checked.
+conditional_cases = 0
+for denominator in range(1, 65):
+    for numerator in range(denominator+1):
+        assert conditional(numerator/64, denominator/64) == float(Fraction(numerator, denominator))
+        conditional_cases += 1
+assert conditional_cases == 2144
+assert not math.isclose(conditional(0.1, 0.2), conditional(0.1, 0.3))
+for factors in ([1], [0.5, 0.25, 0.125], [0.75]*20, [0.5, 0, 1], (0.125, 0.75)):
+    expected = math.prod(Fraction(p) for p in factors)
+    product, logp = sequence_score(factors)
+    assert product == float(expected)
+    assert logp == -math.inf if not expected else math.isclose(logp, math.log(float(expected)), rel_tol=1e-14, abs_tol=1e-14)
 assert sequence_score([1.0]) == (1.0, 0.0)
 assert sequence_score([0.0]) == (0.0, -math.inf)
-assert math.isfinite(sequence_score([0.01] * 1000)[1])
-for args in [(0, 0), (0.3, 0.2), (-0.1, 0.2), (0.1, 1.1), (float("inf"), 1)]:
-    try: conditional(*args)
+underflow_product, retained_log = sequence_score([0.01] * 1000)
+assert underflow_product == 0 and math.isclose(retained_log, 1000*math.log(0.01))
+
+# Near-unit inputs are normalized, not treated as arbitrary weights. Correct
+# rounding must not create a variance for any constant or evidence above one.
+for weights in ([0.5, 0.5000000000005], [0.5, 0.4999999999995], [0.2, 0.3, 0.5000000000004]):
+    snapshot = weights[:]
+    post, evidence = bayes_update(weights, [1]*len(weights))
+    expected_post, _ = exact_bayes(weights, [1]*len(weights))
+    close_vector(post, expected_post)
+    assert evidence == 1 and math.fsum(post) == 1
+    for constant in (-1e308, 1e100, 1.5e308):
+        assert weighted_moments([constant]*len(weights), weights) == (constant, 0.0)
+    values = list(range(len(weights)))
+    close_vector(weighted_moments(values, weights), exact_moments(values, weights))
+    assert weights == snapshot
+
+# Values near 1e16 lose their midpoint on global rounding, but not their local
+# spread. An E[X^2]-E[X]^2 or rounded-mean implementation fails these oracles.
+for weights in ([0.5, 0.5], [0.25, 0.75], [0.75, 0.25]):
+    values = [1e16, 1e16+2]
+    expected = tuple(float(v) for v in exact_moments(values, weights))
+    assert weighted_moments(values, weights) == expected
+    assert weighted_moments(values[::-1], weights[::-1]) == expected
+for large in (1e100, -1e100):
+    neighbor = math.nextafter(large, math.inf)
+    expected = tuple(float(v) for v in exact_moments([large, neighbor], [0.5, 0.5]))
+    assert weighted_moments([large, neighbor], [0.5, 0.5]) == expected
+assert weighted_moments([-1e308, 2, 1e308], [0, 1, 0]) == (2.0, 0.0)
+assert weighted_moments((1, 3), (0.25, 0.75)) == (2.5, 0.75)
+assert weighted_moments([1, 3, 3, 3], [0.25]*4) == (2.5, 0.75)  # population, not unbiased sample variance
+indicator_mean, indicator_variance = weighted_moments([1, 0], [0.25, 0.75])
+assert indicator_variance == indicator_mean*(1-indicator_mean)
+assert weighted_moments([2, 6], [0.25, 0.75])[1] == 4*weighted_moments([1, 3], [0.25, 0.75])[1]
+
+# Normal minimum is supported; positive subnormal joints (even nonzero ones)
+# are rejected before they can distort ratios. Genuine zero joints stay legal.
+normal_min = sys.float_info.min
+assert bayes_update([1], [normal_min]) == ([1.0], normal_min)
+assert bayes_update([0.5, 0.5], [2*normal_min]*2) == ([0.5, 0.5], 2*normal_min)
+assert bayes_update([0, 1], [5e-324, 0.5]) == ([0.0, 1.0], 0.5)
+assert bayes_update([5e-324, 1], [0, 1]) == ([0.0, 1.0], 1.0)
+assert 0 < 0.5*normal_min < normal_min
+tiny_variance = exact_moments([0, 1e-200], [0.5, 0.5])[1]
+assert tiny_variance > 0 and float(tiny_variance) == 0
+assert weighted_moments([0, 1e-200], [0.5, 0.5]) == (5e-201, 0.0)
+# Documented boundary: the unweighted square can overflow even when the
+# mathematical weighted variance would fit in a finite float.
+assert math.isfinite(float(exact_moments([0, 1e200], [1, 1e-200])[1]))
+
+invalid_numbers = [True, False, "0.5", None, [], [0.5], complex(1, 0),
+                   float("nan"), float("inf"), -float("inf"), 10**1000]
+rejection_calls = []
+for bad in invalid_numbers:
+    rejection_calls += [lambda bad=bad: conditional(bad, 1),
+                        lambda bad=bad: conditional(0, bad),
+                        lambda bad=bad: sequence_score([bad]),
+                        lambda bad=bad: bayes_update([bad], [1]),
+                        lambda bad=bad: bayes_update([1], [bad]),
+                        lambda bad=bad: weighted_moments([bad], [1]),
+                        lambda bad=bad: weighted_moments([1], [bad])]
+for bad in ([], (), None, "0.5", 0.5, {0: 1}, {1}):
+    rejection_calls += [lambda bad=bad: sequence_score(bad),
+                        lambda bad=bad: bayes_update(bad, [1]),
+                        lambda bad=bad: bayes_update([1], bad),
+                        lambda bad=bad: weighted_moments(bad, [1]),
+                        lambda bad=bad: weighted_moments([1], bad)]
+for bad in ([-0.1, 1.1], [1.1, -0.1], [0.5, -0.1]):
+    rejection_calls += [lambda bad=bad: sequence_score(bad),
+                        lambda bad=bad: bayes_update(bad, [1, 1]),
+                        lambda bad=bad: bayes_update([0.5, 0.5], bad),
+                        lambda bad=bad: weighted_moments([1, 3], bad)]
+rejection_calls += [lambda: conditional(0, 0), lambda: conditional(0.3, 0.2),
+                    lambda: conditional(-0.1, 0.2), lambda: conditional(0.1, 1.1),
+                    lambda: bayes_update([0.5, 0.5], [0, 0]),
+                    lambda: bayes_update([1, 0], [0, 1]),
+                    lambda: bayes_update([0.5, 0.5], [1]),
+                    lambda: weighted_moments([1, 3], [1]),
+                    lambda: weighted_moments([1], [0.5, 0.5]),
+                    lambda: bayes_update([1], [math.nextafter(normal_min, 0)]),
+                    lambda: bayes_update([0.5, 0.5], [normal_min, 1]),
+                    lambda: bayes_update([0.4, 0.6], [1e-323, 1e-323]),
+                    lambda: bayes_update([5e-324, 1], [0.5, 0.5]),
+                    lambda: weighted_moments([-1e308, 1e308], [0.5, 0.5]),
+                    lambda: weighted_moments([0, 1e200], [1, 1e-200]),
+                    lambda: weighted_moments([float("inf"), 2], [0, 1])]
+for weights in ([0.2, 0.2], [0, 0], [0.5, 0.500000000002], [0.5, 0.499999999998]):
+    rejection_calls += [lambda weights=weights: bayes_update(weights, [0.8, 0.2]),
+                        lambda weights=weights: weighted_moments([1, 3], weights)]
+assert len(rejection_calls) == 148
+for bad in rejection_calls:
+    try: bad()
     except ValueError: pass
-    else: raise AssertionError("invalid conditional probability accepted")
-for args in [[], [-0.1], [1.1], [float("nan")], [float("inf")]]:
-    try: sequence_score(args)
-    except ValueError: pass
-    else: raise AssertionError("invalid probability factor accepted")`,
+    else: raise AssertionError("invalid probability input or documented numeric boundary accepted")
+print("probability regression: 1000 Fraction + invariance cases + 2144 conditional cases + 148 rejections")`,
   'entropy-cross-entropy': `
 assert math.isclose(perplexity([0.5, 0.125, 0.125, 0.125]), 2**2.5)
 assert math.isclose(cross_entropy([0.5, 0.5], [0.5, 0.5]), math.log(2))

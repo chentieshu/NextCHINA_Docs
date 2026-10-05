@@ -82,19 +82,20 @@
       "id": "llm-conditional-probability",
       "file": "content/models/llm/conditional-probability.md",
       "space": "models",
-      "category": "llm-math",
-      "categoryName": "LLM · 表示与数学",
-      "title": "条件概率与自回归：从随机变量到序列似然",
-      "subtitle": "联合分布手算、反向条件、零概率边界与 teacher forcing",
+      "category": "math-probability",
+      "categoryName": "概率与统计基础",
+      "title": "概率基础：从贝叶斯更新到期望与序列概率",
+      "subtitle": "条件方向、基础比例、中心化方差与自回归边界",
       "date": "2026-10-05",
       "tags": [
-        "LLM",
-        "随机变量",
-        "条件概率",
-        "自回归",
-        "最大似然"
+        "概率",
+        "贝叶斯",
+        "期望",
+        "方差",
+        "统计",
+        "自回归"
       ],
-      "excerpt": "用完整的二元概率表区分条件方向，计算终止路径概率，并说明训练与生成前缀及事实可信度的边界。",
+      "excerpt": "区分条件方向与基础比例，手算后验、期望和方差，并连接分类、强化学习、评估与序列建模。",
       "knowledgeUnit": {
         "kind": "independent-explanation",
         "reviewStatus": "needs-independent-review",
@@ -102,7 +103,9 @@
         "conceptIds": [
           "concept:random-variable",
           "concept:conditional-probability",
-          "concept:autoregression"
+          "concept:autoregression",
+          "concept:bayes-rule",
+          "concept:expectation-variance"
         ],
         "placements": [
           {
@@ -113,7 +116,13 @@
         "sourceUrls": [
           "https://www.deeplearningbook.org/contents/prob.html",
           "https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf",
-          "https://arxiv.org/abs/1506.03099"
+          "https://arxiv.org/abs/1506.03099",
+          "https://www.probabilitycourse.com/chapter1/1_4_3_bayes_rule.php",
+          "https://www.probabilitycourse.com/chapter3/3_2_2_expectation.php",
+          "https://www.probabilitycourse.com/chapter3/3_2_4_variance.php",
+          "https://www.probabilitycourse.com/chapter8/8_2_2_point_estimators_for_mean_and_var.php",
+          "https://nlp.stanford.edu/IR-book/html/htmledition/properties-of-naive-bayes-1.html",
+          "https://arxiv.org/html/1801.08287v2"
         ],
         "relatedResourceIds": []
       }

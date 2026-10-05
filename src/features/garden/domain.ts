@@ -14,9 +14,20 @@ export interface KnowledgeNode {
   hubId?: string; outlinePath?: string; conceptRefs?: string[]; hubRefs?: string[]; hubEntries?: string[];
   resourceRefs?: ResourceRef[]; embeddedArticleId?: string; microscopeId?: string | null;
 }
+export interface RelationEvidenceSource {
+  url: string; title: string; locator: string; supportNote: string;
+}
+/** A dated editorial source check; independent review remains outstanding. */
+export interface RelationEvidence {
+  checkedAt: string; // ISO calendar date (YYYY-MM-DD), matching the edge's asOf.
+  reviewStatus: 'source-checked-needs-independent-review';
+  sources: RelationEvidenceSource[];
+  derivation?: string;
+}
 export interface KnowledgeEdge {
   id: string; source: string; target: string; type: RelationKind;
   assertionStatus: string; reason?: string; routeId?: string; provenance?: string; scope?: string; asOf?: string;
+  evidence?: RelationEvidence;
 }
 export interface GardenGraph {
   schemaVersion: number; title: string; scopeNote: string;

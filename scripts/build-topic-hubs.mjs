@@ -59,11 +59,11 @@ export function buildTopicHubs(base, plan, config, publishedIds, datasets) {
         microscopeId: item.microscopeId ?? null });
       for (const ref of node.conceptRefs) {
         assert.ok(byId.has(ref) && !['hub','branch'].includes(byId.get(ref).kind), `Invalid concept reference ${ref}`);
-        pendingRefs.push({ source: node.id, target: ref, reason: '专题中的共享知识引用；不是科学包含或因果判断。' });
+        pendingRefs.push({ source: node.id, target: ref, type: 'references', reason: '专题分支引用规范知识对象。', provenance: 'conceptRefs' });
       }
       for (const ref of node.hubRefs) {
         assert.ok(enabled.has(ref), `Unavailable related hub ${ref}`);
-        pendingRefs.push({ source: node.id, target: ref, reason: '相关专题入口；这里的导航关联不把系统等同于模型结构。' });
+        pendingRefs.push({ source: node.id, target: ref, type: 'references', reason: '专题分支引用另一个专题入口。', provenance: 'hubRefs' });
       }
       if (item.legacyDataRef) {
         const ref = dataRefs.get(item.legacyDataRef);
@@ -104,8 +104,8 @@ export function buildTopicHubs(base, plan, config, publishedIds, datasets) {
     bind(node, placement.articleId, placement.role);
     node.embeddedArticleId = placement.articleId;
   }
-  for (const seed of seeds) pendingRefs.push({ source: seed.id, target: seed.about, reason: '专题的规范知识对象；专题导航与概念本身保留不同 ID。' });
-  for (const ref of pendingRefs) edges.push({ ...ref, id: `hub-ref:${ref.source}>${ref.target}`, type: 'related', assertionStatus: 'editorial' });
+  for (const seed of seeds) pendingRefs.push({ source: seed.id, target: seed.about, type: 'represents', reason: '专题入口指向其规范知识对象；入口与知识实体保留不同 ID。', provenance: 'hubSeed.about' });
+  for (const ref of pendingRefs) edges.push({ ...ref, id: `${ref.type}:${ref.source}>${ref.target}`, assertionStatus: 'editorial' });
   for (const node of nodes) node.hubEntries = entryHubs[node.id] ?? [];
   return { ...base, nodes, edges, hubResources: resources,
     hubIntegration: { stage: config.stage, detailedHubs: Object.keys(plan.hubOutlines).filter(id => enabled.has(id)), contentMigrated: false, factReverification: false },

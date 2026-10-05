@@ -3,6 +3,11 @@ import { graph } from '../../src/features/garden/data';
 import { buildKnowledgeIndex } from '../../src/features/workspace/knowledgeIndex';
 const index = buildKnowledgeIndex(graph);
 const displayNodes = graph.nodes.filter(n => !['root','group','path','document'].includes(n.kind));
+const visibleByDefault = displayNodes.filter(node => {
+  if (node.kind === 'domain' || node.articleBindings.length || node.resourceRefs?.length || node.embeddedArticleId) return true;
+  return graph.edges.some(edge => (edge.source === node.id || edge.target === node.id) &&
+    !['browse_child','references','represents','related'].includes(edge.type));
+});
 async function ready(page: Page) { await expect(page.locator('.og-network-host')).toHaveAttribute('data-layout','ready'); }
 async function choose(page: Page, text: string) { const search = page.getByRole('searchbox',{name:'搜索知识网络',exact:true}); await search.fill(text); await search.press('ArrowDown'); await page.keyboard.press('Enter'); }
 
@@ -52,7 +57,7 @@ test('native pan and zoom do not mutate nodes or relationships',async({page})=>{
   await expect(page.locator('.kg-node')).toHaveCount(count);
   expect(await page.locator('.kg-node:visible').count()).toBeLessThan(count);
   await page.getByRole('button',{name:'恢复默认显示',exact:true}).click();
-  await expect(page.locator('.kg-node:visible')).toHaveCount(count);
+  await expect(page.locator('.kg-node:visible')).toHaveCount(visibleByDefault.length);
 });
 
 test('mobile note is docked without a blackout or focus trap',async({page})=>{

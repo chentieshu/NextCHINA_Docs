@@ -27,13 +27,18 @@ export function mountKnowledgeNetwork(host, graph, callbacks = {}) {
   const roleOf = edge => {
     if (edge.type === 'browse_child') return 'structure';
     if (edge.type === 'recommended_before') return 'before';
-    const owner = network.byId.get(edge.source);
-    return owner?.conceptRefs?.includes(edge.target) || owner?.hubRefs?.includes(edge.target) ? 'reference' : 'related';
+    if (edge.type === 'references' || edge.type === 'represents') return 'reference';
+    return 'related';
   };
   const roles = new Map(network.edges.map(e => [e.id, roleOf(e)]));
   const controlFor = { structure: 'structure', before: 'prerequisites', reference: 'references', related: 'relations' };
   const enabled = edge => settings[controlFor[roles.get(edge.id)]];
   const hasResource = node => Boolean(node.articleBindings?.length || node.resourceRefs?.length || node.embeddedArticleId);
+  const mapEligible = node => {
+    if (node.kind === 'domain' || hasResource(node)) return true;
+    return (network.adjacency.get(node.id) ?? []).some(edge =>
+      !['browse_child','references','represents','related'].includes(edge.type));
+  };
   function refreshVisible() {
     const neighbors = new Set(selectedId ? [selectedId] : []);
     if (selectedId && settings.focusNeighbors) {
@@ -41,7 +46,7 @@ export function mountKnowledgeNetwork(host, graph, callbacks = {}) {
         neighbors.add(edge.source); neighbors.add(edge.target);
       }
     }
-    visibleIds = new Set(network.nodes.filter(node => node.id === selectedId || (
+    visibleIds = new Set(network.nodes.filter(node => node.id === selectedId || (mapEligible(node) &&
       (!settings.groups || settings.groups.includes(domains.get(node.id)?.group)) &&
       (!settings.onlyResources || hasResource(node)) &&
       (settings.detail === 'all' || (settings.detail === 'concepts' ? node.kind === 'concept' : ['domain', 'hub', 'topic'].includes(node.kind))) &&

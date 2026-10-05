@@ -58,7 +58,7 @@ export function buildGardenModel(blueprint, publishedArticleIds) {
   }
   const relationKeys = new Set();
   for (const relation of blueprint.relations) {
-    assert.ok(['related', 'recommended_before'].includes(relation.type), 'Unsupported editorial relationship');
+    assert.ok(['related', 'recommended_before', 'is_a', 'part_of', 'uses', 'trained_with', 'evaluated_by', 'mitigates'].includes(relation.type), 'Unsupported knowledge relationship');
     assert.ok(byId.has(relation.source) && byId.has(relation.target), `Dangling relation: ${JSON.stringify(relation)}`);
     assert.notEqual(relation.source, relation.target, 'Self relation');
     assert.ok(text(relation.reason), 'Every relationship needs an editorial reason');
@@ -68,6 +68,8 @@ export function buildGardenModel(blueprint, publishedArticleIds) {
     relationKeys.add(key);
     edges.push({ ...relation, id: key, assertionStatus: 'editorial' });
   }
+  // Explicit global teaching prerequisites remain a DAG. Route-local teaching edges are compiled later
+  // and keep routeId, so different pedagogical routes may legitimately order the same concepts differently.
   const prerequisites = edges.filter(edge => edge.type === 'recommended_before');
   const indegree = new Map(nodes.map(node => [node.id, 0]));
   const next = new Map(nodes.map(node => [node.id, []]));
@@ -104,6 +106,12 @@ export function buildGardenModel(blueprint, publishedArticleIds) {
     paths.add(route.id);
     assert.ok(route.steps.length > 1 && new Set(route.steps).size === route.steps.length, `Invalid path steps: ${route.id}`);
     for (const id of route.steps) assert.ok(byId.has(id), `Unknown path node: ${id}`);
+    for (let index = 1; index < route.steps.length; index++) {
+      const source = route.steps[index - 1], target = route.steps[index];
+      const id = `route:${route.id}:${source}>${target}`;
+      edges.push({ id, source, target, type: 'recommended_before', assertionStatus: 'editorial',
+        routeId: route.id, provenance: 'learningPath', reason: `学习路径「${route.label}」的相邻步骤。` });
+    }
   }
   const policy = blueprint.viewPolicy;
   assert.equal(policy.initialDomainCount, blueprint.domains.length, 'Atlas summary out of sync');
@@ -114,7 +122,7 @@ export function buildGardenModel(blueprint, publishedArticleIds) {
     unmappedArticleIds: [...publishedArticleIds].filter(id => !boundArticles.has(id)),
     stats: { domains: blueprint.domains.length, topics: nodes.filter(node => node.kind === 'topic').length,
       concepts: nodes.filter(node => node.kind === 'concept').length, nodes: nodes.length,
-      navigationEdges: edges.length - blueprint.relations.length, editorialRelations: blueprint.relations.length,
+      navigationEdges: nodes.length - 1, editorialRelations: edges.filter(edge => edge.type !== 'browse_child').length,
       articleBindings: boundArticles.size, learningPaths: paths.size } };
 }
 

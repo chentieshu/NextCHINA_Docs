@@ -1,12 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { ArrowRight, ArrowLeftRight, ChevronDown, Search, Route, BookOpen } from 'lucide-react';
+import { edgeLabel } from '../garden/domain';
 import type { KnowledgeIndex, IndexedRelation, RelationRole } from './knowledgeIndex';
 
-const names: Record<RelationRole, string> = { before: '建议先学', related: '一起理解', reference: '专题复用' };
+const names: Record<RelationRole, string> = { before: '建议先学', related: '延伸阅读', reference: '专题引用', semantic: '知识关系' };
 export function KnowledgeConnection({ relation, index, onSelect }: { relation: IndexedRelation; index: KnowledgeIndex; onSelect: (id: string) => void }) {
   const { edge, role } = relation;
   return <article className="og-connection atlas-relation" data-relation-id={edge.id} data-role={role}>
-    <div className="og-connection-pair"><button type="button" onClick={() => onSelect(edge.source)}>{index.byId.get(edge.source)?.label ?? edge.source}</button><span className="og-connection-verb">{role === 'related' ? <ArrowLeftRight /> : <ArrowRight />}<span>{role === 'before' ? '先了解 → 再学习' : role === 'reference' ? '引用共享知识' : '可以一起理解'}</span></span><button type="button" onClick={() => onSelect(edge.target)}>{index.byId.get(edge.target)?.label ?? edge.target}</button></div>
+    <div className="og-connection-pair"><button type="button" onClick={() => onSelect(edge.source)}>{index.byId.get(edge.source)?.label ?? edge.source}</button><span className="og-connection-verb">{role === 'related' ? <ArrowLeftRight /> : <ArrowRight />}<span>{role === 'before' ? '先了解 → 再学习' : role === 'reference' ? edgeLabel[edge.type] : role === 'semantic' ? edgeLabel[edge.type] : '延伸阅读'}</span></span><button type="button" onClick={() => onSelect(edge.target)}>{index.byId.get(edge.target)?.label ?? edge.target}</button></div>
     <p>{edge.reason || '原始数据尚未补充关系说明。'}</p><small>{names[role]} · {edge.assertionStatus === 'editorial' ? '编辑整理' : edge.assertionStatus}</small>
   </article>;
 }
@@ -28,7 +29,7 @@ export default function LearningNavigator({ index, onSelect }: { index: Knowledg
       </section>)}{!index.graph.learningPaths.length && <p className="og-section-note">学习路线尚未整理，可切换到概念联系继续探索。</p>}
     </section> : <section aria-label="概念联系浏览器">
       <label className="og-filter-search"><Search /><input type="search" aria-label="筛选概念联系" placeholder="例如：Attention、RAG、评测" value={query} onChange={e => { setQuery(e.target.value); setLimit(12); }} /></label>
-      <div className="og-relation-filters" role="group" aria-label="联系类型">{(['all','before','related','reference'] as const).map(value => <button type="button" key={value} aria-pressed={role === value} onClick={() => { setRole(value); setLimit(12); }}>{value === 'all' ? '全部' : names[value]}</button>)}</div>
+      <div className="og-relation-filters" role="group" aria-label="联系类型">{(['all','before','semantic','reference','related'] as const).map(value => <button type="button" key={value} aria-pressed={role === value} onClick={() => { setRole(value); setLimit(12); }}>{value === 'all' ? '全部' : names[value]}</button>)}</div>
       <p className="og-section-note">{rows.length} 条联系 · 点击任一知识名称，在图中继续探索。</p>
       {rows.slice(0,limit).map(row => <KnowledgeConnection key={row.edge.id} index={index} relation={row} onSelect={onSelect} />)}
       {!rows.length && <div className="og-navigation-empty"><p>没有找到对应联系。</p><button type="button" onClick={() => { setQuery(''); setRole('all'); }}>清除条件</button></div>}

@@ -374,6 +374,50 @@
         ],
         "relatedResourceIds": []
       }
+    },
+    {
+      "id": "ai-ml-dl-boundaries",
+      "file": "content/models/foundations/ai-ml-dl-boundaries.md",
+      "space": "models",
+      "category": "foundations",
+      "categoryName": "AI 基础原理",
+      "title": "AI、机器学习与深度学习：规则、经验与多层表示",
+      "subtitle": "根据构造、训练来源与组件范围判断方法，保留证据不足的结论",
+      "date": "2026-10-05",
+      "tags": [
+        "AI",
+        "机器学习",
+        "深度学习",
+        "表示学习",
+        "观察案例",
+        "证据边界"
+      ],
+      "excerpt": "用六份明确虚构的系统档案区分人工规则、数据经验与多层学习表示，辨别冻结部署、混合组件和缺少证据时能够作出的判断。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "ai-ml-dl-boundaries",
+        "conceptIds": [
+          "concept:artificial-intelligence",
+          "concept:machine-learning",
+          "concept:deep-learning"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:ai-overview",
+            "path": "orientation/ai-ml-dl"
+          }
+        ],
+        "sourceUrls": [
+          "https://artint.info/3e/html/ArtInt3e.Ch1.S1.html",
+          "https://www-formal.stanford.edu/jmc/whatisai/node1.html",
+          "https://www-formal.stanford.edu/jmc/whatisai/node2.html",
+          "https://artint.info/3e/html/ArtInt3e.Ch7.S1.html",
+          "https://www.cs.toronto.edu/~hinton/absps/NatureDeepReview.pdf",
+          "https://www.deeplearningbook.org/contents/intro.html"
+        ],
+        "relatedResourceIds": []
+      }
     }
   ]
 }

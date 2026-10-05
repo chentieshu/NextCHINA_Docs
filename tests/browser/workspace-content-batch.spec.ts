@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { graph } from '../../src/features/garden/data';
 const networkNodeCount = graph.nodes.filter(node => !['root', 'group', 'path', 'document'].includes(node.kind)).length;
@@ -541,5 +541,209 @@ for (const width of [390, 1440]) test(`training sampling and learning-rate secti
   await expect(page.locator('[data-document]')).toHaveCount(1);
   await expect(page.getByRole('tab')).toHaveCount(0);
   await expect(article.locator('.ws-evidence')).toContainText('程序验证不等于专家复核');
+  expect(errors).toEqual([]);
+});
+
+
+// The nonnumeric pilot has its own reader contract. The numeric units and their
+// math/code assertions above remain unchanged and never dispatch on absent code.
+const aiBoundariesArticleId = 'ai-ml-dl-boundaries';
+const aiBoundariesTitle = 'AI、机器学习与深度学习：规则、经验与多层表示';
+const aiBoundariesBranch = 'branch:ai-overview:orientation/ai-ml-dl';
+const aiBoundariesConcepts = ['concept:artificial-intelligence', 'concept:machine-learning', 'concept:deep-learning'];
+const aiBoundariesSources = [
+  'https://artint.info/3e/html/ArtInt3e.Ch1.S1.html',
+  'https://www-formal.stanford.edu/jmc/whatisai/node1.html',
+  'https://www-formal.stanford.edu/jmc/whatisai/node2.html',
+  'https://artint.info/3e/html/ArtInt3e.Ch7.S1.html',
+  'https://www.cs.toronto.edu/~hinton/absps/NatureDeepReview.pdf',
+  'https://www.deeplearningbook.org/contents/intro.html',
+];
+const aiBoundaryCases = [
+  'A：棋盘选步器', 'B：图像分类器乙', 'C：图像分类器丙',
+  'D：同一张照片、同一个答案', 'E：冻结的特征提取器与新分类头', 'F：“两层网络”的说明书',
+];
+
+test('AI boundaries pilot owns three existing concepts and one sibling navigation leaf', () => {
+  const articles = JSON.parse(readFileSync('content/articles.json', 'utf8')).articles;
+  const matches = articles.filter((article: { id: string }) => article.id === aiBoundariesArticleId);
+  expect(matches).toHaveLength(1);
+  const unit = matches[0].knowledgeUnit;
+  expect(matches[0].title).toBe(aiBoundariesTitle);
+  expect(unit.exampleId).toBe(aiBoundariesArticleId);
+  expect(unit.reviewStatus).toBe('needs-independent-review');
+  expect(unit.conceptIds).toEqual(aiBoundariesConcepts);
+  expect(unit.placements).toEqual([{ hubId: 'hub:ai-overview', path: 'orientation/ai-ml-dl' }]);
+  expect(unit.sourceUrls).toEqual(aiBoundariesSources);
+  expect(unit.relatedResourceIds).toEqual([]);
+  expect(Object.keys(unit).sort()).toEqual(['kind', 'reviewStatus', 'exampleId', 'conceptIds', 'placements', 'sourceUrls', 'relatedResourceIds'].sort());
+  expect(graph.nodes.filter(node => node.kind === 'concept' && node.articleBindings.some(ref => ref.articleId === aiBoundariesArticleId)).map(node => node.id).sort()).toEqual([...aiBoundariesConcepts].sort());
+  for (const id of aiBoundariesConcepts) {
+    const nodes = graph.nodes.filter(node => node.id === id);
+    expect(nodes).toHaveLength(1);
+    expect(nodes[0].kind).toBe('concept');
+    expect(nodes[0].parentId).toBe('topic:landscape');
+    expect(nodes[0].articleBindings).toEqual([{ articleId: aiBoundariesArticleId, coverage: 'explanation' }]);
+    expect(nodes[0].embeddedArticleId).toBeUndefined();
+    expect(nodes[0].contentStatus).toBe('outline');
+    expect(nodes[0].evidenceStatus).toBe('not-reviewed');
+    expect(inventory.originalScope.originalModelNodeIds).toContain(id);
+  }
+  const parent = graph.nodes.find(node => node.id === 'branch:ai-overview:orientation')!;
+  expect(parent.label).toBe('基础与认识');
+  expect(parent.articleBindings).toEqual([{ articleId: 'overview', coverage: 'overview' }]);
+  expect(parent.resourceRefs).toEqual([{ articleId: 'overview', role: 'existing-orientation' }]);
+  expect(parent.embeddedArticleId).toBeUndefined();
+  const branch = graph.nodes.find(node => node.id === aiBoundariesBranch)!;
+  expect(branch.kind).toBe('branch');
+  expect(branch.label).toBe('AI、机器学习与深度学习的边界');
+  expect(branch.parentId).toBe(parent.id);
+  expect(branch.embeddedArticleId).toBe(aiBoundariesArticleId);
+  expect(branch.conceptRefs).toEqual(aiBoundariesConcepts);
+  expect(inventory.originalScope.addedNodeIds).toContain(branch.id);
+  const refs = graph.edges.filter(edge => edge.source === branch.id && edge.type === 'references');
+  expect(refs.map(edge => edge.target).sort()).toEqual([...aiBoundariesConcepts].sort());
+  const incidentEdges = graph.edges.filter(edge => edge.source === branch.id || edge.target === branch.id);
+  expect(incidentEdges).toHaveLength(4);
+  expect(incidentEdges.filter(edge => edge.type === 'browse_child').map(edge => [edge.source, edge.target])).toEqual([[parent.id, branch.id]]);
+  expect(graph.nodes.find(node => node.id === 'branch:ai-overview:orientation/naive-bayes')!.embeddedArticleId).toBe(naiveBayesArticleId);
+  expect(inventory.originalScope.originalModelNodeIds).toHaveLength(603);
+  expect(inventory.originalScope.missingOriginalNodeIds).toEqual([]);
+  expect(inventory.summary.independentlyReviewedNodes).toBe(0);
+});
+
+async function checkAiBoundaryReader(page: Page) {
+  const article = page.locator(`[data-document="${aiBoundariesArticleId}"]`);
+  await expect(article.locator('h1')).toHaveText(aiBoundariesTitle);
+  await expect(article.locator('.markdown-body')).toBeVisible();
+  await expect(article.locator('.markdown-body blockquote').first().locator('strong').first()).toHaveText('本页解决的问题');
+  await expect(article.locator('.ws-evidence')).toContainText('包含来源、教学假设、示例与限制');
+  await expect(article.locator('.ws-evidence')).toContainText('程序验证不等于专家复核');
+  await expect(article.locator('.ws-evidence')).not.toContainText('可运行');
+  await expect(article.locator('.ws-evidence')).not.toContainText('数值');
+  await expect(article.locator('.markdown-body')).toContainText('A–F 全部是明确虚构的教学档案，不是实测系统，也不是六次实验。');
+  for (const name of aiBoundaryCases) await expect(article.getByRole('heading', { name, exact: true })).toBeVisible();
+  const paragraphs = article.locator('.markdown-body p');
+  await expect(paragraphs.filter({ hasText: '对 ML 或 DL 的方法归类' })).toContainText('证据不足');
+  await expect(paragraphs.filter({ hasText: '目前对 ML 与 DL 的判断都证据不足' })).toContainText('不能凭一个未定义的层数给出肯定或否定结论');
+  await expect(paragraphs.filter({ hasText: '第一问的答案是' })).toContainText('证据不足');
+  await expect(paragraphs.filter({ hasText: '这里的正确作答依赖限定前提' })).toContainText('不能替代对来源与推论的实质核查');
+  for (const url of aiBoundariesSources) {
+    const links = article.locator(`.markdown-body a[href="${url}"]`);
+    expect(await links.count()).toBeGreaterThan(0);
+    await expect(links.first()).toBeVisible();
+    expect((await links.first().textContent())?.trim().length).toBeGreaterThan(0);
+  }
+  await expect(article.locator('.md-codeblock, pre, .katex-error, .md-mermaid-error')).toHaveCount(0);
+  await expect(page.locator('[data-document]')).toHaveCount(1);
+  await expect(page.getByRole('tab')).toHaveCount(0);
+  expect(await page.locator('.ws-scroll').evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1);
+  expect(await article.locator('.markdown-body').evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1);
+  return article;
+}
+
+for (const width of [390, 1440]) for (const concept of aiBoundariesConcepts) {
+  test(`AI boundaries canonical route preserves evidence and history / ${concept} / ${width}px`, async ({ page }, testInfo) => {
+    const errors: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    page.on('console', message => { if (message.type() === 'error' && !/net::ERR_/.test(message.text())) errors.push(message.text()); });
+    await page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(`/?view=garden&scope=root:ai&node=${concept}&display=graph`);
+    await expect(page.locator('.og-network-host')).toHaveAttribute('data-layout', 'ready');
+    await expect(page.locator('.kg-node[data-active="true"]')).toHaveAttribute('data-node-id', concept);
+    await expect(page.locator('.og-note-badges')).toContainText('有独立讲解资料');
+    await expect(page.locator('.og-coverage-note')).toContainText('不代表内容已经核验完成');
+    await page.locator('.og-read-button').click();
+    await checkAiBoundaryReader(page);
+    await page.reload();
+    await checkAiBoundaryReader(page);
+    await page.goBack();
+    await expect(page.locator('.kg-node[data-active="true"]')).toHaveAttribute('data-node-id', concept);
+    await page.goForward();
+    await checkAiBoundaryReader(page);
+    await page.screenshot({ path: testInfo.outputPath(`ai-boundaries-${concept.split(':')[1]}-${width}.png`) });
+    await page.getByRole('button', { name: '返回知识地图', exact: true }).click();
+    await expect(page.locator('.og-network-host')).toHaveAttribute('data-layout', 'ready');
+    await expect(page.locator('.kg-node[data-active="true"]')).toHaveAttribute('data-node-id', concept);
+    await expect(page.locator('[data-document]')).toHaveCount(0);
+    expect(errors).toEqual([]);
+  });
+}
+
+for (const width of [390, 1440]) test(`AI boundaries direct and leaf readers preserve cases, sources and sibling guides / ${width}px`, async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error' && !/net::ERR_/.test(message.text())) errors.push(message.text()); });
+  await page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+  await page.setViewportSize({ width, height: 900 });
+  await page.goto(`/?view=article&article=${aiBoundariesArticleId}`);
+  const article = await checkAiBoundaryReader(page);
+  await page.reload();
+  await checkAiBoundaryReader(page);
+  for (const [index, name] of aiBoundaryCases.entries()) {
+    const heading = article.getByRole('heading', { name, exact: true });
+    await heading.scrollIntoViewIfNeeded();
+    await expect(heading).toBeInViewport();
+    if ([0, 3, 5].includes(index)) await page.screenshot({ path: testInfo.outputPath(`ai-boundaries-case-${'ABCDEF'[index]}-${width}.png`) });
+  }
+  const uncertainty = article.locator('.markdown-body p').filter({ hasText: '对 ML 或 DL 的方法归类' });
+  await uncertainty.scrollIntoViewIfNeeded();
+  await expect(uncertainty).toBeInViewport();
+  const exercise = article.locator('.markdown-body p').filter({ hasText: '第一问的答案是' });
+  await exercise.scrollIntoViewIfNeeded();
+  await expect(exercise).toBeInViewport();
+  await page.screenshot({ path: testInfo.outputPath(`ai-boundaries-exercise-${width}.png`) });
+  await article.getByRole('heading', { name: '来源与版本', exact: true }).scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath(`ai-boundaries-sources-${width}.png`) });
+  for (const target of [
+    { branch: 'branch:ai-overview:orientation/naive-bayes', article: naiveBayesArticleId, title: naiveBayesTitle },
+    { branch: 'branch:llm:training/loop', article: trainingArticleId, title: trainingTitle },
+  ]) {
+    await article.locator(`.markdown-body a[href="?view=garden&scope=${target.branch}"]`).first().click();
+    await expect(page.locator(`[data-document="${target.article}"] h1`)).toHaveText(target.title);
+    await page.reload();
+    await expect(page.locator(`[data-document="${target.article}"] .md-codeblock`)).toHaveCount(1);
+    await page.goBack();
+    await checkAiBoundaryReader(page);
+    await page.goForward();
+    await expect(page.locator(`[data-document="${target.article}"] h1`)).toHaveText(target.title);
+    await page.goBack();
+    await checkAiBoundaryReader(page);
+  }
+  await page.goto(`/?view=garden&scope=${aiBoundariesBranch}`);
+  await checkAiBoundaryReader(page);
+  await page.reload();
+  await checkAiBoundaryReader(page);
+  const params = new URL(page.url()).searchParams;
+  expect(params.get('view')).toBe('article');
+  expect(params.get('article')).toBe(aiBoundariesArticleId);
+  const returnParams = new URLSearchParams(params.get('return') ?? '');
+  expect(returnParams.get('scope')).toBe(aiBoundariesBranch);
+  expect(returnParams.get('display')).toBe('list');
+
+  await page.goto('/?view=garden&scope=branch:ai-overview:orientation');
+  const parent = page.locator('[data-folder="branch:ai-overview:orientation"]');
+  await expect(parent.locator('h1')).toHaveText('基础与认识');
+  await expect(page.locator('[data-document]')).toHaveCount(0);
+  await expect(parent.locator('.ws-folder-rows button')).toHaveCount(3);
+  await parent.locator(`[data-folder-entry="${aiBoundariesBranch}"]`).click();
+  await checkAiBoundaryReader(page);
+  await page.goBack();
+  await expect(parent).toBeVisible();
+  await parent.locator('[data-folder-entry]').filter({ hasText: '朴素贝叶斯' }).click();
+  await expect(page.locator(`[data-document="${naiveBayesArticleId}"] h1`)).toHaveText(naiveBayesTitle);
+  await expect(page.locator(`[data-document="${naiveBayesArticleId}"] .md-codeblock pre`)).toContainText('def predict(');
+  await page.goBack();
+  await parent.locator('[data-folder-entry="file:branch:ai-overview:orientation:overview"]').click();
+  const overview = page.locator('[data-document="overview"]');
+  await expect(overview.locator('.markdown-body h2').filter({ hasText: '模型、SaaS 与 Agent 是三件不同的事' })).toBeVisible();
+  await page.reload();
+  await expect(overview.locator('.markdown-body')).toBeVisible();
+  await expect(page.locator('[data-document]')).toHaveCount(1);
+  await page.goBack();
+  await expect(parent).toBeVisible();
+  await page.goForward();
+  await expect(overview.locator('.markdown-body')).toBeVisible();
   expect(errors).toEqual([]);
 });

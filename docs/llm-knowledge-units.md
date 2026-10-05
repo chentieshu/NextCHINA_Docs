@@ -38,3 +38,15 @@ Attention 页解释一次完整计算，不表示 QKV、缩放、多头等所有
 ## 后续
 
 独立细化 QKV、Mask、多头、位置编码、Loss、微调等单元；可操作的 Attention 画布实验和 VLM/RAG/Agent 专属内容仍待继续建设。当前交付的是可阅读与可复制运行的知识文章，不是假装已经完成整套互动课程。
+
+## 当前例子检查契约（AI／ML／DL 观察案例试点）
+
+以上首批交付记录保留其历史范围。当前浏览器回归入口是 `tests/browser/workspace-links.spec.ts`、`workspace-content-batch.spec.ts` 等工作区测试；上文的 `garden-knowledge.spec.ts` 是旧记录，不是当前存在的测试文件。
+
+`knowledgeUnit` 仍使用原七字段，所有独立单元仍为 `needs-independent-review`。测试专用的 `scripts/knowledge-example-contract.mjs` 用数组显式登记每个 articleId／exampleId 与 `python` 或 `observable-case`；先检查唯一性、完整使用及精确配对，未知模式、重叠登记或缺失登记均失败。既有数值例子不能转入案例路径；缺少 Python 代码从不选择其他模式。原 Python 提取、隔离运行、环境、超时、数值／拒绝断言、Attention fixture 对照和元数据负例继续执行。
+
+唯一案例登记是 `ai-ml-dl-boundaries`。它仅绑定 AI、ML、DL 三概念并放在 `hub:ai-overview` 的 `orientation/ai-ml-dl`。检查保护一组明确虚构的 A–F 档案、每案的事实／问题／有界判断／理由／改变证据字段、范围与不确定性说明、后续练习、相邻来源链接和既有后续阅读。删除或身份变化的负例随 `test:knowledge` 执行；正文不得出现可运行标记或代码围栏。这里的固定章节与字段是该试点的删除回归约定，不是适用于所有题材的大型内容模板。
+
+报告中 `results` 与 `runnableExamples` 保持原含义，只包含真正执行通过的 Python 例子；`observableCaseResults` 与 `observableCaseFamilies` 单列结构／链接检查。试点贡献 0 个执行例子、1 个案例家族检查；六份虚构档案不是六次实验。`expertReview: false` 保持不变。来源链接的位置和字段非空只防止部分结构缺损，不能证明来源支持、科学结论、实质完整性或教学效果；作者来源核对、独立内容审阅与专家认证仍须分别记录。机械测试不使用作者的科学答案标签作为真值。
+
+读者提示使用“来源、假设、示例与限制”的中性措辞，程序检查与结构／链接检查不被写成事实核验。无需扩展图 schema、领域类型或构建时元数据传播。新增内容仍通过原绑定、来源、放置、公开注册、后续链接及审阅状态检查；清单以正常生成更新，不把导航／引用充作独立覆盖。

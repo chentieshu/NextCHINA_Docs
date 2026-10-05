@@ -21,6 +21,7 @@ import classificationMetrics from '../../content/models/evaluation/classificatio
 import supervisedNaiveBayes from '../../content/models/classical/supervised-learning-naive-bayes.md?raw';
 import entropyCrossEntropy from '../../content/models/llm/entropy-cross-entropy.md?raw';
 
+import aiMlDlBoundaries from '../../content/models/foundations/ai-ml-dl-boundaries.md?raw';
 import derivatives from '../../content/models/llm/derivatives.md?raw';
 
 const contentById: Record<string, string> = {
@@ -44,7 +45,8 @@ const contentById: Record<string, string> = {
   'classification-accuracy-precision-recall-f1': classificationMetrics,
   'supervised-learning-naive-bayes': supervisedNaiveBayes,
   'llm-entropy-cross-entropy': entropyCrossEntropy,
-  'llm-derivatives': derivatives
+  'llm-derivatives': derivatives,
+  'ai-ml-dl-boundaries': aiMlDlBoundaries
 };
 
 export const ESSAY_CHAPTERS: DocChapter[] = articleRegistry.articles.map(article => {

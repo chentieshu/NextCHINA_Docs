@@ -6,6 +6,7 @@ import path from 'node:path';
 import { loadGarden, repositoryRoot } from './validate-garden.mjs';
 import { attachTopicHubs, branchId } from './build-topic-hubs.mjs';
 import { readKnowledgeUnits } from './knowledge-units.mjs';
+import { validateExampleChecks, checkObservableCase, testExampleContract } from './knowledge-example-contract.mjs';
 
 const units = readKnowledgeUnits(repositoryRoot);
 assert.ok(units.length > 0, 'No independent units');
@@ -878,6 +879,8 @@ print(f"training regression: {quad_test_cases} Fraction update cases, conditiona
 `,
   'kv-cache': 'for lengths in [[], [-1], [1.5]]:\n    try: cache_bytes(32, 8, 128, 2, lengths)\n    except ValueError: pass\n    else: raise AssertionError("invalid cache dimensions accepted")'
 };
+const exampleKinds = validateExampleChecks(units, Object.keys(negatives));
+const observableCaseResults = [];
 const temp = mkdtempSync(path.join(tmpdir(), 'nextchina-knowledge-'));
 try {
   for (const article of units) {
@@ -895,6 +898,10 @@ try {
     const links = [...markdown.matchAll(/\]\((\?view=garden[^\s)]*)\)/g)];
     assert.ok(links.length >= 2, 'Independent pages need onward reading links');
     for (const [, link] of links) assert.ok(byId.has(new URLSearchParams(link.slice(1)).get('scope')), `Broken knowledge link: ${link}`);
+    if (exampleKinds.get(article.id) === 'observable-case') {
+      observableCaseResults.push(checkObservableCase(article, markdown));
+      continue;
+    }
     const blocks = [...markdown.matchAll(/^```python\r?\n(# nextchina-example: ([a-z0-9-]+)\r?\n[\s\S]*?)^```\s*$/gm)];
     assert.equal(blocks.length, 1, `${article.id}: expected one explicit runnable example`);
     assert.equal(blocks[0][2], unit.exampleId);
@@ -924,8 +931,12 @@ try {
     writeFileSync(path.join(temp, 'content/articles.json'), JSON.stringify(copy));
     assert.throws(() => readKnowledgeUnits(temp));
   }
+  const pilot = units.find(article => article.id === 'ai-ml-dl-boundaries');
+  const exampleContractNegativeCases = testExampleContract(units, Object.keys(negatives),
+    readFileSync(path.join(repositoryRoot, pilot.file), 'utf8'));
   const report = { status: 'pass', independentArticles: units.length, runnableExamples: results.length,
     metadataNegativeCases: mutations.length, attentionMatchesGardenFixture: true, results,
+    observableCaseFamilies: observableCaseResults.length, observableCaseResults, exampleContractNegativeCases,
     externalModelCalls: 0, commercialMeasurements: false, expertReview: false };
   mkdirSync(path.join(repositoryRoot, 'test-results'), { recursive: true });
   writeFileSync(path.join(repositoryRoot, 'test-results/knowledge-units.json'), JSON.stringify(report, null, 2));

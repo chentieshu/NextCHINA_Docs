@@ -14,6 +14,66 @@ const graph = attachTopicHubs(base, repositoryRoot, publishedArticleIds);
 const byId = new Map(graph.nodes.map(node => [node.id, node]));
 const results = [];
 const negatives = {
+  derivatives: `
+from fractions import Fraction
+import random
+
+# Independent exact polynomial truth across binary-representable inputs.
+for numerator in range(-1024, 1025):
+    q = Fraction(numerator, 32)
+    expected = float(4*q**3 + 18*q**2 + 18*q)
+    point = float(q)
+    assert analytic_derivative(point) == expected
+    assert forward_derivative(point) == expected
+    assert reverse_derivative(point) == expected
+
+rng = random.Random(20261005)
+for _ in range(10000):
+    point = rng.uniform(-100, 100)
+    q = Fraction.from_float(point)
+    expected = float(4*q**3 + 18*q**2 + 18*q)
+    for derivative in (analytic_derivative, forward_derivative, reverse_derivative):
+        assert math.isclose(derivative(point), expected, rel_tol=1e-12, abs_tol=1e-9)
+
+# Exact rational finite-difference identity, then test the implemented stencil.
+def rational_value(q):
+    return q**4 + 6*q**3 + 9*q**2
+for numerator in range(-32, 33):
+    q = Fraction(numerator, 4)
+    exact_derivative = 4*q**3 + 18*q**2 + 18*q
+    for power in range(1, 17):
+        step = Fraction(1, 2**power)
+        stencil = (rational_value(q+step)-rational_value(q-step))/(2*step)
+        assert stencil == exact_derivative + (4*q+6)*step**2
+        assert math.isclose(central_difference(float(q), float(step)), float(stencil),
+                            rel_tol=1e-10, abs_tol=1e-6)
+
+# Stationary points, branch accumulation and the nondifferentiable counterexample.
+for point in (-3.0, -1.5, 0.0):
+    assert analytic_derivative(point) == forward_derivative(point) == reverse_derivative(point) == 0
+assert value(-1) == 4
+assert forward_derivative(-1) == reverse_derivative(-1) == -4
+assert central_difference(1, 0.5) == 42.5
+assert (abs(0.25) - abs(-0.25)) / 0.5 == 0
+assert (abs(0.25) - abs(0)) / 0.25 == 1
+assert (abs(-0.25) - abs(0)) / -0.25 == -1
+
+invalid = [True, "1", None, [], complex(1, 0), float("nan"),
+           float("inf"), -float("inf"), 10**1000, -10**1000, 1e200, -1e200]
+rejection_calls = [lambda f=f, point=point: f(point)
+                   for f in (value, analytic_derivative, forward_derivative, reverse_derivative)
+                   for point in invalid]
+rejection_calls += [lambda step=step: central_difference(1, step) for step in
+                    [0, -1, True, "0.01", None, [], complex(1, 0), float("nan"),
+                     float("inf"), -float("inf"), 10**1000, 1e-20, 1e200, 1e308]]
+rejection_calls += [lambda point=point: central_difference(point, 0.1)
+                    for point in [True, "1", None, float("nan"), float("inf"), 1e200]]
+assert len(rejection_calls) == 68
+for bad in rejection_calls:
+    try: bad()
+    except ValueError: pass
+    else: raise AssertionError("invalid derivative input or step accepted")
+print("derivative regression: 2049 exact + 10000 random + 1040 stencil pairs + 68 rejections")`,
   'tensor-shapes': `
 assert matmul(X, W) == [[4, 1], [-1, 3]]
 assert matmul(X, transpose(X)) == [[14, -1], [-1, 2]]

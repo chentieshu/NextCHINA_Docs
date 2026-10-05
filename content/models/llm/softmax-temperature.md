@@ -99,6 +99,8 @@ $$
 
 ## 7. 可运行实验：稳定性、温度和有限差分
 
+有限差分只是数值核对；若想先理解链式法则、步长误差以及不可导点为何可能“核对通过”，可读 [导数与自动微分](?view=garden&scope=branch:llm:math/derivatives)。
+
 ```python
 # nextchina-example: softmax
 import math

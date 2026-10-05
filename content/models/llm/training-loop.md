@@ -38,6 +38,8 @@ $$
 
 ## 3. 梯度如何变成参数变化？
 
+若还不清楚局部导数如何沿计算路径相乘、分支如何累加，先用 [导数、链式法则与自动微分](?view=garden&scope=branch:llm:math/derivatives) 手算一次。本节继续说明这些变化率怎样进入参数更新。
+
 对于 Softmax 与单个 one-hot 目标，$\partial L/\partial z_i=p_i-y_i$。如果分数由 $z_i=w_i h$ 得到，且本例把上下文特征 $h$ 固定，那么：
 
 $$

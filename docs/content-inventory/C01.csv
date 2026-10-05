@@ -1,6 +1,6 @@
 id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
 branch:llm:math,表示与数学,branch,C01,,,navigation,false
-branch:llm:math/derivatives,梯度、链式法则与自动微分,branch,C01,,,navigation,false
+branch:llm:math/derivatives,梯度、链式法则与自动微分,branch,C01,llm-derivatives,llm-derivatives,bound-needs-review,true
 branch:llm:math/objectives,负对数似然、交叉熵、困惑度与可比条件,branch,C01,llm-entropy-cross-entropy,llm-entropy-cross-entropy,bound-needs-review,true
 branch:llm:math/probability,条件概率、自回归分解与最大似然,branch,C01,llm-conditional-probability,llm-conditional-probability,bound-needs-review,true
 branch:llm:math/representations,Token Embedding、隐藏状态与上下文,branch,C01,,,navigation,false
@@ -8,15 +8,15 @@ branch:llm:math/softmax,Logits、Softmax、温度与数值稳定性,branch,C01,l
 branch:llm:math/tensor-shapes,向量、张量形状、矩阵乘法与批次,branch,C01,llm-tensor-shapes,llm-tensor-shapes,bound-needs-review,true
 branch:llm:math/tokenization,Token、分词、字节与特殊符号,branch,C01,llm-tokenization,llm-tokenization,bound-needs-review,true
 concept:adamw,AdamW,concept,C01,,,missing,false
-concept:autodiff,自动微分,concept,C01,,,missing,false
+concept:autodiff,自动微分,concept,C01,llm-derivatives,llm-derivatives,bound-needs-review,true
 concept:bayes-rule,贝叶斯规则,concept,C01,,,missing,false
 concept:big-o,算法复杂度,concept,C01,,,missing,false
-concept:chain-rule,链式法则,concept,C01,,,missing,true
+concept:chain-rule,链式法则,concept,C01,llm-derivatives,llm-derivatives,bound-needs-review,true
 concept:compression,压缩与表示,concept,C01,,,missing,false
 concept:conditional-probability,条件概率,concept,C01,llm-conditional-probability,llm-conditional-probability,bound-needs-review,true
 concept:constrained-optimization,约束优化,concept,C01,,,missing,false
 concept:cross-entropy,交叉熵,concept,C01,llm-entropy-cross-entropy,llm-entropy-cross-entropy,bound-needs-review,true
-concept:derivative,导数,concept,C01,,,missing,false
+concept:derivative,导数,concept,C01,llm-derivatives,llm-derivatives,bound-needs-review,true
 concept:dot-product,点积,concept,C01,llm-tensor-shapes,llm-tensor-shapes,bound-needs-review,true
 concept:eigen-svd,特征分解与 SVD,concept,C01,,,missing,false
 concept:entropy,熵,concept,C01,llm-entropy-cross-entropy,llm-entropy-cross-entropy,bound-needs-review,true

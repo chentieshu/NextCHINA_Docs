@@ -14,13 +14,14 @@ test('content inventory distinguishes full network candidates from default map a
 });
 
 const units = [
+  { article: 'llm-derivatives', concept: 'concept:derivative', branch: 'branch:llm:math/derivatives' },
   { article: 'llm-tensor-shapes', concept: 'concept:matrix-multiplication', branch: 'branch:llm:math/tensor-shapes' },
   { article: 'llm-conditional-probability', concept: 'concept:conditional-probability', branch: 'branch:llm:math/probability' },
   { article: 'llm-entropy-cross-entropy', concept: 'concept:cross-entropy', branch: 'branch:llm:math/objectives' },
 ];
 
 for (const width of [390, 1440]) for (const unit of units) {
-  test(`foundation batch keeps canonical reading and return / ${unit.article} / ${width}px`, async ({ page }) => {
+  test(`foundation batch keeps canonical reading and return / ${unit.article} / ${width}px`, async ({ page }, testInfo) => {
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
@@ -45,6 +46,13 @@ for (const width of [390, 1440]) for (const unit of units) {
     await page.reload();
     await expect(article.locator('.markdown-body')).toBeVisible();
     expect(await page.locator('.ws-scroll').evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1);
+    if (unit.article === 'llm-derivatives') {
+      await article.locator('.md-diagram').scrollIntoViewIfNeeded();
+      await expect(article.locator('.md-diagram')).toHaveAttribute('data-status', 'ready');
+      await expect(article.locator('.md-mermaid svg')).toBeVisible();
+      await expect(article.locator('.md-mermaid-error')).toHaveCount(0);
+      await page.screenshot({ path: testInfo.outputPath(`derivatives-${width}.png`) });
+    }
     expect(errors).toEqual([]);
     if (unit.article === 'llm-tensor-shapes') await page.screenshot({ path: `test-results/content-batch-${width}.png` });
   });

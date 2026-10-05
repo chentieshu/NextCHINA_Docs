@@ -157,6 +157,49 @@
         ],
         "relatedResourceIds": []
       }
+    },
+    {
+      "id": "llm-derivatives",
+      "file": "content/models/llm/derivatives.md",
+      "space": "models",
+      "category": "llm-math",
+      "categoryName": "LLM · 表示与数学",
+      "title": "导数、链式法则与自动微分：沿计算图追踪变化",
+      "subtitle": "分支复合函数手算、前向与反向传播、中心差分及不可导边界",
+      "date": "2026-10-05",
+      "tags": [
+        "LLM",
+        "导数",
+        "链式法则",
+        "自动微分",
+        "计算图",
+        "有限差分"
+      ],
+      "excerpt": "沿同一个分支复合函数手算局部变化，比较前向、反向与中心差分，识别路径累加、数值步长和不可导边界。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "derivatives",
+        "conceptIds": [
+          "concept:derivative",
+          "concept:chain-rule",
+          "concept:autodiff"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "math/derivatives"
+          }
+        ],
+        "sourceUrls": [
+          "https://openstax.org/books/calculus-volume-1/pages/3-6-the-chain-rule",
+          "https://docs.jax.dev/en/latest/jacobian-vector-products.html",
+          "https://docs.pytorch.org/docs/stable/notes/autograd.html",
+          "https://docs.pytorch.org/docs/stable/notes/gradcheck.html",
+          "https://docs.python.org/3/tutorial/floatingpoint.html"
+        ],
+        "relatedResourceIds": []
+      }
     }
   ]
 }

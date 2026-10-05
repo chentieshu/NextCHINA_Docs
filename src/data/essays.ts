@@ -17,6 +17,8 @@ import tensorShapes from '../../content/models/llm/tensor-shapes.md?raw';
 import conditionalProbability from '../../content/models/llm/conditional-probability.md?raw';
 import entropyCrossEntropy from '../../content/models/llm/entropy-cross-entropy.md?raw';
 
+import derivatives from '../../content/models/llm/derivatives.md?raw';
+
 const contentById: Record<string, string> = {
   'apple-style-premium-product-video': premiumVideoMarkdown,
   'llm-how-it-works': llmMarkdown,
@@ -33,7 +35,8 @@ const contentById: Record<string, string> = {
   'llm-kv-cache': kvCache,
   'llm-tensor-shapes': tensorShapes,
   'llm-conditional-probability': conditionalProbability,
-  'llm-entropy-cross-entropy': entropyCrossEntropy
+  'llm-entropy-cross-entropy': entropyCrossEntropy,
+  'llm-derivatives': derivatives
 };
 
 export const ESSAY_CHAPTERS: DocChapter[] = articleRegistry.articles.map(article => {

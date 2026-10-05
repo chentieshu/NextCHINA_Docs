@@ -1066,6 +1066,18 @@
   },
   "relations": [
     {
+      "source": "concept:derivative",
+      "target": "concept:chain-rule",
+      "type": "recommended_before",
+      "reason": "先理解单点局部变化率，再把复合函数的内外层变化相乘；这是本文的建议阅读顺序。"
+    },
+    {
+      "source": "concept:chain-rule",
+      "target": "concept:autodiff",
+      "type": "recommended_before",
+      "reason": "先手算链式法则与分支贡献，再沿计算图组合局部求导规则；不宣称唯一学习路线。"
+    },
+    {
       "source": "concept:matrix-multiplication",
       "target": "concept:self-attention",
       "type": "recommended_before",

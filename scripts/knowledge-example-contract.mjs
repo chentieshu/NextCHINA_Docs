@@ -28,7 +28,9 @@ export const exampleChecks = [
   ['regularization-penalty-generalization', 'regularization-penalty-generalization', 'python'],
   ['adamw-moments-decoupled-decay', 'adamw-moments-decoupled-decay', 'python'],
   ['eigen-svd-low-rank', 'eigen-svd-low-rank', 'python'],
-  ['compression-prefix-codes', 'compression-prefix-codes', 'python']
+  ['compression-prefix-codes', 'compression-prefix-codes', 'python'],
+  ['constrained-optimization-projection-kkt', 'constrained-optimization-projection-kkt', 'python'],
+  ['probability-calibration-brier-bins', 'probability-calibration-brier-bins', 'python']
 ];
 const pilotId = 'ai-ml-dl-boundaries';
 const sourceUrls = [

@@ -6,6 +6,7 @@ branch:llm:pricing/self-hosting,自托管设备、利用率、能耗与运维,br
 branch:llm:pricing/subscription,产品订阅与 API 分账,branch,C06,,,navigation,false
 branch:llm:pricing/task-cost,输入输出、缓存、工具、重试和人工的任务总成本,branch,C06,,,navigation,false
 branch:llm:rankings,能力、评测与榜单,branch,C06,aa-intelligence;arena-text;terminal-bench,,navigation,true
+branch:llm:rankings/calibration,概率校准、Brier 分数与分箱边界,branch,C06,probability-calibration-brier-bins,probability-calibration-brier-bins,bound-needs-review,true
 branch:llm:rankings/capabilities,写作、知识、数学、代码、指令、多语言与长文,branch,C06,,,navigation,false
 branch:llm:rankings/composite,综合指标及组成条件,branch,C06,aa-intelligence,,navigation,true
 branch:llm:rankings/efficiency,时延、速度、吞吐与费用条件,branch,C06,,,navigation,false
@@ -18,7 +19,7 @@ concept:aa-index,Artificial Analysis 指数,concept,C06,aa-intelligence,,missing
 concept:accuracy-f1,准确率与 F1,concept,C06,classification-accuracy-precision-recall-f1,classification-accuracy-precision-recall-f1,bound-needs-review,true
 concept:api-pricing,API 计价,concept,C06,model-api-prices,,missing,true
 concept:benchmark-protocol,评测协议,concept,C06,,,missing,true
-concept:calibration,校准,concept,C06,,,missing,false
+concept:calibration,校准,concept,C06,probability-calibration-brier-bins,probability-calibration-brier-bins,bound-needs-review,true
 concept:confidence-interval,置信区间,concept,C06,statistical-inference-confidence-interval,statistical-inference-confidence-interval,bound-needs-review,true
 concept:contamination-audit,污染审计,concept,C06,,,missing,false
 concept:evaluation-dataset,评价数据集,concept,C06,,,missing,false

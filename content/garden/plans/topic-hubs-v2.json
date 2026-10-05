@@ -65,7 +65,8 @@
         {"id":"compression","label":"无损编码、码长与有损表示","conceptRefs":["concept:compression"]},
         {"id":"derivatives","label":"梯度、链式法则与自动微分","conceptRefs":["concept:gradient","concept:chain-rule","concept:autodiff"]},
         {"id":"complexity","label":"算法复杂度、比较次数与资源边界","conceptRefs":["concept:big-o"]},
-        {"id":"eigen-svd","label":"特征分解、SVD 与低秩近似","conceptRefs":["concept:eigen-svd"]}
+        {"id":"eigen-svd","label":"特征分解、SVD 与低秩近似","conceptRefs":["concept:eigen-svd"]},
+        {"id":"constrained-optimization","label":"约束优化、可行域与最优性证书","conceptRefs":["concept:constrained-optimization"]}
       ]},
       {"id":"mechanisms","label":"架构与内部计算","children":[
         {"id":"architectures","label":"Encoder、Decoder、Transformer、SSM 与混合结构","conceptRefs":["concept:transformer","concept:ssm"]},
@@ -111,6 +112,7 @@
       {"id":"rankings","label":"能力、评测与榜单","children":[
         {"id":"capabilities","label":"写作、知识、数学、代码、指令、多语言与长文"},
         {"id":"metrics","label":"分类指标：混淆矩阵、准确率、精确率、召回率与 F1","conceptRefs":["concept:accuracy-f1","concept:precision-recall"]},
+        {"id":"calibration","label":"概率校准、Brier 分数与分箱边界","conceptRefs":["concept:calibration"]},
         {"id":"methodology","label":"任务、配置、判分、置信区间与污染","conceptRefs":["concept:benchmark-protocol","concept:confidence-interval"]},
         {"id":"text-preference","label":"文本人类偏好快照","legacyDataRef":"data:arena-text"},
         {"id":"composite","label":"综合指标及组成条件","legacyDataRef":"data:aa-intelligence"},

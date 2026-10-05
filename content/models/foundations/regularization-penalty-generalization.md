@@ -305,6 +305,8 @@ print("scale, mean-loss duplication and clean-data harm checks passed")
 
 L2 也不是正则化的全部。换成 L1 会改变惩罚的形状；限制参数可行集合是另一个问题表述，不能没有条件就声称与某个固定 $\lambda$ 等价；早停改变训练何时结束，数据增强改变提供给学习过程的输入。它们并非本页公式的同义词，这里不据一个斜率算例推导这些方法的效果。
 
+若要把“允许集合”算清楚，可继续读[约束优化：投影与 KKT 证书](?view=garden&scope=branch:llm:math/constrained-optimization)，检查硬预算与有限平方惩罚为何不同。
+
 这种问题也不限于语言模型：前面是普通数值预测；Ridge 是实际回归接口；[Krogh 与 Hertz §6](https://proceedings.neurips.cc/paper/1991/file/8eefcfdf5990e441f0fb6f3fad709e21-Paper.pdf) 则报告过 NetTalk 文本到发音任务的实验。历史实验有自己的网络、数据和测量条件，不能直接变成今天某个 LLM 的收益数字。本页尚未完整讲授过拟合与欠拟合、线性与逻辑回归或约束优化；这些更广的问题仍需要各自的论证。
 
 ## 9. 常见误解与练习

@@ -12,6 +12,8 @@ export const pythonFixtureRegistrations = [
   ['adamw-moments-decoupled-decay', 'scripts/knowledge-fixtures/adamw-moments-decoupled-decay.py'],
   ['eigen-svd-low-rank', 'scripts/knowledge-fixtures/eigen-svd-low-rank.py'],
   ['compression-prefix-codes', 'scripts/knowledge-fixtures/compression-prefix-codes.py'],
+  ['constrained-optimization-projection-kkt', 'scripts/knowledge-fixtures/constrained-optimization-projection-kkt.py'],
+  ['probability-calibration-brier-bins', 'scripts/knowledge-fixtures/probability-calibration-brier-bins.py'],
 ];
 
 export function loadPythonFixtureSuffixes(root, inlineIds, registrations = pythonFixtureRegistrations) {

@@ -76,9 +76,12 @@ export function registerOptimizationTests(unit: OptimizationLesson) {
     for (const [path, id] of [['loop', 'llm-training-loop'], ['samples', 'train-validation-test-data-leakage']]) {
       expect(graph.nodes.find(node => node.id === `branch:llm:training/${path}`)!.embeddedArticleId).toBe(id);
     }
-    for (const id of ['concept:overfitting', 'concept:linear-models', 'concept:checkpoint', 'concept:constrained-optimization']) {
+    for (const id of ['concept:overfitting', 'concept:linear-models', 'concept:checkpoint']) {
       expect(graph.nodes.find(node => node.id === id)!.articleBindings).toEqual([]);
     }
+    // This concept now owns its reviewed lesson; all other prior assertions remain.
+    expect(graph.nodes.find(node => node.id === 'concept:constrained-optimization')!.articleBindings)
+      .toEqual([{ articleId: 'constrained-optimization-projection-kkt', coverage: 'explanation' }]);
   });
 
   async function reader(page: Page) {

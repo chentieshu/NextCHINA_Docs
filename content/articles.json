@@ -750,6 +750,85 @@
         ],
         "relatedResourceIds": []
       }
+    },
+    {
+      "id": "constrained-optimization-projection-kkt",
+      "file": "content/models/foundations/constrained-optimization-projection-kkt.md",
+      "space": "models",
+      "category": "foundations",
+      "categoryName": "AI 基础原理",
+      "title": "约束优化：在可行范围内，怎样证明已经最优？",
+      "subtitle": "二维精确投影、KKT 证书、活跃边界与有限惩罚反例",
+      "date": "2026-10-05",
+      "tags": [
+        "约束优化",
+        "可行域",
+        "欧氏投影",
+        "KKT",
+        "精确计算"
+      ],
+      "excerpt": "从预算三角形推导唯一最近点，逐项验证 KKT 证书并直接证明最优性，区分活跃约束、乘子、投影更新和有限平方惩罚。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "constrained-optimization-projection-kkt",
+        "conceptIds": [
+          "concept:constrained-optimization"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "math/constrained-optimization"
+          }
+        ],
+        "sourceUrls": [
+          "https://www.seas.ucla.edu/~vandenbe/cvxbook/bv_cvxbook.pdf",
+          "https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf",
+          "https://ocw.mit.edu/courses/6-7220j-nonlinear-optimization-spring-2025/mit6_7220_s25_lec14.pdf"
+        ],
+        "relatedResourceIds": []
+      }
+    },
+    {
+      "id": "probability-calibration-brier-bins",
+      "file": "content/models/evaluation/probability-calibration-brier-bins.md",
+      "space": "models",
+      "category": "evaluation-statistics",
+      "categoryName": "评测与统计基础",
+      "title": "模型给出 90%，应该怎样检查？概率校准、Brier 与分箱盲点",
+      "subtitle": "从同分数频率、严格适当评分到精确分解与校准评估隔离",
+      "date": "2026-10-05",
+      "tags": [
+        "概率校准",
+        "Brier",
+        "ECE",
+        "评测",
+        "分箱",
+        "精确计算"
+      ],
+      "excerpt": "用八条固定记录区分准确率、校准与分辨能力，推导 Brier 严格适当性和同分数分解，检查分箱抵消及校准映射的数据边界。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "probability-calibration-brier-bins",
+        "conceptIds": [
+          "concept:calibration"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "rankings/calibration"
+          }
+        ],
+        "sourceUrls": [
+          "https://proceedings.mlr.press/v70/guo17a/guo17a.pdf",
+          "https://proceedings.mlr.press/v89/vaicenavicius19a/vaicenavicius19a.pdf",
+          "https://www.eecs.harvard.edu/cs286r/courses/fall10/papers/Gneiting07.pdf",
+          "https://scikit-learn.org/stable/modules/calibration.html",
+          "https://scikit-learn.org/1.9/modules/generated/sklearn.metrics.brier_score_loss.html"
+        ],
+        "relatedResourceIds": []
+      }
     }
   ]
 }

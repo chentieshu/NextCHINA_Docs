@@ -31,6 +31,8 @@ import regularization from '../../content/models/foundations/regularization-pena
 import adamw from '../../content/models/foundations/adamw-moments-decoupled-decay.md?raw';
 import eigenSvd from '../../content/models/foundations/eigen-svd-low-rank.md?raw';
 import compression from '../../content/models/foundations/compression-prefix-codes.md?raw';
+import constrainedOptimization from '../../content/models/foundations/constrained-optimization-projection-kkt.md?raw';
+import probabilityCalibration from '../../content/models/evaluation/probability-calibration-brier-bins.md?raw';
 
 const contentById: Record<string, string> = {
   'apple-style-premium-product-video': premiumVideoMarkdown,
@@ -62,7 +64,9 @@ const contentById: Record<string, string> = {
   'eigen-svd-low-rank': eigenSvd,
   'compression-prefix-codes': compression,
   'unsupervised-self-supervised-learning': learningSignals,
-  'ai-ml-dl-boundaries': aiMlDlBoundaries
+  'ai-ml-dl-boundaries': aiMlDlBoundaries,
+  'constrained-optimization-projection-kkt': constrainedOptimization,
+  'probability-calibration-brier-bins': probabilityCalibration
 };
 
 export const ESSAY_CHAPTERS: DocChapter[] = articleRegistry.articles.map(article => {

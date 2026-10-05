@@ -376,6 +376,8 @@ print('示例检查通过')
 
 想把这些计数接到一个从标签学习的模型，可读[监督学习与朴素贝叶斯](?view=garden&scope=branch:ai-overview:orientation/naive-bayes)：它在小型人工保留集上与全负基线准确率持平，适合练习为何还要看混淆矩阵与建模假设。
 
+本页的阈值分数没有被当作已校准概率。若要检查“报 90%”与事件发生频率是否相符，可继续读[概率校准、Brier 与分箱](?view=garden&scope=branch:llm:rankings/calibration)，比较分类决定相同但概率不同的情形。
+
 ## 来源与核验范围
 
 [1] scikit-learn，[confusion_matrix](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html)。核对行真实、列预测、标签顺序与四格位置。

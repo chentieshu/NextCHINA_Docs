@@ -2,6 +2,7 @@ id,label,type,batch,direct_article_ids,independent_article_ids,independent_cover
 branch:llm:math,表示与数学,branch,C01,,,navigation,false
 branch:llm:math/complexity,算法复杂度、比较次数与资源边界,branch,C01,algorithm-complexity-cost-model,algorithm-complexity-cost-model,bound-needs-review,true
 branch:llm:math/compression,无损编码、码长与有损表示,branch,C01,compression-prefix-codes,compression-prefix-codes,bound-needs-review,true
+branch:llm:math/constrained-optimization,约束优化、可行域与最优性证书,branch,C01,constrained-optimization-projection-kkt,constrained-optimization-projection-kkt,bound-needs-review,true
 branch:llm:math/derivatives,梯度、链式法则与自动微分,branch,C01,llm-derivatives,llm-derivatives,bound-needs-review,true
 branch:llm:math/eigen-svd,特征分解、SVD 与低秩近似,branch,C01,eigen-svd-low-rank,eigen-svd-low-rank,bound-needs-review,true
 branch:llm:math/floating-point,浮点数、舍入误差与比较容差,branch,C01,floating-point-rounding,floating-point-rounding,bound-needs-review,true
@@ -19,7 +20,7 @@ concept:big-o,算法复杂度,concept,C01,algorithm-complexity-cost-model,algori
 concept:chain-rule,链式法则,concept,C01,llm-derivatives,llm-derivatives,bound-needs-review,true
 concept:compression,压缩与表示,concept,C01,compression-prefix-codes,compression-prefix-codes,bound-needs-review,true
 concept:conditional-probability,条件概率,concept,C01,llm-conditional-probability,llm-conditional-probability,bound-needs-review,true
-concept:constrained-optimization,约束优化,concept,C01,,,missing,false
+concept:constrained-optimization,约束优化,concept,C01,constrained-optimization-projection-kkt,constrained-optimization-projection-kkt,bound-needs-review,true
 concept:cross-entropy,交叉熵,concept,C01,llm-entropy-cross-entropy,llm-entropy-cross-entropy,bound-needs-review,true
 concept:derivative,导数,concept,C01,llm-derivatives,llm-derivatives,bound-needs-review,true
 concept:dot-product,点积,concept,C01,llm-tensor-shapes,llm-tensor-shapes,bound-needs-review,true

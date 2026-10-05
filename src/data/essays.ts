@@ -29,6 +29,8 @@ import complexityCostModel from '../../content/models/foundations/algorithm-comp
 import mutualInformation from '../../content/models/foundations/mutual-information.md?raw';
 import regularization from '../../content/models/foundations/regularization-penalty-generalization.md?raw';
 import adamw from '../../content/models/foundations/adamw-moments-decoupled-decay.md?raw';
+import eigenSvd from '../../content/models/foundations/eigen-svd-low-rank.md?raw';
+import compression from '../../content/models/foundations/compression-prefix-codes.md?raw';
 
 const contentById: Record<string, string> = {
   'apple-style-premium-product-video': premiumVideoMarkdown,
@@ -57,6 +59,8 @@ const contentById: Record<string, string> = {
   'mutual-information': mutualInformation,
   'regularization-penalty-generalization': regularization,
   'adamw-moments-decoupled-decay': adamw,
+  'eigen-svd-low-rank': eigenSvd,
+  'compression-prefix-codes': compression,
   'unsupervised-self-supervised-learning': learningSignals,
   'ai-ml-dl-boundaries': aiMlDlBoundaries
 };

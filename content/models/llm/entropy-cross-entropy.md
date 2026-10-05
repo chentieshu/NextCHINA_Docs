@@ -176,6 +176,8 @@ PPL 比较至少要固定 tokenizer、测试文本、特殊符号与计分范围
 
 继续到[互信息](?view=garden&scope=branch:llm:math/mutual-information)，把联合分布与同边缘的独立乘积分布作 KL 比较，检查平均条件熵怎样变化。
 
+继续到[压缩与表示](?view=garden&scope=branch:llm:math/compression)，在已知有限分布下比较熵、前缀码期望码长与实际消息位数，再单独核算码本和帧开销。
+
 ## 来源、核验日期与范围
 
 [1] Shannon，[A Mathematical Theory of Communication，原论文第 6 节](https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf)：熵与信息单位；链接为哈佛大学托管的原文重印本。

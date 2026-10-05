@@ -10,6 +10,8 @@ export const pythonFixtureRegistrations = [
   ['mutual-information', 'scripts/knowledge-fixtures/mutual-information.py'],
   ['regularization-penalty-generalization', 'scripts/knowledge-fixtures/regularization-penalty-generalization.py'],
   ['adamw-moments-decoupled-decay', 'scripts/knowledge-fixtures/adamw-moments-decoupled-decay.py'],
+  ['eigen-svd-low-rank', 'scripts/knowledge-fixtures/eigen-svd-low-rank.py'],
+  ['compression-prefix-codes', 'scripts/knowledge-fixtures/compression-prefix-codes.py'],
 ];
 
 export function loadPythonFixtureSuffixes(root, inlineIds, registrations = pythonFixtureRegistrations) {

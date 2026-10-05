@@ -1,7 +1,9 @@
 id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
 branch:llm:math,表示与数学,branch,C01,,,navigation,false
 branch:llm:math/complexity,算法复杂度、比较次数与资源边界,branch,C01,algorithm-complexity-cost-model,algorithm-complexity-cost-model,bound-needs-review,true
+branch:llm:math/compression,无损编码、码长与有损表示,branch,C01,compression-prefix-codes,compression-prefix-codes,bound-needs-review,true
 branch:llm:math/derivatives,梯度、链式法则与自动微分,branch,C01,llm-derivatives,llm-derivatives,bound-needs-review,true
+branch:llm:math/eigen-svd,特征分解、SVD 与低秩近似,branch,C01,eigen-svd-low-rank,eigen-svd-low-rank,bound-needs-review,true
 branch:llm:math/floating-point,浮点数、舍入误差与比较容差,branch,C01,floating-point-rounding,floating-point-rounding,bound-needs-review,true
 branch:llm:math/mutual-information,互信息、依赖关系与信息损失,branch,C01,mutual-information,mutual-information,bound-needs-review,true
 branch:llm:math/objectives,负对数似然、交叉熵、困惑度与可比条件,branch,C01,llm-entropy-cross-entropy,llm-entropy-cross-entropy,bound-needs-review,true
@@ -15,13 +17,13 @@ concept:autodiff,自动微分,concept,C01,llm-derivatives,llm-derivatives,bound-
 concept:bayes-rule,贝叶斯规则,concept,C01,llm-conditional-probability,llm-conditional-probability,bound-needs-review,true
 concept:big-o,算法复杂度,concept,C01,algorithm-complexity-cost-model,algorithm-complexity-cost-model,bound-needs-review,true
 concept:chain-rule,链式法则,concept,C01,llm-derivatives,llm-derivatives,bound-needs-review,true
-concept:compression,压缩与表示,concept,C01,,,missing,false
+concept:compression,压缩与表示,concept,C01,compression-prefix-codes,compression-prefix-codes,bound-needs-review,true
 concept:conditional-probability,条件概率,concept,C01,llm-conditional-probability,llm-conditional-probability,bound-needs-review,true
 concept:constrained-optimization,约束优化,concept,C01,,,missing,false
 concept:cross-entropy,交叉熵,concept,C01,llm-entropy-cross-entropy,llm-entropy-cross-entropy,bound-needs-review,true
 concept:derivative,导数,concept,C01,llm-derivatives,llm-derivatives,bound-needs-review,true
 concept:dot-product,点积,concept,C01,llm-tensor-shapes,llm-tensor-shapes,bound-needs-review,true
-concept:eigen-svd,特征分解与 SVD,concept,C01,,,missing,false
+concept:eigen-svd,特征分解与 SVD,concept,C01,eigen-svd-low-rank,eigen-svd-low-rank,bound-needs-review,true
 concept:entropy,熵,concept,C01,llm-entropy-cross-entropy,llm-entropy-cross-entropy,bound-needs-review,true
 concept:expectation-variance,期望与方差,concept,C01,llm-conditional-probability,llm-conditional-probability,bound-needs-review,true
 concept:floating-point,浮点数与舍入误差,concept,C01,floating-point-rounding,floating-point-rounding,bound-needs-review,true

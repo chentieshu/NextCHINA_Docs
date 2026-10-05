@@ -1828,6 +1828,22 @@
       "reason": "先比较同一结果空间上的概率分布，再把联合分布与保持相同边缘的独立乘积分布作 KL 对照；这是本课的一种学习顺序，不是定义上的必要条件。",
       "scope": "互信息单元中，从既有 KL 基础到有限已知联合分布的教学阅读次序。",
       "provenance": "mutual-information 单元及独立内容／数值复核的编辑性阅读建议；不构成专家认证。"
+    },
+    {
+      "source": "concept:matrix-multiplication",
+      "target": "concept:eigen-svd",
+      "type": "recommended_before",
+      "reason": "先能按行列尺寸、转置和点积核对矩阵乘法，再阅读特征分解与 SVD 的正交性 UᵀU=I、重建 UΣVᵀ 与截断计算。",
+      "scope": "本站实矩阵基础课的建议学习顺序；不要求先学通用特征值算法，不表示逻辑必要条件、类型包含、机制 uses 或所有学习路径必须如此。",
+      "provenance": "tensor-shapes 第 2–3 节及矩阵乘法例子、eigen-svd-low-rank 第 1–2、4、8 节与独立关系审阅的编辑性阅读建议；不构成专家认证。"
+    },
+    {
+      "source": "concept:entropy",
+      "target": "concept:compression",
+      "type": "recommended_before",
+      "reason": "本课先沿有限分布学习熵与 bit/nat 单位，再比较熵 H(p)、前缀码期望码长 L 和单条消息的实际位数，理解已知分布下的码长界；这是 compression-prefix-codes 的建议阅读顺序，不是所有编码器的逻辑必要条件。",
+      "scope": "compression-prefix-codes 单元中，从有限分布的熵与 bit/nat 单位到已知分布前缀码期望码长界的教学阅读次序；不是所有编码器的逻辑必要条件。",
+      "provenance": "entropy-cross-entropy 的熵、单位与 KL 基础、compression-prefix-codes 第 4–5 节与独立关系审阅的编辑性阅读建议；不构成专家认证。"
     }
   ],
   "articleBindings": [

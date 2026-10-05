@@ -26,7 +26,9 @@ export const exampleChecks = [
   ['algorithm-complexity-cost-model', 'algorithm-complexity-cost-model', 'python'],
   ['mutual-information', 'mutual-information', 'python'],
   ['regularization-penalty-generalization', 'regularization-penalty-generalization', 'python'],
-  ['adamw-moments-decoupled-decay', 'adamw-moments-decoupled-decay', 'python']
+  ['adamw-moments-decoupled-decay', 'adamw-moments-decoupled-decay', 'python'],
+  ['eigen-svd-low-rank', 'eigen-svd-low-rank', 'python'],
+  ['compression-prefix-codes', 'compression-prefix-codes', 'python']
 ];
 const pilotId = 'ai-ml-dl-boundaries';
 const sourceUrls = [

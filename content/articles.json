@@ -667,6 +667,89 @@
         ],
         "relatedResourceIds": []
       }
+    },
+    {
+      "id": "eigen-svd-low-rank",
+      "file": "content/models/foundations/eigen-svd-low-rank.md",
+      "space": "models",
+      "category": "foundations",
+      "categoryName": "AI 基础原理",
+      "title": "特征分解与 SVD：哪些方向能分开，丢掉一项会怎样？",
+      "subtitle": "从列空间与正交基到矩形分解、精确证书与低秩误差",
+      "date": "2026-10-05",
+      "tags": [
+        "线性代数",
+        "特征分解",
+        "SVD",
+        "低秩近似",
+        "精确计算"
+      ],
+      "excerpt": "用小矩阵补上基、秩与正交坐标，区分实对称特征分解和一般矩形 SVD，精确核验给定的有理薄分解，分清截断误差、存储成本与任务信息。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "eigen-svd-low-rank",
+        "conceptIds": [
+          "concept:eigen-svd"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "math/eigen-svd"
+          }
+        ],
+        "sourceUrls": [
+          "https://ee263.stanford.edu/archive/ee263_course_reader.pdf",
+          "https://people.maths.ox.ac.uk/trefethen/publication/PDF/2014_151.pdf",
+          "https://slepc.upv.es/release/documentation/manual/svd.html",
+          "https://numpy.org/doc/stable/reference/generated/numpy.linalg.svd.html",
+          "https://ocw.mit.edu/courses/18-065-matrix-methods-in-data-analysis-signal-processing-and-machine-learning-spring-2018/resources/lecture-7-eckart-young-the-closest-rank-k-matrix-to-a/",
+          "https://docs.python.org/3.14/library/fractions.html"
+        ],
+        "relatedResourceIds": []
+      }
+    },
+    {
+      "id": "compression-prefix-codes",
+      "file": "content/models/foundations/compression-prefix-codes.md",
+      "space": "models",
+      "category": "foundations",
+      "categoryName": "AI 基础原理",
+      "title": "压缩与表示：短了多少位，还能还原什么？",
+      "subtitle": "从已知分布的前缀码到实际载荷、帧开销与有损信息边界",
+      "date": "2026-10-05",
+      "tags": [
+        "信息论",
+        "压缩",
+        "前缀码",
+        "Huffman",
+        "有损表示"
+      ],
+      "excerpt": "用已知有限分布构造确定性的 Huffman 码，分清期望码长、单条消息与完整帧，并用八点量化核对恢复误差和任务信息。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "compression-prefix-codes",
+        "conceptIds": [
+          "concept:compression"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "math/compression"
+          }
+        ],
+        "sourceUrls": [
+          "https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf",
+          "https://compression.ru/download/articles/huff/huffman_1952_minimum-redundancy-codes.pdf",
+          "https://ocw.mit.edu/courses/6-450-principles-of-digital-communications-i-fall-2006/5fd6b5c839a76dd0c52d8480c3dad224_book_2.pdf",
+          "https://ocw.mit.edu/courses/6-450-principles-of-digital-communications-i-fall-2006/926689aaa62a0315473fa9b982de1b07_book_3.pdf",
+          "https://www.rfc-editor.org/rfc/rfc1951.html",
+          "https://www.rfc-editor.org/rfc/rfc3629.html",
+          "https://docs.python.org/3.14/library/stdtypes.html"
+        ],
+        "relatedResourceIds": []
+      }
     }
   ]
 }

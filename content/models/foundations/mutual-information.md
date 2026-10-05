@@ -298,7 +298,7 @@ print("near independent:", f'{near["mi_bits"]:.3e}', near["independent"])
 - 回到[概率基础](?view=garden&scope=branch:llm:math/probability)，检查联合、边缘和条件方向
 - 回到[熵、交叉熵与 KL](?view=garden&scope=branch:llm:math/objectives)，区分平均不确定性、预测损失与分布比较
 - 到[无监督与自监督学习](?view=garden&scope=branch:ai-overview:orientation/learning-signals)，追踪训练信号来自哪里，并核对信息碰撞所需的条件
-- [信息压缩概念入口](?view=garden&scope=concept:compression)与[对比学习概念入口](?view=garden&scope=concept:contrastive-learning)是后续方向；它们各自的独立教学单元仍待建设，本页不把这些应用计作已完成
+- [信息压缩概念入口](?view=garden&scope=concept:compression)已有[压缩与表示基础课](?view=garden&scope=branch:llm:math/compression)，可继续区分已知分布的码长、完整帧开销与有损信息边界；[对比学习概念入口](?view=garden&scope=concept:contrastive-learning)的独立教学单元仍待建设，本页不把该应用计作已完成
 
 ## 来源、版本与验证边界
 

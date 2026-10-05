@@ -204,6 +204,8 @@ print(Y)
 
 继续沿 [点积](?view=garden&scope=concept:dot-product)、[矩阵乘法](?view=garden&scope=concept:matrix-multiplication) 查看概念关联；沿 [Softmax 与温度](?view=garden&scope=branch:llm:math/softmax) 学习分数归一化，再回到 Attention。
 
+继续到[特征分解与 SVD](?view=garden&scope=branch:llm:math/eigen-svd)，从矩阵乘法进一步学习基、正交方向与低秩截断；那一页另行补上本页未讲的谱分解基础。
+
 ## 来源与范围
 
 [1] Goodfellow、Bengio、Courville，[Deep Learning，第 2 章](https://www.deeplearningbook.org/contents/linear_algebra.html)。用于对象、转置、范数与几何量的基本定义；本页数字与练习为独立构造。

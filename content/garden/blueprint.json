@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "title": "NextCHINA 人工智能知识网络",
   "status": "design-scaffold",
-  "updatedAt": "2026-09-28",
+  "updatedAt": "2026-10-05",
   "baselineCommit": "623361377cc12c84c083ba38caa97763b06ac97a",
   "rootId": "root:ai",
   "scopeNote": "从 0 到 1 掌握人工智能的统一知识本体。目录只是学习入口；概念节点只定义一次，由 LLM、VLM、RAG、Agent、评测、产品与教程等专题复用。全站只有一张全局知识网络，文档是节点的解释资源，不生成页面专属图谱。",
@@ -233,7 +233,11 @@
             "value-function": "价值函数",
             "policy-gradient": "策略梯度",
             "actor-critic": "Actor-Critic",
-            "exploration": "探索与利用"
+            "exploration": "探索与利用",
+            "q-learning": "Q-learning",
+            "dqn": "DQN",
+            "ppo": "PPO",
+            "reward-model": "奖励模型"
           }
         },
         {
@@ -266,7 +270,13 @@
             "random-forest": "随机森林",
             "gradient-boosting": "梯度提升",
             "svm": "支持向量机",
-            "clustering": "聚类"
+            "clustering": "聚类",
+            "naive-bayes": "朴素贝叶斯",
+            "knn": "k 近邻",
+            "pca": "主成分分析",
+            "em-algorithm": "EM 算法",
+            "gmm": "高斯混合模型",
+            "kernel-methods": "核方法"
           }
         },
         {
@@ -289,7 +299,11 @@
             "mcts": "蒙特卡洛树搜索",
             "classical-planning": "经典规划",
             "evolutionary-algorithms": "演化算法",
-            "swarm-intelligence": "群体智能"
+            "swarm-intelligence": "群体智能",
+            "adversarial-search": "对抗搜索",
+            "game-theory": "博弈论",
+            "utility-theory": "效用理论",
+            "multi-agent-decision": "多智能体决策"
           }
         },
         {
@@ -361,7 +375,13 @@
             "logits": "Logits",
             "softmax": "Softmax",
             "decoding": "采样与解码",
-            "context-window": "上下文窗口"
+            "context-window": "上下文窗口",
+            "temperature": "温度",
+            "top-k-sampling": "Top-k 采样",
+            "top-p-sampling": "Top-p 采样",
+            "beam-search": "Beam Search",
+            "scaling-laws": "缩放定律",
+            "long-context": "长上下文"
           }
         },
         {
@@ -397,7 +417,10 @@
             "dit": "Diffusion Transformer",
             "flow-matching": "Flow Matching",
             "cfg": "Classifier-Free Guidance",
-            "generation-control": "条件控制与编辑"
+            "generation-control": "条件控制与编辑",
+            "gan": "生成对抗网络",
+            "energy-based-model": "能量模型",
+            "normalizing-flow": "归一化流"
           }
         },
         {
@@ -903,7 +926,11 @@
             "prompt-injection": "提示注入",
             "adversarial-input": "对抗输入",
             "deepfake": "深度伪造",
-            "misuse": "滥用"
+            "misuse": "滥用",
+            "membership-inference": "成员推断",
+            "model-extraction": "模型窃取",
+            "watermarking": "生成内容水印",
+            "differential-privacy": "差分隐私"
           }
         },
         {
@@ -1016,8 +1043,8 @@
   ],
   "relationPolicy": {
     "browse_parent": "由 domain/topic/概念归属派生，仅用于导航；不是 is-a，不证明因果或科学包含关系。",
-    "related": "编辑建议的跨主题阅读关联；对称，数据只记录一次。",
-    "recommended_before": "编辑建议的学习先后；有向且必须无环，不等于严格的逻辑必要条件。",
+    "related": "人工整理的延伸阅读或对照阅读；不参与科学关系推理。",
+    "recommended_before": "特定学习路径中的推荐先后；有向、保留 routeId，不等于严格逻辑必要条件。",
     "semanticFutureTypes": [
       "is_a",
       "part_of",
@@ -1027,7 +1054,15 @@
       "mitigates",
       "contrasts_with"
     ],
-    "semanticFutureRequirement": "正式语义边必须有类型约束、适用范围与证据。mitigates 不得解释为 eliminates。论文超链接与自动提及不得自动升级为科学关系。"
+    "semanticFutureRequirement": "正式语义边必须有类型约束、适用范围与证据。mitigates 不得解释为 eliminates。论文超链接与自动提及不得自动升级为科学关系。",
+    "represents": "专题入口指向规范知识对象；用于身份映射，不表示 is-a、因果或机制依赖。",
+    "references": "专题或编辑分支引用共享知识/专题入口；是导航复用，不自动升级为 uses。",
+    "is_a": "实体到类别的类型关系。",
+    "part_of": "部件到整体的组成关系。",
+    "uses": "主体实际使用机制、算法或系统能力；必须允许 scope 限定。",
+    "trained_with": "模型或系统使用训练目标、数据或算法。",
+    "evaluated_by": "主体由评测协议或快照评估。",
+    "mitigates": "控制措施缓解风险，不表示完全消除。"
   },
   "relations": [
     {
@@ -1359,6 +1394,100 @@
       "target": "concept:claim-review",
       "type": "related",
       "reason": "来源追踪是审查事实主张和更新证据的基础。"
+    },
+    {
+      "source": "concept:llm",
+      "target": "concept:transformer",
+      "type": "uses",
+      "reason": "主流大语言模型通常以 Transformer 家族作为核心架构。",
+      "scope": "主流 Transformer-based LLM"
+    },
+    {
+      "source": "concept:decoding",
+      "target": "concept:softmax",
+      "type": "uses",
+      "reason": "解码通常从经 Softmax 归一化的 token 分布中选择输出。"
+    },
+    {
+      "source": "concept:decoding",
+      "target": "concept:temperature",
+      "type": "uses",
+      "reason": "温度调节解码分布的尖锐程度。"
+    },
+    {
+      "source": "concept:decoding",
+      "target": "concept:top-k-sampling",
+      "type": "uses",
+      "reason": "Top-k 是常见的候选截断采样策略。"
+    },
+    {
+      "source": "concept:decoding",
+      "target": "concept:top-p-sampling",
+      "type": "uses",
+      "reason": "Top-p 是常见的核采样策略。"
+    },
+    {
+      "source": "concept:q-learning",
+      "target": "concept:mdp",
+      "type": "uses",
+      "reason": "Q-learning 在 MDP 框架下学习动作价值。"
+    },
+    {
+      "source": "concept:q-learning",
+      "target": "concept:bellman-equation",
+      "type": "uses",
+      "reason": "Q-learning 的更新来自 Bellman 最优性关系。"
+    },
+    {
+      "source": "concept:dqn",
+      "target": "concept:q-learning",
+      "type": "uses",
+      "reason": "DQN 用神经网络近似 Q-learning 的动作价值函数。"
+    },
+    {
+      "source": "concept:ppo",
+      "target": "concept:policy-gradient",
+      "type": "uses",
+      "reason": "PPO 属于策略梯度方法族。"
+    },
+    {
+      "source": "concept:rag",
+      "target": "concept:embedding-model",
+      "type": "uses",
+      "reason": "向量型 RAG 通常使用嵌入模型建立检索表示。",
+      "scope": "向量检索型 RAG"
+    },
+    {
+      "source": "concept:rag",
+      "target": "concept:reranker",
+      "type": "uses",
+      "reason": "RAG 可使用重排器提高候选证据排序质量。",
+      "scope": "采用重排阶段的 RAG"
+    },
+    {
+      "source": "concept:agent",
+      "target": "concept:tool-calling",
+      "type": "uses",
+      "reason": "可执行型 Agent 使用工具调用把模型决策连接到外部能力。",
+      "scope": "工具型 Agent"
+    },
+    {
+      "source": "concept:differential-privacy",
+      "target": "concept:membership-inference",
+      "type": "mitigates",
+      "reason": "差分隐私可降低训练数据成员关系被推断的风险，但不是绝对消除。"
+    },
+    {
+      "source": "concept:gan",
+      "target": "concept:generative-ai",
+      "type": "is_a",
+      "reason": "GAN 是生成模型家族之一。"
+    },
+    {
+      "source": "concept:normalizing-flow",
+      "target": "concept:generative-ai",
+      "type": "is_a",
+      "reason": "归一化流是显式密度生成模型家族之一。"
     }
   ],
   "articleBindings": [
@@ -1674,7 +1803,7 @@
     "mobileVisibleNodeBudget": 50,
     "edgeBudgetPerNode": 3,
     "budgetsAreDesignTargetsNotBenchmarks": true,
-    "showOutlinedNodesInMap": true,
+    "showOutlinedNodesInMap": false,
     "showOutlinedNodesAsPublishedArticles": false,
     "defaultReaderMode": "read-only",
     "persistLayoutInKnowledgeData": false

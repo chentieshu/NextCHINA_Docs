@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 import { loadGarden, repositoryRoot } from './validate-garden.mjs';
 import { attachTopicHubs } from './build-topic-hubs.mjs';
+import { prepareContentInventory } from './audit-node-content.mjs';
 
 // Canonical MD/JSON -> checked graph + topic-navigation overlay, never stored facts twice.
 const { blueprint, graph: base, publishedArticleIds } = loadGarden();
@@ -29,4 +30,6 @@ for (const file of readdirSync(assetDirectory)) {
 }
 writeFileSync(path.join(assetDirectory, filename), bytes);
 writeFileSync(path.join(destination, 'garden-worker.json'), JSON.stringify({ file: `garden-generated/${filename}`, hash }) + '\n');
+// Detailed audit is a reproducible ignored build output; tracked compact inventories must already match.
+prepareContentInventory(repositoryRoot);
 console.log(JSON.stringify({ status: 'pass', generated: 'src/generated/garden.json', worker: filename, ...graph.stats }));

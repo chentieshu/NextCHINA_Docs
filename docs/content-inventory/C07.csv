@@ -1,0 +1,38 @@
+id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
+branch:agents:products,产品与平台,branch,C07,agent-products,,navigation,true
+branch:agents:rankings,能力、评测与榜单,branch,C07,terminal-bench,,navigation,true
+branch:embedding:orientation,基础与认识,branch,C07,embedding-models,,navigation,true
+branch:llm:applications,应用、产品与系统,branch,C07,catalog-code;catalog-text,,navigation,true
+branch:llm:applications/agents,LLM 在智能体中的角色,branch,C07,agent-products,,navigation,true
+branch:llm:applications/assistants,聊天、写作、办公与研究助手,branch,C07,catalog-text,,navigation,true
+branch:llm:applications/coding,编程产品与任务,branch,C07,catalog-code,,navigation,true
+branch:llm:applications/industries,行业基线、价值、失败与人的参与,branch,C07,,,navigation,false
+branch:llm:applications/integration,平台、接口与工作流,branch,C07,catalog-platform,,navigation,true
+branch:llm:applications/rag,LLM 在检索增强系统中的角色,branch,C07,,,navigation,false
+concept:a2a,A2A,concept,C07,,,missing,false
+concept:agent,Agent,concept,C07,,,missing,true
+concept:agent-loop,行动与观察循环,concept,C07,,,missing,false
+concept:api-contract,API 契约,concept,C07,,,missing,false
+concept:bm25,BM25,concept,C07,,,missing,false
+concept:chunking,文档分块,concept,C07,,,missing,true
+concept:context-assembly,上下文组装,concept,C07,,,missing,false
+concept:embedding-model,Embedding 模型,concept,C07,embedding-models,,missing,true
+concept:evidence-attribution,证据归因,concept,C07,,,missing,true
+concept:human-approval,人工确认,concept,C07,,,missing,true
+concept:hybrid-search,混合检索,concept,C07,embedding-models,,missing,true
+concept:idempotency,幂等,concept,C07,,,missing,false
+concept:least-privilege,最小权限,concept,C07,,,missing,true
+concept:mcp,MCP,concept,C07,,,missing,false
+concept:multi-agent,多智能体,concept,C07,,,missing,false
+concept:observability,可观测性,concept,C07,,,missing,true
+concept:planning-memory,规划与记忆,concept,C07,,,missing,false
+concept:query-rewriting,查询改写,concept,C07,,,missing,false
+concept:rag,RAG,concept,C07,,,missing,true
+concept:reranker,重排模型,concept,C07,,,missing,true
+concept:retry-budget,重试与预算,concept,C07,,,missing,false
+concept:sandbox,执行沙箱,concept,C07,,,missing,true
+concept:streaming-protocol,流式接口,concept,C07,,,missing,false
+concept:structured-output,结构化输出,concept,C07,,,missing,true
+concept:tool-calling,工具调用,concept,C07,,,missing,true
+concept:vector-index,向量索引,concept,C07,,,missing,true
+concept:workflow-vs-agent,工作流与自主性,concept,C07,,,missing,false

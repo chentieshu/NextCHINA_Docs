@@ -13,6 +13,9 @@ import softmax from '../../content/models/llm/softmax-temperature.md?raw';
 import attention from '../../content/models/llm/attention-calculation.md?raw';
 import training from '../../content/models/llm/training-loop.md?raw';
 import kvCache from '../../content/models/llm/kv-cache.md?raw';
+import tensorShapes from '../../content/models/llm/tensor-shapes.md?raw';
+import conditionalProbability from '../../content/models/llm/conditional-probability.md?raw';
+import entropyCrossEntropy from '../../content/models/llm/entropy-cross-entropy.md?raw';
 
 const contentById: Record<string, string> = {
   'apple-style-premium-product-video': premiumVideoMarkdown,
@@ -27,7 +30,10 @@ const contentById: Record<string, string> = {
   'llm-softmax-temperature': softmax,
   'llm-attention-calculation': attention,
   'llm-training-loop': training,
-  'llm-kv-cache': kvCache
+  'llm-kv-cache': kvCache,
+  'llm-tensor-shapes': tensorShapes,
+  'llm-conditional-probability': conditionalProbability,
+  'llm-entropy-cross-entropy': entropyCrossEntropy
 };
 
 export const ESSAY_CHAPTERS: DocChapter[] = articleRegistry.articles.map(article => {

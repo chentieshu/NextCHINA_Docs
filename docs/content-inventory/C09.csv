@@ -1,0 +1,13 @@
+id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
+branch:vlm:orientation,基础与认识,branch,C09,vlm-how-it-works,,navigation,true
+concept:clip-alignment,CLIP 图文对齐,concept,C09,vlm-how-it-works,,missing,true
+concept:image-classification,图像分类,concept,C09,,,missing,false
+concept:object-detection,目标检测,concept,C09,,,missing,false
+concept:ocr,文字识别,concept,C09,,,missing,false
+concept:segmentation,图像分割,concept,C09,,,missing,false
+concept:spatial-grounding,空间定位与 Grounding,concept,C09,,,missing,false
+concept:vision-encoder,视觉编码器,concept,C09,,,missing,false
+concept:visual-connector,视觉连接器,concept,C09,vlm-how-it-works,,missing,true
+concept:visual-reasoning,视觉推理,concept,C09,,,missing,false
+concept:vit-patch,ViT 与 Patch,concept,C09,,,missing,false
+concept:vlm,视觉语言模型,concept,C09,vlm-how-it-works,,missing,true

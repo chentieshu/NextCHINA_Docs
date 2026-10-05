@@ -1,0 +1,16 @@
+id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
+branch:audio:applications,应用、产品与系统,branch,C11,catalog-audio,,navigation,true
+branch:audio:orientation,基础与认识,branch,C11,audio-models,,navigation,true
+branch:music:applications,应用、产品与系统,branch,C11,catalog-music,,navigation,true
+branch:music:orientation,基础与认识,branch,C11,audio-models,,navigation,true
+concept:asr,语音识别,concept,C11,audio-models,,missing,true
+concept:audio-model,音频模型,concept,C11,audio-models,,missing,true
+concept:full-duplex,流式与全双工,concept,C11,,,missing,false
+concept:interleaved-modalities,交错模态序列,concept,C11,,,missing,false
+concept:joint-representation,联合表示,concept,C11,,,missing,false
+concept:modality-fusion,模态融合,concept,C11,,,missing,false
+concept:music-generation,音乐生成,concept,C11,,,missing,false
+concept:neural-codec,神经音频编码,concept,C11,,,missing,false
+concept:tts,语音合成,concept,C11,audio-models,,missing,true
+concept:understanding-generation,理解与生成的统一,concept,C11,,,missing,false
+concept:waveform-stft,波形、STFT 与频谱,concept,C11,,,missing,false

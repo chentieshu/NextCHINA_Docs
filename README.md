@@ -24,6 +24,12 @@
 
 每个概念只定义一次，文章可以在多个专题出现引用入口，但正文不复制。目录归属、知识关联、建议先学、专题引用和学习路径分别表达；布局不添加语义边。直接资料、引用资料、下级资料分开，不以总览填满独立讲解缺口。
 
+## 内容整理与持续完善
+
+“602 个节点”对应 2026-10-05 初始基线：603 个模型节点排除根节点，其中有 380 个规范概念。此后上游扩展了概念并启用图谱准入规则，完整模型、图谱候选与默认显示需要分别计数；节点数也不等于独立讲解篇数。最新统计、逐节点绑定、地图准入和待办批次见 [逐批内容清单](docs/content-inventory/README.md)，范围、质量门槛与后续顺序见 [内容整理计划](docs/content-organization-plan.md)。
+
+修改正文、注册表或知识结构后，运行 `npm run audit:content` 更新可审阅的逐批 CSV，再运行 `npm run build`。完整来源、关系和覆盖明细会在准备构建时生成到 `content/garden/content-inventory.json`，不作为重复的大文件提交。构建中的 `test:content` 会检查全量 ID、批次覆盖、可复现性和清单是否过期；这些机械检查不替代概念审阅或实时来源核验。
+
 旧画布模块和 ELK 同源 Worker 生成脚本仍保留，新首页不再依赖它们。正文仍采用 CommonMark + GFM + KaTeX + Mermaid，HTML/JSX 不作为可执行正文。见 [Markdown 规范](docs/markdown-rendering.md) 和 [图示规范](docs/diagram-rendering.md)。
 
 ## 验证与部署

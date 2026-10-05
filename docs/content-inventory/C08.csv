@@ -1,0 +1,45 @@
+id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
+concept:activation,神经元与激活函数,concept,C08,,,missing,false
+concept:adversarial-search,对抗搜索,concept,C08,,,missing,false
+concept:anomaly-detection,异常检测,concept,C08,,,missing,false
+concept:astar,A* 搜索,concept,C08,,,missing,false
+concept:bayesian-network,贝叶斯网络,concept,C08,,,missing,false
+concept:causal-model,结构因果模型,concept,C08,,,missing,false
+concept:classical-planning,经典规划,concept,C08,,,missing,false
+concept:clustering,聚类,concept,C08,,,missing,false
+concept:cnn,卷积网络,concept,C08,,,missing,false
+concept:counterfactual,干预与反事实,concept,C08,,,missing,false
+concept:decision-tree,决策树,concept,C08,,,missing,false
+concept:em-algorithm,EM 算法,concept,C08,,,missing,false
+concept:evolutionary-algorithms,演化算法,concept,C08,,,missing,false
+concept:formal-logic,命题与一阶逻辑,concept,C08,,,missing,false
+concept:game-theory,博弈论,concept,C08,,,missing,false
+concept:gmm,高斯混合模型,concept,C08,,,missing,false
+concept:gnn,图神经网络,concept,C08,,,missing,false
+concept:gradient-boosting,梯度提升,concept,C08,,,missing,false
+concept:graph-learning,图学习,concept,C08,,,missing,false
+concept:graphical-models,概率图模型,concept,C08,,,missing,false
+concept:heuristic-search,启发式搜索,concept,C08,,,missing,false
+concept:hmm-kalman,HMM 与 Kalman 滤波,concept,C08,,,missing,false
+concept:kernel-methods,核方法,concept,C08,,,missing,false
+concept:knn,k 近邻,concept,C08,,,missing,false
+concept:knowledge-representation,知识表示,concept,C08,,,missing,false
+concept:linear-models,线性与逻辑回归,concept,C08,,,missing,false
+concept:mcts,蒙特卡洛树搜索,concept,C08,,,missing,false
+concept:mlp,多层感知机,concept,C08,,,missing,false
+concept:moe,混合专家,concept,C08,llm-how-it-works,,missing,true
+concept:multi-agent-decision,多智能体决策,concept,C08,,,missing,false
+concept:naive-bayes,朴素贝叶斯,concept,C08,,,missing,false
+concept:neuro-symbolic,神经符号方法,concept,C08,,,missing,false
+concept:pca,主成分分析,concept,C08,,,missing,false
+concept:random-forest,随机森林,concept,C08,,,missing,false
+concept:recommender-system,推荐系统,concept,C08,,,missing,false
+concept:rnn-lstm,循环网络,concept,C08,,,missing,false
+concept:sat-csp,SAT 与约束求解,concept,C08,,,missing,false
+concept:ssm,状态空间模型,concept,C08,,,missing,false
+concept:svm,支持向量机,concept,C08,,,missing,false
+concept:swarm-intelligence,群体智能,concept,C08,,,missing,false
+concept:tabular-learning,表格数据建模,concept,C08,,,missing,false
+concept:theorem-proving,自动定理证明,concept,C08,,,missing,false
+concept:time-series,时序预测,concept,C08,,,missing,false
+concept:utility-theory,效用理论,concept,C08,,,missing,false

@@ -1,0 +1,23 @@
+id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
+concept:agriculture-ai,农业,concept,C15,,,missing,false
+concept:art-ai,艺术,concept,C15,,,missing,false
+concept:biology-ai,生物与蛋白质,concept,C15,,,missing,false
+concept:climate-ai,气候,concept,C15,,,missing,false
+concept:commerce-ai,零售,concept,C15,,,missing,false
+concept:design-ai,设计,concept,C15,,,missing,false
+concept:domain-validation,领域验收,concept,C15,,,missing,false
+concept:education-ai,教育,concept,C15,,,missing,false
+concept:energy-ai,能源,concept,C15,,,missing,false
+concept:finance-ai,金融,concept,C15,,,missing,false
+concept:game-ai,游戏,concept,C15,,,missing,false
+concept:human-in-loop,人的参与,concept,C15,,,missing,false
+concept:legal-ai,法律,concept,C15,,,missing,false
+concept:logistics-ai,物流,concept,C15,,,missing,false
+concept:manufacturing-ai,制造,concept,C15,,,missing,false
+concept:materials-ai,材料,concept,C15,,,missing,false
+concept:media-ai,传媒,concept,C15,,,missing,false
+concept:medical-ai,医疗,concept,C15,,,missing,false
+concept:roi-study,成本与收益验证,concept,C15,,,missing,false
+concept:scientific-ai,科学计算与发现,concept,C15,,,missing,false
+concept:transport-ai,交通与自动驾驶,concept,C15,,,missing,false
+concept:usecase-baseline,非 AI 基线,concept,C15,,,missing,false

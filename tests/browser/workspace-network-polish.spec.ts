@@ -34,6 +34,8 @@ for(const theme of ['dark','light'])test(`click selects in place without a viewp
 test('settings persist and reset while the exact source nodes and edges remain mounted',async({page})=>{
   await clean(page);await page.goto('/');await ready(page);
   const count=await page.locator('.kg-node').count(),edges=await page.locator('.kg-edge').count();
+  const initiallyVisible=await page.locator('.kg-node:visible').count();
+  expect(initiallyVisible).toBeLessThan(count); // Unlinked outlines remain mounted, outside default admission.
   await page.getByRole('button',{name:'图谱设置',exact:true}).click();
   await page.getByLabel('只显示有资料的节点',{exact:true}).check();
   await expect.poll(()=>page.locator('.kg-node:visible').count()).toBeLessThan(count);
@@ -42,12 +44,12 @@ test('settings persist and reset while the exact source nodes and edges remain m
   await page.reload();await ready(page);await page.getByRole('button',{name:'图谱设置',exact:true}).click();
   await expect(page.getByLabel('只显示有资料的节点',{exact:true})).toBeChecked();await expect(page.getByRole('slider',{name:'节点大小',exact:true})).toHaveValue('1.8');
   await page.getByRole('button',{name:'恢复默认显示',exact:true}).click();
-  await expect(page.locator('.kg-node:visible')).toHaveCount(count);await expect(page.locator('.kg-edge')).toHaveCount(edges);
+  await expect(page.locator('.kg-node:visible')).toHaveCount(initiallyVisible);await expect(page.locator('.kg-node')).toHaveCount(count);await expect(page.locator('.kg-edge')).toHaveCount(edges);
   await page.getByLabel('显示建议先学',{exact:true}).uncheck();await expect(page.locator('.kg-edge[data-role="before"]:visible')).toHaveCount(0);
   await expect(page.locator('.kg-edge[data-role="before"]')).toHaveCount(index.relations.filter(r=>r.role==='before').length);
   await page.getByLabel('显示专题引用',{exact:true}).uncheck();await expect(page.locator('.kg-edge[data-role="reference"]:visible')).toHaveCount(0);
   await page.getByRole('button',{name:'清空',exact:true}).click();await expect(page.locator('.og-empty')).toBeVisible();
-  await page.getByRole('button',{name:'清除筛选',exact:true}).click();await expect(page.locator('.kg-node:visible')).toHaveCount(count);
+  await page.getByRole('button',{name:'清除筛选',exact:true}).click();await expect(page.locator('.kg-node:visible')).toHaveCount(initiallyVisible);
 });
 
 test('learning navigation uses source paths and clearly typed concept connections',async({page})=>{

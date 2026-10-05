@@ -1,0 +1,111 @@
+id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
+domain:algorithms,模型与算法,domain,N00,,,navigation,true
+domain:applications,行业应用与案例,domain,N00,,,navigation,true
+domain:data-learning,数据与学习,domain,N00,,,navigation,true
+domain:embodied,具身智能与世界模型,domain,N00,,,navigation,true
+domain:engineering,算力与工程部署,domain,N00,,,navigation,true
+domain:evaluation,评测、榜单与选型,domain,N00,,,navigation,true
+domain:governance,安全、伦理与社会,domain,N00,,,navigation,true
+domain:mathematics,数学与计算基础,domain,N00,,,navigation,true
+domain:modalities,多模态与内容生成,domain,N00,,,navigation,true
+domain:overview,AI 全景与入门,domain,N00,,,navigation,true
+domain:products,产品、工具与生态,domain,N00,,,navigation,true
+domain:research,研究、产业与未来,domain,N00,,,navigation,true
+domain:systems,检索、Agent 与系统,domain,N00,,,navigation,true
+domain:tutorials,教程与实验,domain,N00,,,navigation,true
+hub:agents,Agent · 智能体系统,hub,N00,,,navigation,false
+hub:ai-overview,AI 全景与入门,hub,N00,,,navigation,false
+hub:assistants,通用助手与办公应用,hub,N00,,,navigation,false
+hub:audio,音频与语音,hub,N00,,,navigation,false
+hub:coding,代码模型与编程应用,hub,N00,,,navigation,false
+hub:embedding,Embedding 与检索表示,hub,N00,,,navigation,false
+hub:evidence,来源、核验与更新,hub,N00,,,navigation,false
+hub:image-generation,图像生成与编辑,hub,N00,,,navigation,false
+hub:llm,LLM · 大语言模型,hub,N00,,,navigation,false
+hub:music,音乐 AI,hub,N00,,,navigation,false
+hub:platforms,AI 平台与基础设施,hub,N00,,,navigation,false
+hub:rag,RAG · 检索增强系统,hub,N00,,,navigation,false
+hub:spatial,3D 与空间 AI,hub,N00,,,navigation,false
+hub:transformer,Transformer 机制,hub,N00,,,navigation,false
+hub:video,视频理解与生成,hub,N00,,,navigation,false
+hub:video-production,视频制作实践,hub,N00,,,navigation,false
+hub:vlm,VLM · 视觉语言模型,hub,N00,,,navigation,false
+hub:world-models,世界模型,hub,N00,,,navigation,false
+root:ai,NextCHINA 人工智能知识网络,root,N00,,,navigation,false
+topic:agent-systems,智能体系统,topic,N00,,,navigation,false
+topic:assistant-tools,助手与办公,topic,N00,,,navigation,false
+topic:audio-speech,音频、语音与音乐,topic,N00,,,navigation,false
+topic:boundaries,边界与人的理解,topic,N00,,,navigation,false
+topic:calculus,微积分与求导,topic,N00,,,navigation,false
+topic:case-method,案例证据,topic,N00,,,navigation,false
+topic:classical-ml,经典机器学习,topic,N00,,,navigation,false
+topic:commerce-transport,商业与交通,topic,N00,,,navigation,false
+topic:computer-vision,计算机视觉,topic,N00,,,navigation,false
+topic:creative-practice,创作实践,topic,N00,,,navigation,false
+topic:creative-tools,创作工具,topic,N00,,,navigation,false
+topic:culture-design,文化与设计,topic,N00,,,navigation,false
+topic:data-lifecycle,数据生命周期,topic,N00,,,navigation,false
+topic:data-rights,数据与权利,topic,N00,,,navigation,false
+topic:developer-practice,开发实践,topic,N00,,,navigation,false
+topic:developer-tools,开发工具,topic,N00,,,navigation,false
+topic:distributed-training,分布式训练,topic,N00,,,navigation,false
+topic:edge-cost,端侧与经济性,topic,N00,,,navigation,false
+topic:efficiency-metrics,效率与预算,topic,N00,,,navigation,false
+topic:evaluation-protocols,评测方法,topic,N00,,,navigation,false
+topic:evidence-maintenance,证据维护,topic,N00,sources-and-gaps,,navigation,true
+topic:first-steps,零基础实践,topic,N00,,,navigation,false
+topic:frontiers,前沿问题,topic,N00,,,navigation,false
+topic:generalization,划分与泛化,topic,N00,,,navigation,false
+topic:hardware,硬件与资源,topic,N00,,,navigation,false
+topic:history,历史与路线,topic,N00,,,navigation,false
+topic:human-society,社会影响,topic,N00,,,navigation,false
+topic:image-generation,图像生成,topic,N00,,,navigation,false
+topic:industry-ecosystem,产业生态,topic,N00,,,navigation,false
+topic:industry-environment,工业与环境,topic,N00,,,navigation,false
+topic:inference-efficiency,推理优化,topic,N00,,,navigation,false
+topic:inference-serving,推理服务,topic,N00,,,navigation,false
+topic:information-theory,信息论,topic,N00,,,navigation,false
+topic:interfaces,协议与接口,topic,N00,,,navigation,false
+topic:knowledge-work,知识行业,topic,N00,,,navigation,false
+topic:landscape,概念地图,topic,N00,overview,,navigation,true
+topic:language-modeling,语言与代码模型,topic,N00,,,navigation,false
+topic:learning-paradigms,学习范式,topic,N00,,,navigation,false
+topic:linear-algebra,线性代数,topic,N00,,,navigation,false
+topic:mathematical-practice,计算实验,topic,N00,,,navigation,false
+topic:mechanistic-understanding,机制解释,topic,N00,,,navigation,false
+topic:native-multimodal,统一多模态,topic,N00,,,navigation,false
+topic:neural-architectures,神经网络结构,topic,N00,,,navigation,false
+topic:operational-governance,运行治理,topic,N00,,,navigation,false
+topic:optimization,优化与计算代价,topic,N00,,,navigation,false
+topic:physical-perception,物理感知,topic,N00,,,navigation,false
+topic:platform-tools,平台与基础设施,topic,N00,catalog-platform,,navigation,true
+topic:policy-standards,政策与标准,topic,N00,,,navigation,false
+topic:post-training,后训练与适配,topic,N00,,,navigation,false
+topic:probabilistic-causal,概率与因果模型,topic,N00,,,navigation,false
+topic:probability-statistics,概率与统计,topic,N00,,,navigation,false
+topic:product-lifecycle,产品与版本关系,topic,N00,,,navigation,false
+topic:ranking-references,榜单与价格参考,topic,N00,,,navigation,false
+topic:reinforcement-learning,强化学习,topic,N00,,,navigation,false
+topic:retrieval-augmentation,检索增强系统,topic,N00,,,navigation,false
+topic:risk-mechanisms,失效与攻击,topic,N00,,,navigation,false
+topic:robot-learning,动作学习,topic,N00,,,navigation,false
+topic:science-health,科学与健康,topic,N00,,,navigation,false
+topic:scientific-method,研究方法,topic,N00,,,navigation,false
+topic:search-planning,搜索、规划与优化,topic,N00,,,navigation,false
+topic:search-retrieval,检索与重排,topic,N00,,,navigation,false
+topic:shipping-practice,交付验收,topic,N00,,,navigation,false
+topic:simulation-transfer,仿真到现实,topic,N00,,,navigation,false
+topic:specialized-modeling,结构化与专门任务,topic,N00,,,navigation,false
+topic:stack-operations,软件栈与运维,topic,N00,,,navigation,false
+topic:state-control,状态与控制,topic,N00,,,navigation,false
+topic:symbolic-reasoning,符号与知识推理,topic,N00,,,navigation,false
+topic:system-reliability,可靠执行,topic,N00,,,navigation,false
+topic:task-landscape,任务与能力,topic,N00,,,navigation,false
+topic:task-metrics,任务质量,topic,N00,,,navigation,false
+topic:training-loop,训练过程,topic,N00,,,navigation,false
+topic:transfer-continuity,迁移与持续学习,topic,N00,,,navigation,false
+topic:transformer-mechanisms,Transformer 内部机制,topic,N00,,,navigation,false
+topic:trust-metrics,可靠与可信评价,topic,N00,,,navigation,false
+topic:video-space,视频、三维与时空,topic,N00,,,navigation,false
+topic:vision-language,图文理解,topic,N00,,,navigation,false
+topic:world-modeling,环境预测,topic,N00,,,navigation,false

@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 
-for (const id of ['llm-tokenization','llm-softmax-temperature','llm-attention-calculation','llm-training-loop','llm-kv-cache']) {
+const independentIds: string[] = JSON.parse(readFileSync('content/articles.json', 'utf8')).articles
+  .filter((article: {knowledgeUnit?: unknown}) => article.knowledgeUnit)
+  .map((article: {id: string}) => article.id);
+for (const id of independentIds) {
   test(`knowledge introduction uses real CommonMark emphasis: ${id}`, async ({page}) => {
     await page.goto(`/?view=article&article=${id}`);
     const intro=page.locator('.markdown-body blockquote').first();

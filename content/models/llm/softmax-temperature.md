@@ -2,6 +2,8 @@
 >
 > 前置知识是指数、比例和向量。例子是自定的 4 项分数，不来自任何模型 API；程序使用 Python 3 标准库。
 
+若概率分布还不熟悉，先读 [条件概率与自回归](?view=garden&scope=branch:llm:math/probability)；理解本页后，再用 [熵、交叉熵与 KL 散度](?view=garden&scope=branch:llm:math/objectives) 区分模型输出分布与训练目标。
+
 ## 1. Logits 不是概率
 
 假设模型在一个教学词表上的分数是 $z=[2,1,0,-1]$。它们可以为负、不必和为 1，也没有“2 就是 200%”这种解释。

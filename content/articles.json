@@ -32,6 +32,131 @@
       "id":"llm-kv-cache","file":"content/models/llm/kv-cache.md","space":"models","category":"llm-inference","categoryName":"LLM · 推理与部署",
       "title":"KV Cache：缓存读写、显存计算与失效条件","subtitle":"从因果前缀不变性推导复用过程，区分 KV 头、序列长度、运行成本与 API 计价","date":"2026-09-28","tags":["LLM","KV Cache","Prefill","Decode","GQA","显存","部署"],"excerpt":"推导缓存容量公式并计算 1 GiB 示例，说明它没有包含哪些开销，以及何时不能复用缓存。",
       "knowledgeUnit":{"kind":"independent-explanation","reviewStatus":"needs-independent-review","exampleId":"kv-cache","conceptIds":["concept:kv-cache","concept:prefill","concept:decode","concept:mqa-gqa"],"placements":[{"hubId":"hub:llm","path":"inference/kv-cache"}],"sourceUrls":["https://huggingface.co/docs/transformers/en/cache_explanation","https://aclanthology.org/2023.emnlp-main.298/","https://arxiv.org/abs/2309.06180","https://arxiv.org/abs/2205.14135"],"relatedResourceIds":["model-api-prices"]}
+    },
+    {
+      "id": "llm-tensor-shapes",
+      "file": "content/models/llm/tensor-shapes.md",
+      "space": "models",
+      "category": "llm-math",
+      "categoryName": "LLM · 表示与数学",
+      "title": "向量、张量与矩阵乘法：先读懂形状",
+      "subtitle": "从点积、XW 与转置，到批次轴、广播和余弦边界",
+      "date": "2026-10-05",
+      "tags": [
+        "LLM",
+        "向量",
+        "矩阵乘法",
+        "张量形状",
+        "广播",
+        "余弦相似度"
+      ],
+      "excerpt": "用可运行的二维算术实验读懂向量、矩阵与批次张量，区分特征变换、位置匹配、距离和方向，并识别广播与零向量的边界。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "tensor-shapes",
+        "conceptIds": [
+          "concept:vector",
+          "concept:matrix-tensor",
+          "concept:dot-product",
+          "concept:matrix-multiplication",
+          "concept:norm-distance"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "math/tensor-shapes"
+          }
+        ],
+        "sourceUrls": [
+          "https://www.deeplearningbook.org/contents/linear_algebra.html",
+          "https://numpy.org/doc/stable/reference/generated/numpy.matmul.html",
+          "https://numpy.org/doc/stable/user/basics.broadcasting.html",
+          "https://arxiv.org/html/1706.03762v7#S3.SS2",
+          "https://numpy.org/doc/stable/reference/generated/numpy.transpose.html"
+        ],
+        "relatedResourceIds": []
+      }
+    },
+    {
+      "id": "llm-conditional-probability",
+      "file": "content/models/llm/conditional-probability.md",
+      "space": "models",
+      "category": "llm-math",
+      "categoryName": "LLM · 表示与数学",
+      "title": "条件概率与自回归：从随机变量到序列似然",
+      "subtitle": "联合分布手算、反向条件、零概率边界与 teacher forcing",
+      "date": "2026-10-05",
+      "tags": [
+        "LLM",
+        "随机变量",
+        "条件概率",
+        "自回归",
+        "最大似然"
+      ],
+      "excerpt": "用完整的二元概率表区分条件方向，计算终止路径概率，并说明训练与生成前缀及事实可信度的边界。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "conditional-probability",
+        "conceptIds": [
+          "concept:random-variable",
+          "concept:conditional-probability",
+          "concept:autoregression"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "math/probability"
+          }
+        ],
+        "sourceUrls": [
+          "https://www.deeplearningbook.org/contents/prob.html",
+          "https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf",
+          "https://arxiv.org/abs/1506.03099"
+        ],
+        "relatedResourceIds": []
+      }
+    },
+    {
+      "id": "llm-entropy-cross-entropy",
+      "file": "content/models/llm/entropy-cross-entropy.md",
+      "space": "models",
+      "category": "llm-math",
+      "categoryName": "LLM · 表示与数学",
+      "title": "熵、交叉熵与 KL：从分类似然到困惑度",
+      "subtitle": "三类别手算、one-hot 目标、零概率支持集与 Token 加权评估",
+      "date": "2026-10-05",
+      "tags": [
+        "LLM",
+        "熵",
+        "交叉熵",
+        "KL 散度",
+        "困惑度"
+      ],
+      "excerpt": "验证交叉熵等于熵加 KL，连接 one-hot 负对数似然，并正确聚合困惑度及检查跨模型可比条件。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "entropy-cross-entropy",
+        "conceptIds": [
+          "concept:entropy",
+          "concept:cross-entropy",
+          "concept:kl-divergence"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "math/objectives"
+          }
+        ],
+        "sourceUrls": [
+          "https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf",
+          "https://www.deeplearningbook.org/contents/prob.html",
+          "https://huggingface.co/docs/transformers/en/perplexity"
+        ],
+        "relatedResourceIds": []
+      }
     }
   ]
 }

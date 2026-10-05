@@ -2,6 +2,8 @@
 >
 > 本页以自回归语言建模为背景，再用一个只有两个可训练参数的分类器手算更新。这个分类器不是完整 LLM；它只暴露训练循环的局部机制。Python 实验不需要 GPU、API 或第三方包。
 
+前置阅读：[条件概率与自回归](?view=garden&scope=branch:llm:math/probability) 说明每个预测目标的条件；[熵、交叉熵与 KL 散度](?view=garden&scope=branch:llm:math/objectives) 给出本页损失的概率解释。
+
 ## 1. 先把输入和目标对齐
 
 考虑教学符号序列：`BOS / 我 / 喜欢 / AI`。一个 next-token 训练样本可整理为：

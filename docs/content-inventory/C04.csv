@@ -1,0 +1,37 @@
+id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
+branch:llm:mechanisms,架构与内部计算,branch,C04,,,navigation,false
+branch:llm:mechanisms/architectures,Encoder、Decoder、Transformer、SSM 与混合结构,branch,C04,,,navigation,false
+branch:llm:mechanisms/attention,Attention 的逐步计算,branch,C04,llm-attention-calculation,llm-attention-calculation,bound-needs-review,true
+branch:llm:mechanisms/attention/heads,多头、MQA/GQA 与交叉注意力,branch,C04,,,navigation,false
+branch:llm:mechanisms/attention/mask,因果与其他可见性掩码,branch,C04,,,navigation,false
+branch:llm:mechanisms/attention/normalization,逐行 Softmax 与权重,branch,C04,,,navigation,false
+branch:llm:mechanisms/attention/qkv,输入 X 与投影 Q/K/V,branch,C04,,,navigation,false
+branch:llm:mechanisms/attention/scaling,缩放与方差假设,branch,C04,,,navigation,false
+branch:llm:mechanisms/attention/scores,Q 与 K 转置相乘,branch,C04,,,navigation,false
+branch:llm:mechanisms/attention/weighted-values,权重乘 V 与输出投影,branch,C04,,,navigation,false
+branch:llm:mechanisms/experts,Dense、MoE、路由与激活参数,branch,C04,,,navigation,false
+branch:llm:mechanisms/feedforward,MLP、门控、残差与归一化,branch,C04,,,navigation,false
+branch:llm:mechanisms/output,LM Head、Logits 与生成概率,branch,C04,,,navigation,false
+branch:llm:mechanisms/position,位置编码、RoPE 与长上下文,branch,C04,,,navigation,false
+concept:autoregression,自回归,concept,C04,llm-conditional-probability,llm-conditional-probability,bound-needs-review,true
+concept:beam-search,Beam Search,concept,C04,,,missing,false
+concept:causal-mask,因果掩码,concept,C04,llm-attention-calculation,llm-attention-calculation,bound-needs-review,true
+concept:context-window,上下文窗口,concept,C04,,,missing,false
+concept:cross-attention,交叉注意力,concept,C04,,,missing,false
+concept:decoding,采样与解码,concept,C04,,,missing,true
+concept:llm,大语言模型,concept,C04,llm-how-it-works,,missing,true
+concept:logits,Logits,concept,C04,llm-softmax-temperature,llm-softmax-temperature,bound-needs-review,true
+concept:long-context,长上下文,concept,C04,,,missing,false
+concept:multi-head,多头注意力,concept,C04,,,missing,false
+concept:qkv,Query、Key、Value,concept,C04,llm-attention-calculation,llm-attention-calculation,bound-needs-review,true
+concept:residual-normalization,残差与归一化,concept,C04,,,missing,false
+concept:rope,旋转位置编码,concept,C04,,,missing,false
+concept:scaling-laws,缩放定律,concept,C04,,,missing,false
+concept:self-attention,自注意力,concept,C04,llm-attention-calculation;llm-how-it-works,llm-attention-calculation,bound-needs-review,true
+concept:softmax,Softmax,concept,C04,llm-softmax-temperature,llm-softmax-temperature,bound-needs-review,true
+concept:temperature,温度,concept,C04,,,missing,true
+concept:token-embedding,Token 嵌入,concept,C04,llm-tokenization,llm-tokenization,bound-needs-review,true
+concept:tokenization,分词与 Token,concept,C04,llm-tokenization,llm-tokenization,bound-needs-review,true
+concept:top-k-sampling,Top-k 采样,concept,C04,,,missing,true
+concept:top-p-sampling,Top-p 采样,concept,C04,,,missing,true
+concept:transformer,Transformer,concept,C04,,,missing,true

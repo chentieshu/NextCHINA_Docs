@@ -1,0 +1,28 @@
+id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
+branch:llm:tutorials,教程、实验与案例,branch,C14,,,navigation,false
+branch:llm:tutorials/attention-lab,一次完整注意力计算,branch,C14,,,navigation,false
+branch:llm:tutorials/evaluation-lab,比较模型、时延、成本与失败案例,branch,C14,,,navigation,false
+branch:llm:tutorials/first-steps,首次使用、提示、核验与 API,branch,C14,,,navigation,false
+branch:llm:tutorials/system-lab,RAG、Agent 和结构化输出实验,branch,C14,,,navigation,false
+branch:llm:tutorials/token-lab,分词、概率与采样实验,branch,C14,,,navigation,false
+branch:llm:tutorials/training-lab,损失、梯度、小模型训练与微调,branch,C14,,,navigation,false
+branch:video-production:workflow,制作流程,branch,C14,apple-style-premium-product-video,,navigation,true
+concept:agent-lab,Agent 实验,concept,C14,,,missing,true
+concept:api-first-request,第一次 API 请求,concept,C14,,,missing,true
+concept:asset-consistency,素材一致性,concept,C14,,,missing,true
+concept:attention-lab,手算注意力,concept,C14,,,missing,true
+concept:deployment-lab,部署实验,concept,C14,,,missing,false
+concept:evaluation-lab,评测实验,concept,C14,,,missing,false
+concept:fact-check-practice,事实核验练习,concept,C14,,,missing,true
+concept:finetuning-lab,微调实验,concept,C14,,,missing,false
+concept:linear-regression-lab,训练小型回归模型,concept,C14,,,missing,false
+concept:local-model-lab,本地模型实验,concept,C14,,,missing,false
+concept:monitoring-lab,监测实验,concept,C14,,,missing,false
+concept:motion-design,交互动效,concept,C14,apple-style-premium-product-video,,missing,true
+concept:prompt-practice,提示实践,concept,C14,,,missing,true
+concept:rag-lab,RAG 实验,concept,C14,,,missing,true
+concept:rl-lab,强化学习环境实验,concept,C14,,,missing,false
+concept:sound-editing,声音制作,concept,C14,,,missing,true
+concept:storyboarding,故事板,concept,C14,apple-style-premium-product-video,,missing,true
+concept:table-analysis-practice,表格分析练习,concept,C14,,,missing,false
+concept:video-production,视频制作,concept,C14,apple-style-premium-product-video,,missing,true

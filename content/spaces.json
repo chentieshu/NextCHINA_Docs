@@ -1,6 +1,6 @@
 {
   "spaces": [
-    {"id":"models","name":"Models","shortName":"M","description":"LLM、VLM、生成模型、Embedding、Audio、Video、World Model、模型基准与价格。","chapterIds":["llm-how-it-works","llm-tokenization","llm-softmax-temperature","llm-attention-calculation","llm-training-loop","llm-kv-cache","vlm-how-it-works","embedding-models","diffusion-dit","video-models","audio-models","world-models","arena-text","aa-intelligence","model-api-prices"]},
+    {"id":"models","name":"Models","shortName":"M","description":"LLM、VLM、生成模型、Embedding、Audio、Video、World Model、模型基准与价格。","chapterIds":["llm-how-it-works","llm-tokenization","llm-tensor-shapes","llm-conditional-probability","llm-softmax-temperature","llm-entropy-cross-entropy","llm-attention-calculation","llm-training-loop","llm-kv-cache","vlm-how-it-works","embedding-models","diffusion-dit","video-models","audio-models","world-models","arena-text","aa-intelligence","model-api-prices"]},
     {"id":"products","name":"AI Products","shortName":"P","description":"Video、Image、Audio、3D、Music、Code 等 AI SaaS 与基础设施。","chapterIds":["catalog-audio","catalog-video","catalog-image","catalog-3d","catalog-music","catalog-code","catalog-platform","catalog-text"]},
     {"id":"agents","name":"Agents","shortName":"A","description":"Agent 产品、构建平台、终端任务基准与选型方法。","chapterIds":["terminal-bench","agent-products"]},
     {"id":"research","name":"Research","shortName":"R","description":"阅读方法、来源、核验规则与持续更新记录。","chapterIds":["overview","sources-and-gaps"]},

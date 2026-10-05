@@ -1,0 +1,42 @@
+id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
+branch:llm:inference,推理、部署与优化,branch,C05,,,navigation,false
+branch:llm:inference/deployment,本地、云端、端侧、回滚与迁移,branch,C05,,,navigation,false
+branch:llm:inference/generation-loop,Prefill、Decode、采样与停止,branch,C05,,,navigation,false
+branch:llm:inference/kv-cache,KV Cache 的过程、形状与资源,branch,C05,llm-kv-cache,llm-kv-cache,bound-needs-review,true
+branch:llm:inference/kv-cache/memory,层数、KV头、维度、精度与显存计算,branch,C05,,,navigation,false
+branch:llm:inference/kv-cache/prefix,前缀复用、批处理与服务条件,branch,C05,,,navigation,false
+branch:llm:inference/kv-cache/read-write,一个 Token 的缓存读写,branch,C05,,,navigation,false
+branch:llm:inference/optimization,量化、内核与投机解码,branch,C05,,,navigation,false
+branch:llm:inference/reasoning-runtime,推理时计算、搜索与验证,branch,C05,,,navigation,false
+branch:llm:inference/request,请求模板、上下文预算与输入处理,branch,C05,,,navigation,false
+branch:llm:inference/serving,批处理、内存、调度、并发与可观测性,branch,C05,,,navigation,false
+concept:capacity-planning,容量规划,concept,C05,,,missing,false
+concept:compiler-kernel,编译器与算子,concept,C05,,,missing,false
+concept:compute-memory-bound,计算与访存瓶颈,concept,C05,,,missing,false
+concept:continuous-batching,连续批处理,concept,C05,,,missing,false
+concept:data-parallel,数据并行,concept,C05,,,missing,false
+concept:decode,Decode,concept,C05,llm-kv-cache,llm-kv-cache,bound-needs-review,true
+concept:drift-monitoring,漂移监测,concept,C05,,,missing,false
+concept:edge-ai,端侧 AI,concept,C05,,,missing,false
+concept:energy-accounting,能耗核算,concept,C05,,,missing,false
+concept:expert-parallel,专家并行,concept,C05,,,missing,false
+concept:flash-attention,FlashAttention,concept,C05,,,missing,false
+concept:gpu,GPU,concept,C05,,,missing,true
+concept:interconnect,设备互联,concept,C05,,,missing,false
+concept:kv-cache,KV Cache,concept,C05,llm-how-it-works;llm-kv-cache,llm-kv-cache,bound-needs-review,true
+concept:local-privacy,本地运行边界,concept,C05,,,missing,false
+concept:memory-bandwidth,显存与带宽,concept,C05,,,missing,true
+concept:mlops-release,MLOps 与发布,concept,C05,,,missing,false
+concept:model-registry,模型注册,concept,C05,,,missing,false
+concept:mqa-gqa,MQA 与 GQA,concept,C05,llm-kv-cache,llm-kv-cache,bound-needs-review,true
+concept:npu,NPU,concept,C05,,,missing,false
+concept:paged-attention,分页注意力,concept,C05,,,missing,false
+concept:pipeline-parallel,流水线并行,concept,C05,,,missing,false
+concept:prefill,Prefill,concept,C05,llm-kv-cache,llm-kv-cache,bound-needs-review,true
+concept:pruning,剪枝,concept,C05,,,missing,false
+concept:quantization,量化,concept,C05,,,missing,true
+concept:speculative-decoding,投机解码,concept,C05,,,missing,false
+concept:task-total-cost,任务总成本,concept,C05,,,missing,true
+concept:tensor-parallel,张量并行,concept,C05,,,missing,false
+concept:training-framework,训练框架,concept,C05,,,missing,false
+concept:zero-fsdp,状态分片,concept,C05,,,missing,false

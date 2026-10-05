@@ -2,6 +2,8 @@
 >
 > 这是独立知识单元，不是某个商业模型的分词结果说明。下文的合并规则、词表和数字均为明确构造的教学样例。代码只需 Python 3 标准库，不需要 API、模型下载或付费服务。
 
+学习路线：读完 ID 与查表后，可用 [向量、张量与矩阵乘法](?view=garden&scope=branch:llm:math/tensor-shapes) 检查表示的形状，再用 [条件概率与自回归](?view=garden&scope=branch:llm:math/probability) 理解模型预测的对象。
+
 ## 1. 先区分五个对象
 
 | 对象 | 含义 | 本页例子 |

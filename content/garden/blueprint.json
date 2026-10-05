@@ -1488,6 +1488,72 @@
       "target": "concept:generative-ai",
       "type": "is_a",
       "reason": "归一化流是显式密度生成模型家族之一。"
+    },
+    {
+      "source": "concept:vector",
+      "target": "concept:matrix-tensor",
+      "type": "recommended_before",
+      "reason": "先用向量区分坐标轴，再把多个样本、位置和特征组织为矩阵与张量。"
+    },
+    {
+      "source": "concept:vector",
+      "target": "concept:dot-product",
+      "type": "recommended_before",
+      "reason": "先理解分量与维度，再计算两个同维向量的点积。"
+    },
+    {
+      "source": "concept:dot-product",
+      "target": "concept:matrix-multiplication",
+      "type": "recommended_before",
+      "reason": "矩阵乘法的每个输出元素可用一行与一列的点积检查。"
+    },
+    {
+      "source": "concept:matrix-tensor",
+      "target": "concept:matrix-multiplication",
+      "type": "recommended_before",
+      "reason": "先注明每个轴的含义与形状，避免把逐元素乘法当作矩阵乘法。"
+    },
+    {
+      "source": "concept:vector",
+      "target": "concept:norm-distance",
+      "type": "recommended_before",
+      "reason": "先约定向量表示，再比较长度、距离和方向；零向量的余弦需要单独处理。"
+    },
+    {
+      "source": "concept:random-variable",
+      "target": "concept:conditional-probability",
+      "type": "recommended_before",
+      "reason": "先区分随机变量、取值和事件，再理解条件概率的分母与定义域。"
+    },
+    {
+      "source": "concept:conditional-probability",
+      "target": "concept:entropy",
+      "type": "recommended_before",
+      "reason": "先理解概率分布与条件事件，再阅读平均信息量及条件语言建模目标。"
+    },
+    {
+      "source": "concept:softmax",
+      "target": "concept:cross-entropy",
+      "type": "recommended_before",
+      "reason": "沿分类模型这条学习路线，先得到归一化预测分布，再计算目标分布上的交叉熵。"
+    },
+    {
+      "source": "concept:cross-entropy",
+      "target": "concept:kl-divergence",
+      "type": "recommended_before",
+      "reason": "先分清交叉熵与熵，再理解两者之差为何是有方向的 KL 散度。"
+    },
+    {
+      "source": "concept:autoregression",
+      "target": "concept:loss-objective",
+      "type": "recommended_before",
+      "reason": "先写出前缀条件概率的乘积，再理解语言建模的负对数似然目标。"
+    },
+    {
+      "source": "concept:cross-entropy",
+      "target": "concept:loss-objective",
+      "type": "recommended_before",
+      "reason": "先亲算分类交叉熵，再阅读训练循环如何聚合损失；损失目标并不限于交叉熵。"
     }
   ],
   "articleBindings": [

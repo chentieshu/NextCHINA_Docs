@@ -1,0 +1,24 @@
+id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
+branch:image-generation:applications,应用、产品与系统,branch,C10,catalog-image,,navigation,true
+branch:image-generation:mechanisms,架构与内部计算,branch,C10,diffusion-dit,,navigation,true
+branch:spatial:applications,应用、产品与系统,branch,C10,catalog-3d,,navigation,true
+branch:video:applications,应用、产品与系统,branch,C10,catalog-video,,navigation,true
+branch:video:orientation,基础与认识,branch,C10,video-models,,navigation,true
+branch:video:tutorials,教程、实验与案例,branch,C10,apple-style-premium-product-video,,navigation,true
+concept:cfg,Classifier-Free Guidance,concept,C10,,,missing,false
+concept:denoising,去噪目标,concept,C10,,,missing,false
+concept:diffusion,扩散模型,concept,C10,diffusion-dit,,missing,true
+concept:dit,Diffusion Transformer,concept,C10,diffusion-dit,,missing,true
+concept:dynamic-scene,动态三维场景,concept,C10,,,missing,false
+concept:energy-based-model,能量模型,concept,C10,,,missing,false
+concept:flow-matching,Flow Matching,concept,C10,,,missing,false
+concept:gan,生成对抗网络,concept,C10,,,missing,true
+concept:gaussian-splatting,3D Gaussian Splatting,concept,C10,,,missing,false
+concept:generation-control,条件控制与编辑,concept,C10,,,missing,false
+concept:identity-consistency,身份与时序一致性,concept,C10,video-models,,missing,true
+concept:latent-vae,VAE 与潜在空间,concept,C10,,,missing,false
+concept:mesh-generation,网格生成,concept,C10,,,missing,false
+concept:nerf,NeRF,concept,C10,,,missing,false
+concept:normalizing-flow,归一化流,concept,C10,,,missing,true
+concept:spatiotemporal-attention,时空注意力,concept,C10,,,missing,false
+concept:video-model,视频模型,concept,C10,video-models,,missing,true

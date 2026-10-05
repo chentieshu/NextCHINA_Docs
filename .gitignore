@@ -16,3 +16,6 @@ test-results/
 test-results-production/
 playwright-report/
 .markdown-render-test-*/
+
+# Full content audit is rebuilt during prepare; compact CSV inventories stay tracked.
+content/garden/content-inventory.json

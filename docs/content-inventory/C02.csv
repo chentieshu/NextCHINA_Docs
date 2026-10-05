@@ -1,0 +1,25 @@
+id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
+branch:ai-overview:orientation,基础与认识,branch,C02,overview,,navigation,true
+branch:llm:orientation,基础与认识,branch,C02,llm-how-it-works,,navigation,true
+branch:llm:orientation/definition,LLM、语言建模与模型边界,branch,C02,,,navigation,false
+branch:llm:orientation/learning-map,普通读者、开发者和研究者的阅读路径,branch,C02,,,navigation,false
+branch:llm:orientation/paradigms,AI、学习、生成、检索与行动的关系,branch,C02,,,navigation,false
+branch:llm:orientation/training-inference,训练与推理、参数与运行状态,branch,C02,,,navigation,false
+concept:accessibility,无障碍与可理解性,concept,C02,,,missing,false
+concept:anthropomorphism,拟人化误解,concept,C02,,,missing,false
+concept:artificial-intelligence,人工智能,concept,C02,,,missing,false
+concept:capability-vs-reliability,能力与可靠性的区别,concept,C02,,,missing,false
+concept:classification-task,分类,concept,C02,,,missing,false
+concept:decision-control-task,决策与控制,concept,C02,,,missing,false
+concept:deep-learning,深度学习,concept,C02,,,missing,false
+concept:foundation-model-era,基础模型路线,concept,C02,,,missing,false
+concept:generation-task,生成,concept,C02,,,missing,false
+concept:generative-ai,生成式 AI,concept,C02,,,missing,true
+concept:human-ai-interaction,人机交互,concept,C02,,,missing,false
+concept:machine-learning,机器学习,concept,C02,,,missing,false
+concept:model-vs-product,模型与产品的区别,concept,C02,overview,,missing,true
+concept:neural-era,神经网络路线,concept,C02,,,missing,false
+concept:prediction-task,预测,concept,C02,,,missing,false
+concept:retrieval-task,检索,concept,C02,,,missing,false
+concept:statistical-era,统计学习路线,concept,C02,,,missing,false
+concept:symbolic-era,符号路线,concept,C02,,,missing,false

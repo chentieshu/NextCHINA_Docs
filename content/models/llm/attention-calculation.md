@@ -2,6 +2,8 @@
 >
 > 本页限定为一个缩放点积注意力头，采用因果掩码、无 dropout。数值为教学构造，不是商业模型权重，也不包含完整 Transformer 的所有层。先阅读 [Softmax](?view=garden&scope=branch:llm:math/softmax) 会更容易理解。
 
+先读 [向量、张量与矩阵乘法](?view=garden&scope=branch:llm:math/tensor-shapes)，再把每个轴代入下方计算；[条件概率与自回归](?view=garden&scope=branch:llm:math/probability) 解释为何需要因果可见性约束。
+
 ## 1. 先约定对象与形状
 
 设序列长度为 $n$、输入维度为 $d_{model}$，Query/Key 维度为 $d_k$、Value 维度为 $d_v$。忽略批次维，只观察一个头：

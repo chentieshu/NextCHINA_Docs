@@ -209,6 +209,8 @@ F3 若事先明确采用**传导式任务**，允许无标签目标实体特征�
 - [训练、验证、测试与数据泄漏](?view=garden&scope=branch:llm:training/samples)：进一步检查预处理、选择和泛化声明的边界
 - [聚类概念入口](?view=garden&scope=concept:clustering)与[对比学习概念入口](?view=garden&scope=concept:contrastive-learning)：后续深入方向；这两个入口的独立教学单元仍待建设，本页不把它们计作已完成讲解
 
+- [互信息](?view=garden&scope=branch:llm:math/mutual-information)：在完整指定的有限分布下，量化案例 D 的两圆颜色碰撞，并区分平均信息量与单次观察
+
 ## 来源、版本与验证边界
 
 访问日期统一为 **2026-10-05**，与出版或修订日期分开。下面只支持正文所标注的定义、机制和协议；本页不引用历史排名作为当代性能结论。

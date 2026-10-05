@@ -61,7 +61,9 @@
         {"id":"probability","label":"条件概率、自回归分解与最大似然","conceptRefs":["concept:conditional-probability","concept:autoregression"]},
         {"id":"softmax","label":"Logits、Softmax、温度与数值稳定性","conceptRefs":["concept:logits","concept:softmax","concept:numerical-stability"]},
         {"id":"objectives","label":"负对数似然、交叉熵、困惑度与可比条件","conceptRefs":["concept:cross-entropy"]},
-        {"id":"derivatives","label":"梯度、链式法则与自动微分","conceptRefs":["concept:gradient","concept:chain-rule","concept:autodiff"]}
+        {"id":"mutual-information","label":"互信息、依赖关系与信息损失","conceptRefs":["concept:mutual-information"]},
+        {"id":"derivatives","label":"梯度、链式法则与自动微分","conceptRefs":["concept:gradient","concept:chain-rule","concept:autodiff"]},
+        {"id":"complexity","label":"算法复杂度、比较次数与资源边界","conceptRefs":["concept:big-o"]}
       ]},
       {"id":"mechanisms","label":"架构与内部计算","children":[
         {"id":"architectures","label":"Encoder、Decoder、Transformer、SSM 与混合结构","conceptRefs":["concept:transformer","concept:ssm"]},

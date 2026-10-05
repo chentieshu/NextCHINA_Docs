@@ -172,6 +172,8 @@ FlashAttention 讨论的是通过分块和读写安排实现精确注意力，�
 
 注意力权重也不是完整因果解释。改变 Value、输出投影或后续层，都可能改变最终行为；需要控制变量和干预实验，而不只是看热力图。
 
+怎样确定输入规模、基本操作，以及为什么要分开数准备、输出与辅助空间，可继续读[算法复杂度](?view=garden&scope=branch:llm:math/complexity)。
+
 ## 10. 继续进入相关分支
 
 [QKV 分支](?view=garden&scope=branch:llm:mechanisms/attention/qkv) 保留更细问题的入口；[KV Cache](?view=garden&scope=branch:llm:inference/kv-cache) 解释为什么生成下一 Token 时能复用过去的 K/V。要判断模型效果，应查看 [能力评测](?view=garden&scope=branch:llm:rankings)，不能从一张结构图推出榜单名次。

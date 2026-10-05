@@ -22,7 +22,9 @@ export const exampleChecks = [
   ['classification-accuracy-precision-recall-f1', 'classification-accuracy-precision-recall-f1', 'python'],
   ['supervised-learning-naive-bayes', 'supervised-learning-naive-bayes', 'python'],
   ['ai-ml-dl-boundaries', 'ai-ml-dl-boundaries', 'observable-case'],
-  ['unsupervised-self-supervised-learning', 'unsupervised-self-supervised-learning', 'observable-case']
+  ['unsupervised-self-supervised-learning', 'unsupervised-self-supervised-learning', 'observable-case'],
+  ['algorithm-complexity-cost-model', 'algorithm-complexity-cost-model', 'python'],
+  ['mutual-information', 'mutual-information', 'python']
 ];
 const pilotId = 'ai-ml-dl-boundaries';
 const sourceUrls = [

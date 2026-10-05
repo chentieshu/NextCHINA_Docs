@@ -506,6 +506,89 @@
           "llm-derivatives"
         ]
       }
+    },
+    {
+      "id": "algorithm-complexity-cost-model",
+      "file": "content/models/foundations/algorithm-complexity-cost-model.md",
+      "space": "models",
+      "category": "foundations",
+      "categoryName": "AI 基础原理",
+      "title": "算法复杂度：先说清楚在数什么",
+      "subtitle": "同一下界位置的两种搜索，逐项核算比较次数、准备成本、输出与空间",
+      "date": "2026-10-05",
+      "tags": [
+        "算法复杂度",
+        "成本模型",
+        "二分查找",
+        "比较次数",
+        "渐近分析"
+      ],
+      "excerpt": "对同一下界位置分别核算线性与二分搜索，区分精确比较次数、渐近界、输入分布、准备和输出成本。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "algorithm-complexity-cost-model",
+        "conceptIds": [
+          "concept:big-o"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "math/complexity"
+          }
+        ],
+        "sourceUrls": [
+          "https://opendatastructures.org/ods-python/1_3_Mathematical_Background.html",
+          "https://opendatastructures.org/ods-python/1_4_Model_Computation.html",
+          "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/c6d8f06c6f11e3342633dec85498f551_MIT6_006S20_r01.pdf",
+          "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-fall-2011/6b9b20992d8c6a0f3f10a34ff7878aa9_MIT6_006F11_lec02.pdf",
+          "https://docs.python.org/3.14/library/bisect.html",
+          "https://algs4.cs.princeton.edu/14analysis/",
+          "https://arxiv.org/html/2205.14135v2"
+        ],
+        "relatedResourceIds": []
+      }
+    },
+    {
+      "id": "mutual-information",
+      "file": "content/models/foundations/mutual-information.md",
+      "space": "models",
+      "category": "foundations",
+      "categoryName": "AI 基础原理",
+      "title": "互信息：已知一个变量，平均少了多少不确定性？",
+      "subtitle": "从完整联合分布到条件熵、表示碰撞与 XOR 约束",
+      "date": "2026-10-05",
+      "tags": [
+        "互信息",
+        "联合分布",
+        "条件熵",
+        "信息论",
+        "数值计算"
+      ],
+      "excerpt": "用已知有限联合分布计算互信息，区分平均与单次观察、精确独立与浮点近零，并量化表示碰撞和两两独立遗漏的 XOR 约束。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "mutual-information",
+        "conceptIds": [
+          "concept:mutual-information"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "math/mutual-information"
+          }
+        ],
+        "sourceUrls": [
+          "https://ee.stanford.edu/~gray/it.pdf",
+          "https://ocw.mit.edu/courses/6-441-information-theory-spring-2016/184197ca5d5418da2415d37e929860b9_MIT6_441S16_chapter_2.pdf",
+          "https://ocw.mit.edu/courses/6-441-information-theory-spring-2016/pages/lecture-notes/",
+          "https://sites.stat.columbia.edu/liam/research/pubs/info_est-nc.pdf",
+          "https://docs.python.org/3.14/library/math.html",
+          "https://docs.python.org/3.14/library/fractions.html"
+        ],
+        "relatedResourceIds": []
+      }
     }
   ]
 }

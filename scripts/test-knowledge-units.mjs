@@ -9,6 +9,7 @@ import { readKnowledgeUnits } from './knowledge-units.mjs';
 import { validateExampleChecks, checkObservableCase, testExampleContract, testPilotMarkdownVisibility } from './knowledge-example-contract.mjs';
 
 import { checkLearningSignalsCase, testLearningSignalsContract } from './learning-signals-case-contract.mjs';
+import { loadPythonFixtureSuffixes, testPythonFixtureRegistrations } from './knowledge-python-fixtures.mjs';
 
 const units = readKnowledgeUnits(repositoryRoot);
 assert.ok(units.length > 0, 'No independent units');
@@ -1111,7 +1112,9 @@ print(f"training regression: {quad_test_cases} Fraction update cases, conditiona
 `,
   'kv-cache': 'for lengths in [[], [-1], [1.5]]:\n    try: cache_bytes(32, 8, 128, 2, lengths)\n    except ValueError: pass\n    else: raise AssertionError("invalid cache dimensions accepted")'
 };
-const exampleKinds = validateExampleChecks(units, Object.keys(negatives));
+const numericChecks = { ...negatives, ...loadPythonFixtureSuffixes(repositoryRoot, Object.keys(negatives)) };
+const fixtureRegistrationNegativeCases = testPythonFixtureRegistrations(negatives, checks => validateExampleChecks(units, Object.keys(checks)));
+const exampleKinds = validateExampleChecks(units, Object.keys(numericChecks));
 const observableCaseResults = [];
 const temp = mkdtempSync(path.join(tmpdir(), 'nextchina-knowledge-'));
 try {
@@ -1138,8 +1141,8 @@ try {
     const blocks = [...markdown.matchAll(/^```python\r?\n(# nextchina-example: ([a-z0-9-]+)\r?\n[\s\S]*?)^```\s*$/gm)];
     assert.equal(blocks.length, 1, `${article.id}: expected one explicit runnable example`);
     assert.equal(blocks[0][2], unit.exampleId);
-    assert.ok(Object.hasOwn(negatives, unit.exampleId), 'Add numeric and rejection checks when registering a new example');
-    let code = blocks[0][1] + '\n' + negatives[unit.exampleId];
+    assert.ok(Object.hasOwn(numericChecks, unit.exampleId), 'Add numeric and rejection checks when registering a new example');
+    let code = blocks[0][1] + '\n' + numericChecks[unit.exampleId];
     if (unit.exampleId === 'attention') {
       // One numeric truth: compare the article's Python output with the garden fixture.
       code += '\nexpected = ' + JSON.stringify(computed[0].output) + '\nassert all(abs(a-b)<1e-10 for row,ref in zip(output,expected) for a,b in zip(row,ref))\n';
@@ -1165,15 +1168,15 @@ try {
     assert.throws(() => readKnowledgeUnits(temp));
   }
   const pilot = units.find(article => article.id === 'ai-ml-dl-boundaries');
-  const exampleContractNegativeCases = testExampleContract(units, Object.keys(negatives),
+  const exampleContractNegativeCases = testExampleContract(units, Object.keys(numericChecks),
     readFileSync(path.join(repositoryRoot, pilot.file), 'utf8'));
   const pilotVisibilityNegativeCases = testPilotMarkdownVisibility(pilot,
     readFileSync(path.join(repositoryRoot, pilot.file), 'utf8'));
   const learningSignals = units.find(article => article.id === 'unsupervised-self-supervised-learning');
-  const learningSignalsContract = testLearningSignalsContract(units, Object.keys(negatives),
+  const learningSignalsContract = testLearningSignalsContract(units, Object.keys(numericChecks),
     readFileSync(path.join(repositoryRoot, learningSignals.file), 'utf8'));
   const report = { status: 'pass', independentArticles: units.length, runnableExamples: results.length,
-    metadataNegativeCases: mutations.length, attentionMatchesGardenFixture: true, results,
+    metadataNegativeCases: mutations.length, fixtureRegistrationNegativeCases, attentionMatchesGardenFixture: true, results,
     observableCaseFamilies: observableCaseResults.length, observableCaseResults, exampleContractNegativeCases, pilotVisibilityNegativeCases, learningSignalsContract,
     externalModelCalls: 0, commercialMeasurements: false, expertReview: false };
   mkdirSync(path.join(repositoryRoot, 'test-results'), { recursive: true });

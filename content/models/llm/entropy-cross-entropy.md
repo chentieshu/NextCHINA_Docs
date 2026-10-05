@@ -174,6 +174,8 @@ PPL 比较至少要固定 tokenizer、测试文本、特殊符号与计分范围
 
 继续阅读 [训练循环](?view=garden&scope=branch:llm:training/loop) 连接梯度与参数更新；回看 [Token 与分词](?view=garden&scope=branch:llm:math/tokenization) 确认平均单位；在 [能力与评测](?view=garden&scope=branch:llm:rankings) 区分语言建模指标与任务指标。
 
+继续到[互信息](?view=garden&scope=branch:llm:math/mutual-information)，把联合分布与同边缘的独立乘积分布作 KL 比较，检查平均条件熵怎样变化。
+
 ## 来源、核验日期与范围
 
 [1] Shannon，[A Mathematical Theory of Communication，原论文第 6 节](https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf)：熵与信息单位；链接为哈佛大学托管的原文重印本。

@@ -1820,6 +1820,14 @@
       "type": "recommended_before",
       "reason": "先区分浮点表示、运算舍入与显示，再理解等价公式为何可能产生不同数值结果；这是阅读建议，不是所有稳定算法的逻辑必要条件。",
       "scope": "浮点数基础到既有数值稳定性单元的教学阅读次序。"
+    },
+    {
+      "source": "concept:kl-divergence",
+      "target": "concept:mutual-information",
+      "type": "recommended_before",
+      "reason": "先比较同一结果空间上的概率分布，再把联合分布与保持相同边缘的独立乘积分布作 KL 对照；这是本课的一种学习顺序，不是定义上的必要条件。",
+      "scope": "互信息单元中，从既有 KL 基础到有限已知联合分布的教学阅读次序。",
+      "provenance": "mutual-information 单元及独立内容／数值复核的编辑性阅读建议；不构成专家认证。"
     }
   ],
   "articleBindings": [

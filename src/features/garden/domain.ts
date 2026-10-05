@@ -1,5 +1,5 @@
 export type NodeKind = 'root' | 'group' | 'path' | 'domain' | 'topic' | 'concept' | 'hub' | 'branch' | 'document';
-export type RelationKind = 'browse_child' | 'related' | 'recommended_before';
+export type RelationKind = 'browse_child' | 'represents' | 'references' | 'related' | 'recommended_before' | 'is_a' | 'part_of' | 'uses' | 'trained_with' | 'evaluated_by' | 'mitigates';
 export interface ArticleBinding { articleId: string; coverage: string; }
 export interface ResourceRef { articleId: string; role: string; }
 export interface HubResource {
@@ -10,13 +10,13 @@ export interface HubResource {
 export interface KnowledgeNode {
   id: string; label: string; kind: NodeKind; parentId: string | null;
   contentStatus: string; evidenceStatus: string; articleBindings: ArticleBinding[];
-  summary: string | null; group?: string;
+  summary: string | null; group?: string; domainKind?: 'knowledge-domain' | 'editorial-entry';
   hubId?: string; outlinePath?: string; conceptRefs?: string[]; hubRefs?: string[]; hubEntries?: string[];
   resourceRefs?: ResourceRef[]; embeddedArticleId?: string; microscopeId?: string | null;
 }
 export interface KnowledgeEdge {
   id: string; source: string; target: string; type: RelationKind;
-  assertionStatus: string; reason?: string;
+  assertionStatus: string; reason?: string; routeId?: string; provenance?: string; scope?: string; asOf?: string;
 }
 export interface GardenGraph {
   schemaVersion: number; title: string; scopeNote: string;
@@ -35,5 +35,6 @@ export const coverageLabel: Record<string, string> = {
   prices: 'API 报价', methodology: '方法教程', orientation: '阅读指南'
 };
 export const edgeLabel: Record<RelationKind, string> = {
-  browse_child: '目录归属', related: '编辑关联', recommended_before: '建议先学'
+  browse_child: '目录归属', represents: '规范对象', references: '引用', related: '延伸阅读', recommended_before: '建议先学',
+  is_a: '属于', part_of: '组成', uses: '使用', trained_with: '训练方式', evaluated_by: '评测', mitigates: '缓解'
 };

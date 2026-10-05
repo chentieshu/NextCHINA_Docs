@@ -8,6 +8,8 @@ import path from 'node:path';
 export const pythonFixtureRegistrations = [
   ['algorithm-complexity-cost-model', 'scripts/knowledge-fixtures/algorithm-complexity-cost-model.py'],
   ['mutual-information', 'scripts/knowledge-fixtures/mutual-information.py'],
+  ['regularization-penalty-generalization', 'scripts/knowledge-fixtures/regularization-penalty-generalization.py'],
+  ['adamw-moments-decoupled-decay', 'scripts/knowledge-fixtures/adamw-moments-decoupled-decay.py'],
 ];
 
 export function loadPythonFixtureSuffixes(root, inlineIds, registrations = pythonFixtureRegistrations) {
@@ -49,26 +51,39 @@ export function testPythonFixtureRegistrations(inlineChecks, validateChecks) {
     check(pythonFixtureRegistrations);
     const reject = (name, rows, error) => { assert.throws(() => check(rows), error, name); negatives++; };
     const rows = () => structuredClone(pythonFixtureRegistrations);
-    const [first, second] = pythonFixtureRegistrations;
-    reject('missing required registration', [second], /Missing numeric checks/);
+    const [first, ...rest] = pythonFixtureRegistrations;
+    // Node may append a value diff to strictEqual's message; the first line is
+    // the exact diagnostic category/target, not an unrelated missing fixture.
+    const assertion = message => error => error?.name === 'AssertionError'
+      && error?.code === 'ERR_ASSERTION' && error.message.split('\n')[0] === message;
+    // Mutate one row at a time and preserve every unaffected registration.
+    // Otherwise an omitted later fixture can mask the failure being tested.
+    for (const [index, [id]] of pythonFixtureRegistrations.entries()) {
+      reject(`missing required registration: ${id}`, rows().filter((_, i) => i !== index),
+        assertion(`Missing numeric checks: ${id}`));
+      const missing = rows(); missing[index][1] = 'scripts/knowledge-fixtures/missing.py';
+      reject(`missing fixture file: ${id}`, missing,
+        assertion('Missing Python fixture: scripts/knowledge-fixtures/missing.py'));
+      const unknown = rows(); unknown[index][0] = 'unknown';
+      reject(`unknown replacement ID: ${id}`, unknown,
+        assertion(`Missing numeric checks: ${id}`));
+    }
     reject('duplicate fixture ID', [...rows(), [first[0], unusedPath]], /Duplicate fixture example ID/);
     reject('duplicate fixture path', [...rows(), ['unused', first[1]]], /Duplicate fixture path/);
     reject('duplicate registration', [...rows(), [...first]], /Duplicate fixture example ID/);
-    reject('missing fixture file', [[first[0], 'scripts/knowledge-fixtures/missing.py'], second], /Missing Python fixture/);
     reject('inline ID collision', [...rows(), [Object.keys(inlineChecks)[0], unusedPath]], /collides with inline/);
-    reject('unknown replacement ID', [['unknown', first[1]], second], /Missing numeric checks/);
-    reject('unused numeric ID', [...rows(), ['unused', unusedPath]], /Unused\/reassigned numeric check/);
-    reject('empty fixture content', [[first[0], emptyPath], second], /Empty Python fixture/);
+    reject('unused numeric ID', [...rows(), ['unused', unusedPath]], assertion('Unused/reassigned numeric check: unused'));
+    reject('empty fixture content', [[first[0], emptyPath], ...rest], /Empty Python fixture/);
     reject('nonarray registry', null, /Expected fixture registration array/);
     for (const row of [null, {}, [], [first[0]], [...first, 'extra']]) {
-      reject('malformed fixture tuple', [row, second], /Expected example\/path/);
+      reject('malformed fixture tuple', [row, ...rest], /Expected example\/path/);
     }
     for (const id of ['', null, 1, 'has space', 'Uppercase', '__proto__']) {
-      reject('invalid fixture ID', [[id, first[1]], second], /Invalid fixture example ID/);
+      reject('invalid fixture ID', [[id, first[1]], ...rest], /Invalid fixture example ID/);
     }
     for (const file of ['', null, 1, '/tmp/example.py', '../example.py',
       'scripts/knowledge-fixtures/../example.py', 'scripts/knowledge-fixtures/./example.py', 'scripts/knowledge-fixtures/example.txt']) {
-      reject('invalid fixture path', [[first[0], file], second], /Invalid fixture path/);
+      reject('invalid fixture path', [[first[0], file], ...rest], /Invalid fixture path/);
     }
     return negatives;
   } finally { rmSync(root, { recursive: true, force: true }); }

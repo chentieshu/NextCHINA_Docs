@@ -249,6 +249,8 @@ print("ten boundary checks passed")
 
 再读[无监督与自监督的训练信号](?view=garden&scope=branch:ai-overview:orientation/learning-signals)，检查没有类别标签的预处理和预训练为什么仍须遵守声明的数据边界。
 
+可以接着用[正则化与 L2 惩罚](?view=garden&scope=branch:llm:training/budget/regularization)看一个具体的超参数例子：惩罚系数改变训练目标，保留计分仍不包含惩罚；开发集选择与最终测试的职责不能因训练目标改变而混在一起。
+
 ## 来源与核验范围
 
 [1] scikit-learn，[3.1：Cross-validation: evaluating estimator performance](https://scikit-learn.org/stable/modules/cross_validation.html)。核对首节训练、验证、测试职责，3.1.2.2 的分层作用，3.1.2.4 的未见群组目标，以及 3.1.2.6 的时间结构。本页的人造实体数据与计分不是官方模型实验。

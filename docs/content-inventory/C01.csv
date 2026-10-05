@@ -10,7 +10,7 @@ branch:llm:math/representations,Token Embedding、隐藏状态与上下文,branc
 branch:llm:math/softmax,Logits、Softmax、温度与数值稳定性,branch,C01,llm-softmax-temperature,llm-softmax-temperature,bound-needs-review,true
 branch:llm:math/tensor-shapes,向量、张量形状、矩阵乘法与批次,branch,C01,llm-tensor-shapes,llm-tensor-shapes,bound-needs-review,true
 branch:llm:math/tokenization,Token、分词、字节与特殊符号,branch,C01,llm-tokenization,llm-tokenization,bound-needs-review,true
-concept:adamw,AdamW,concept,C01,,,missing,false
+concept:adamw,AdamW,concept,C01,adamw-moments-decoupled-decay,adamw-moments-decoupled-decay,bound-needs-review,true
 concept:autodiff,自动微分,concept,C01,llm-derivatives,llm-derivatives,bound-needs-review,true
 concept:bayes-rule,贝叶斯规则,concept,C01,llm-conditional-probability,llm-conditional-probability,bound-needs-review,true
 concept:big-o,算法复杂度,concept,C01,algorithm-complexity-cost-model,algorithm-complexity-cost-model,bound-needs-review,true
@@ -33,7 +33,7 @@ concept:mutual-information,互信息,concept,C01,mutual-information,mutual-infor
 concept:norm-distance,范数与距离,concept,C01,llm-tensor-shapes,llm-tensor-shapes,bound-needs-review,true
 concept:numerical-stability,数值稳定性,concept,C01,llm-softmax-temperature,llm-softmax-temperature,bound-needs-review,true
 concept:random-variable,随机变量,concept,C01,llm-conditional-probability,llm-conditional-probability,bound-needs-review,true
-concept:regularization,正则化,concept,C01,,,missing,false
+concept:regularization,正则化,concept,C01,regularization-penalty-generalization,regularization-penalty-generalization,bound-needs-review,true
 concept:sgd,随机梯度下降,concept,C01,llm-training-loop,llm-training-loop,bound-needs-review,true
 concept:statistical-inference,统计推断,concept,C01,statistical-inference-confidence-interval,statistical-inference-confidence-interval,bound-needs-review,true
 concept:vector,向量,concept,C01,llm-tensor-shapes,llm-tensor-shapes,bound-needs-review,true

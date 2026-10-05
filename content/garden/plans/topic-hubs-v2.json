@@ -85,7 +85,10 @@
         {"id":"data","label":"来源、许可、清洗、配比、合成与版本","conceptRefs":["concept:data-collection","concept:data-versioning"]},
         {"id":"samples","label":"划分、标签移位、样本打包与污染","conceptRefs":["concept:train-validation-test","concept:data-contamination","concept:data-leakage"]},
         {"id":"loop","label":"前向、损失、反向、梯度与更新","conceptRefs":["concept:backpropagation","concept:loss-objective","concept:sgd","concept:learning-rate"]},
-        {"id":"budget","label":"预算、规模、泛化、精度与恢复","conceptRefs":["concept:overfitting","concept:checkpoint"]},
+        {"id":"adamw","label":"AdamW、矩估计与解耦权重衰减","conceptRefs":["concept:adamw"]},
+        {"id":"budget","label":"预算、规模、泛化、精度与恢复","conceptRefs":["concept:overfitting","concept:checkpoint"],"children":[
+          {"id":"regularization","label":"正则化、L2 惩罚与泛化边界","conceptRefs":["concept:regularization"]}
+        ]},
         {"id":"alignment","label":"SFT、奖励、RLHF、DPO 与可验证反馈","conceptRefs":["concept:sft","concept:rlhf","concept:dpo"]},
         {"id":"adaptation","label":"LoRA、全量微调、持续预训练与蒸馏","conceptRefs":["concept:lora","concept:distillation"]},
         {"id":"not-training","label":"上下文学习、检索与更新参数的区别","conceptRefs":["concept:in-context-learning","concept:rag"]}

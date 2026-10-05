@@ -27,6 +27,8 @@ import floatingPoint from '../../content/models/foundations/floating-point-round
 import derivatives from '../../content/models/llm/derivatives.md?raw';
 import complexityCostModel from '../../content/models/foundations/algorithm-complexity-cost-model.md?raw';
 import mutualInformation from '../../content/models/foundations/mutual-information.md?raw';
+import regularization from '../../content/models/foundations/regularization-penalty-generalization.md?raw';
+import adamw from '../../content/models/foundations/adamw-moments-decoupled-decay.md?raw';
 
 const contentById: Record<string, string> = {
   'apple-style-premium-product-video': premiumVideoMarkdown,
@@ -53,6 +55,8 @@ const contentById: Record<string, string> = {
   'floating-point-rounding': floatingPoint,
   'algorithm-complexity-cost-model': complexityCostModel,
   'mutual-information': mutualInformation,
+  'regularization-penalty-generalization': regularization,
+  'adamw-moments-decoupled-decay': adamw,
   'unsupervised-self-supervised-learning': learningSignals,
   'ai-ml-dl-boundaries': aiMlDlBoundaries
 };

@@ -342,6 +342,8 @@ DPO 使用偏好对构造优化目标，和“给每个正确 Token 做普通交
 
 继续阅读 [Token 表示](?view=garden&scope=branch:llm:math/tokenization)、[Softmax 与交叉熵](?view=garden&scope=branch:llm:math/softmax)、[推理中的 KV Cache](?view=garden&scope=branch:llm:inference/kv-cache)。
 
+更新规则还可以继续拆开：用[正则化与 L2 惩罚](?view=garden&scope=branch:llm:training/budget/regularization)分清数据损失、拟合目标与保留预测误差；再用[AdamW 的矩估计与解耦衰减](?view=garden&scope=branch:llm:training/adamw)追踪同一数据梯度怎样经过优化器状态。这两页的教学计算同样不保证真实模型收敛或泛化。
+
 ## 来源与范围
 
 [1] [Hugging Face：Causal language modeling](https://huggingface.co/docs/transformers/en/tasks/language_modeling) 与 [GPT-2 模型接口](https://huggingface.co/docs/transformers/model_doc/gpt2)。前者说明 next-token 与因果可见性；后者的 `labels` 契约明确模型内部移位。具体接口应按使用版本核对。

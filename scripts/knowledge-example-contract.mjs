@@ -24,7 +24,9 @@ export const exampleChecks = [
   ['ai-ml-dl-boundaries', 'ai-ml-dl-boundaries', 'observable-case'],
   ['unsupervised-self-supervised-learning', 'unsupervised-self-supervised-learning', 'observable-case'],
   ['algorithm-complexity-cost-model', 'algorithm-complexity-cost-model', 'python'],
-  ['mutual-information', 'mutual-information', 'python']
+  ['mutual-information', 'mutual-information', 'python'],
+  ['regularization-penalty-generalization', 'regularization-penalty-generalization', 'python'],
+  ['adamw-moments-decoupled-decay', 'adamw-moments-decoupled-decay', 'python']
 ];
 const pilotId = 'ai-ml-dl-boundaries';
 const sourceUrls = [

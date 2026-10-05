@@ -1,8 +1,10 @@
 id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
 branch:llm:training,数据、训练与后训练,branch,C03,,,navigation,false
+branch:llm:training/adamw,AdamW、矩估计与解耦权重衰减,branch,C03,adamw-moments-decoupled-decay,adamw-moments-decoupled-decay,bound-needs-review,true
 branch:llm:training/adaptation,LoRA、全量微调、持续预训练与蒸馏,branch,C03,,,navigation,false
 branch:llm:training/alignment,SFT、奖励、RLHF、DPO 与可验证反馈,branch,C03,,,navigation,false
 branch:llm:training/budget,预算、规模、泛化、精度与恢复,branch,C03,,,navigation,false
+branch:llm:training/budget/regularization,正则化、L2 惩罚与泛化边界,branch,C03,regularization-penalty-generalization,regularization-penalty-generalization,bound-needs-review,true
 branch:llm:training/data,来源、许可、清洗、配比、合成与版本,branch,C03,,,navigation,false
 branch:llm:training/loop,前向、损失、反向、梯度与更新,branch,C03,llm-training-loop,llm-training-loop,bound-needs-review,true
 branch:llm:training/not-training,上下文学习、检索与更新参数的区别,branch,C03,,,navigation,false

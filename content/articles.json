@@ -589,6 +589,84 @@
         ],
         "relatedResourceIds": []
       }
+    },
+    {
+      "id": "regularization-penalty-generalization",
+      "file": "content/models/foundations/regularization-penalty-generalization.md",
+      "space": "models",
+      "category": "foundations",
+      "categoryName": "AI 基础原理",
+      "title": "正则化改变了什么？从 L2 惩罚到泛化的取舍",
+      "subtitle": "分清数据损失、惩罚与预测误差，用精确有限噪声例子说明收益和边界",
+      "date": "2026-10-05",
+      "tags": [
+        "正则化",
+        "L2 惩罚",
+        "泛化",
+        "损失函数",
+        "精确计算"
+      ],
+      "excerpt": "从无截距的一维预测器推导 L2 目标，完整枚举噪声、缩放与保留评估，解释正则化何时有益、何时有害。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "regularization-penalty-generalization",
+        "conceptIds": [
+          "concept:regularization"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "training/budget/regularization"
+          }
+        ],
+        "sourceUrls": [
+          "https://proceedings.neurips.cc/paper/1991/file/8eefcfdf5990e441f0fb6f3fad709e21-Paper.pdf",
+          "https://d2l.ai/chapter_linear-regression/weight-decay.html",
+          "https://scikit-learn.org/1.9/modules/generated/sklearn.linear_model.Ridge.html"
+        ],
+        "relatedResourceIds": []
+      }
+    },
+    {
+      "id": "adamw-moments-decoupled-decay",
+      "file": "content/models/foundations/adamw-moments-decoupled-decay.md",
+      "space": "models",
+      "category": "foundations",
+      "categoryName": "AI 基础原理",
+      "title": "AdamW 怎样更新参数？矩估计、偏差修正与解耦衰减",
+      "subtitle": "沿着两步梯度回放追踪参数与矩状态，区分 L2 项和解耦权重衰减",
+      "date": "2026-10-05",
+      "tags": [
+        "AdamW",
+        "矩估计",
+        "偏差修正",
+        "权重衰减",
+        "优化器"
+      ],
+      "excerpt": "从有限加权和推导 Adam 的矩修正，用两步参数轨迹与零梯度边界解释 AdamW 的解耦机制、系数约定及数值限制。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "adamw-moments-decoupled-decay",
+        "conceptIds": [
+          "concept:adamw"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "training/adamw"
+          }
+        ],
+        "sourceUrls": [
+          "https://arxiv.org/pdf/1412.6980v9",
+          "https://arxiv.org/pdf/1711.05101v3",
+          "https://docs.pytorch.org/docs/2.14/generated/torch.optim.AdamW.html",
+          "https://docs.pytorch.org/docs/2.14/generated/torch.optim.Adam.html",
+          "https://arxiv.org/pdf/1904.09237v1"
+        ],
+        "relatedResourceIds": []
+      }
     }
   ]
 }

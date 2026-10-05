@@ -1,6 +1,12 @@
 # AI 知识花园：事实源与内容清单
 
-本目录已接入生产 React 工作区。现行首页使用完整的单一知识网络和只读 SVG 点线引擎；原 602 节点范围完整保留，并发主线新增 27 个概念，内容组织先后补 metrics、naive-bayes、ai-ml-dl、learning-signals、floating-point、mutual-information 与 complexity 七个导航叶；模型共 637 个节点（407 个概念、120 个分支），`normalizeNetwork` 得到 636 个候选。2026-10-05 第十二批工作树默认地图准入为 209，另 427 个候选仍保留在模型和清单中；显式选择与用户筛选可改变实际显示。`root:ai` 不进入地图候选，不能把候选数称为默认可见数。React Flow/ELK 的历史模块仍在仓库，不代表当前首页依赖它们。现行交互见 [数字花园设计](../../docs/obsidian-digital-garden.md)，早期设计不作为上线状态证明。
+本目录已接入生产 React 工作区。现行首页使用完整的单一知识网络和只读 SVG 点线引擎；原 602 节点范围完整保留，并发主线新增 27 个概念，内容组织先后补 metrics、naive-bayes、ai-ml-dl、learning-signals、floating-point、mutual-information、complexity、regularization 与 adamw 九个导航叶；模型共 639 个节点（407 个概念、122 个分支），`normalizeNetwork` 得到 638 个候选。2026-10-05 第十三批工作树默认地图准入为 213，另 425 个候选仍保留在模型和清单中；显式选择与用户筛选可改变实际显示。`root:ai` 不进入地图候选，不能把候选数称为默认可见数。React Flow/ELK 的历史模块仍在仓库，不代表当前首页依赖它们。现行交互见 [数字花园设计](../../docs/obsidian-digital-garden.md)，早期设计不作为上线状态证明。
+
+当前第十三批工作树新增正则化与 AdamW 两篇分别经过来源、数学和代码审阅的课，只绑定既有 `concept:regularization` 与 `concept:adamw`。正则化放在原预算目录的子叶，AdamW 位于训练循环之后；预算目录的 ID、标签、过拟合与检查点引用不变。实测 **43 个页面（28 篇 MD、15 个生成页面）**、**20 篇独立单元覆盖 51/407 个概念**，356 个概念仍缺独立绑定；141 个节点有直接资料，其中 84 个概念。模型 639 个节点、638 个候选、213 个默认准入，425 个未准入候选仍保留；原 603 个 ID 全部保留。
+
+第十三批只新增两个目录边与两条 references，不增加规范概念、全局建议或语义边。实际知识检查为 **18 个 Python 执行＋2 个案例家族结构／链接检查**；14 个内联后缀、两份既有外部后缀、全部旧代码与案例检查器保留。显式文件登记负例由 29 扩至 38，逐项保留未被修改的登记并精确检查错误目标；学习信号契约负例由 229 增至 231，原 77／16／5 个其他负例保留。审查状态仍为 needs-independent-review、专家复核为 0；该工作树的完整浏览器冻结验收、发布和部署须分别确认。
+
+以下两段保留第十二批 `5c834dcb` 的历史叙述与计数，不以其中“当前”指代第十三批。
 
 第十二批新增 `algorithm-complexity-cost-model` 与 `mutual-information` 两篇独立基础课，只绑定既有复杂度与互信息概念，并在原 LLM math 下各加一个最小叶。当前 41 个页面（26 篇 MD、15 个生成页面），18 篇独立单元覆盖 49/407 个概念，缺口 358；137 个节点有直接资料，其中 82 个概念。只新增两个目录边、两条 references 及一条有范围和理由的 KL → 互信息阅读建议，不更改规范归属或语义边，不为两篇课创造相互依赖。893 条边分为 636 目录、37 全局建议、57 路径局部建议、85 references，其他类型不变。
 
@@ -12,10 +18,10 @@
 
 - `blueprint.json`：14 个领域、77 个主题、407 个规范概念、编辑关联、建议先学、学习路径及已有资源绑定
 - `master-outline.json`：学习阶段、规范知识复用与知识单元完成契约
-- `plans/topic-hubs-v2.json` 与 `hub-integration.json`：18 个专题和 120 个实际分支的结构、引用及资料放置；目录不等于独立正文
+- `plans/topic-hubs-v2.json` 与 `hub-integration.json`：18 个专题和 122 个实际分支的结构、引用及资料放置；目录不等于独立正文
 - `microscopes/attention-3x2.json`：可验证的人工教学计算输入与约束，不是商业模型实测或已经完成的交互模拟器
 - `../articles.json` 的 `knowledgeUnit`：独立知识单元的规范概念、已有分支、来源 URL、例子及审查状态；正文仍在原 MD
-- [分批 CSV 清单](../../docs/content-inventory/README.md)：18 个已跟踪小文件，记录全部 637 个节点的身份、类型、批次、直接文章、独立覆盖和默认准入，不手改
+- [分批 CSV 清单](../../docs/content-inventory/README.md)：18 个已跟踪小文件，记录全部 639 个节点的身份、类型、批次、直接文章、独立覆盖和默认准入，不手改
 - `content-inventory.json`：忽略的可复现完整审计产物，保留来源定位、全部类型化边与覆盖细节；安装/构建自动重建。审计定义见 [内容整理计划](../../docs/content-organization-plan.md)
 
 所有概念只定义一次。文章在不同专题出现时复用同一 articleId；产品价格、榜单与其他易变事实仍由 `content/data/**` 管理，不复制进节点。正文日期、来源访问日期和榜单快照日期分别保留。
@@ -29,7 +35,7 @@ node scripts/test-garden.mjs
 npm run test:hubs
 npm run test:knowledge
 
-# 全部 637 个模型节点（636 个地图候选；当前 209 个默认准入）的可复现审计
+# 全部 639 个模型节点（638 个地图候选；当前 213 个默认准入）的可复现审计
 node scripts/audit-node-content.mjs --write
 # 仅重建忽略的 JSON，检查已跟踪 CSV 和索引
 node scripts/audit-node-content.mjs --prepare

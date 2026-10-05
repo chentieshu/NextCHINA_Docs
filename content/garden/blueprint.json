@@ -1801,6 +1801,12 @@
       "target": "concept:accuracy-f1",
       "type": "recommended_before",
       "reason": "先区分精确率与召回率的两个分母，再解释 F1 的调和组合及它与包含真负例的准确率有何不同；F1 不等于实际错误成本。"
+    },
+    {
+      "source": "concept:supervised-learning",
+      "target": "concept:naive-bayes",
+      "type": "recommended_before",
+      "reason": "先区分带标签样本、学习算法、拟合参数与输入预测，再用朴素贝叶斯观察一个具体的监督分类过程；这一阅读次序不把算法的条件独立假设推广到所有监督学习。"
     }
   ],
   "articleBindings": [

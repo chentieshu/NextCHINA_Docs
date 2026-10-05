@@ -1,15 +1,15 @@
 # AI 知识花园：事实源与内容清单
 
-本目录已接入生产 React 工作区。现行首页使用完整的单一知识网络和只读 SVG 点线引擎；原 602 节点范围完整保留，并发主线新增 27 个概念，本次内容组织另增 1 个 metrics 导航叶；模型共 631 个节点（407 个概念、114 个分支），`normalizeNetwork` 得到 630 个候选。2026-10-05 第六批工作树默认地图准入为 192，另 438 个候选仍保留在模型和清单中；显式选择与用户筛选可改变实际显示。`root:ai` 不进入地图候选，不能把候选数称为默认可见数。React Flow/ELK 的历史模块仍在仓库，不代表当前首页依赖它们。现行交互见 [数字花园设计](../../docs/obsidian-digital-garden.md)，早期设计不作为上线状态证明。
+本目录已接入生产 React 工作区。现行首页使用完整的单一知识网络和只读 SVG 点线引擎；原 602 节点范围完整保留，并发主线新增 27 个概念，内容组织先后补 metrics 与 AI 全景的 naive-bayes 两个导航叶；模型共 632 个节点（407 个概念、115 个分支），`normalizeNetwork` 得到 631 个候选。2026-10-05 第七批工作树默认地图准入为 194，另 437 个候选仍保留在模型和清单中；显式选择与用户筛选可改变实际显示。`root:ai` 不进入地图候选，不能把候选数称为默认可见数。React Flow/ELK 的历史模块仍在仓库，不代表当前首页依赖它们。现行交互见 [数字花园设计](../../docs/obsidian-digital-garden.md)，早期设计不作为上线状态证明。
 
 ## 事实源
 
 - `blueprint.json`：14 个领域、77 个主题、407 个规范概念、编辑关联、建议先学、学习路径及已有资源绑定
 - `master-outline.json`：学习阶段、规范知识复用与知识单元完成契约
-- `plans/topic-hubs-v2.json` 与 `hub-integration.json`：18 个专题和 114 个实际分支的结构、引用及资料放置；目录不等于独立正文
+- `plans/topic-hubs-v2.json` 与 `hub-integration.json`：18 个专题和 115 个实际分支的结构、引用及资料放置；目录不等于独立正文
 - `microscopes/attention-3x2.json`：可验证的人工教学计算输入与约束，不是商业模型实测或已经完成的交互模拟器
 - `../articles.json` 的 `knowledgeUnit`：独立知识单元的规范概念、已有分支、来源 URL、例子及审查状态；正文仍在原 MD
-- [分批 CSV 清单](../../docs/content-inventory/README.md)：18 个已跟踪小文件，记录全部 631 个节点的身份、类型、批次、直接文章、独立覆盖和默认准入，不手改
+- [分批 CSV 清单](../../docs/content-inventory/README.md)：18 个已跟踪小文件，记录全部 632 个节点的身份、类型、批次、直接文章、独立覆盖和默认准入，不手改
 - `content-inventory.json`：忽略的可复现完整审计产物，保留来源定位、全部类型化边与覆盖细节；安装/构建自动重建。审计定义见 [内容整理计划](../../docs/content-organization-plan.md)
 
 所有概念只定义一次。文章在不同专题出现时复用同一 articleId；产品价格、榜单与其他易变事实仍由 `content/data/**` 管理，不复制进节点。正文日期、来源访问日期和榜单快照日期分别保留。
@@ -23,7 +23,7 @@ node scripts/test-garden.mjs
 npm run test:hubs
 npm run test:knowledge
 
-# 全部 631 个模型节点（630 个地图候选；当前 192 个默认准入）的可复现审计
+# 全部 632 个模型节点（631 个地图候选；当前 194 个默认准入）的可复现审计
 node scripts/audit-node-content.mjs --write
 # 仅重建忽略的 JSON，检查已跟踪 CSV 和索引
 node scripts/audit-node-content.mjs --prepare

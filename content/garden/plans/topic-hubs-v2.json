@@ -39,6 +39,11 @@
   ],
   "seedScope": "以上种子优先承接现有内容，不是全 AI 专题清单；完整宏观覆盖仍以十四领域及设计文档为准。模板分支是可用能力，不是所有专题必须展示的空目录。",
   "hubOutlines": {
+    "hub:ai-overview": [
+      {"id":"orientation","label":"基础与认识","children":[
+        {"id":"naive-bayes","label":"监督学习：用朴素贝叶斯训练分类器","conceptRefs":["concept:supervised-learning","concept:naive-bayes"]}
+      ]}
+    ],
     "hub:llm": [
       {"id":"orientation","label":"基础与认识","children":[
         {"id":"definition","label":"LLM、语言建模与模型边界","conceptRefs":["concept:llm","concept:model-vs-product"]},

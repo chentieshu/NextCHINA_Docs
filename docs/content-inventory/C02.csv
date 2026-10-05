@@ -1,5 +1,6 @@
 id,label,type,batch,direct_article_ids,independent_article_ids,independent_coverage,default_admission
 branch:ai-overview:orientation,基础与认识,branch,C02,overview,,navigation,true
+branch:ai-overview:orientation/naive-bayes,监督学习：用朴素贝叶斯训练分类器,branch,C02,supervised-learning-naive-bayes,supervised-learning-naive-bayes,bound-needs-review,true
 branch:llm:orientation,基础与认识,branch,C02,llm-how-it-works,,navigation,true
 branch:llm:orientation/definition,LLM、语言建模与模型边界,branch,C02,,,navigation,false
 branch:llm:orientation/learning-map,普通读者、开发者和研究者的阅读路径,branch,C02,,,navigation,false

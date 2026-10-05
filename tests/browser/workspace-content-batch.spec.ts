@@ -7,14 +7,16 @@ const probabilityArticleId = 'llm-conditional-probability';
 const statisticsArticleId = 'statistical-inference-confidence-interval';
 const dataSplitArticleId = 'train-validation-test-data-leakage';
 const metricsArticleId = 'classification-accuracy-precision-recall-f1';
+const naiveBayesArticleId = 'supervised-learning-naive-bayes';
+const naiveBayesTitle = '监督学习怎样从标注样本得到分类器？朴素贝叶斯实算';
 const metricsTitle = '准确率90%，为什么仍漏掉全部目标？精确率、召回率与 F1';
 const dataSplitTitle = '训练、验证与测试：模型没见过答案，评估就可信吗？';
 const statisticsTitle = '测试集答对80%，能说明模型有多可靠？统计推断与置信区间';
 const probabilityTitle = '概率基础：从贝叶斯更新到期望与序列概率';
 const probabilityBridges = [
-  { source: 'concept:bayes-rule', target: 'concept:naive-bayes', label: '朴素贝叶斯', articleId: null },
-  { source: 'concept:expectation-variance', target: 'concept:value-function', label: '价值函数', articleId: null },
-  { source: 'concept:expectation-variance', target: 'concept:confidence-interval', label: '置信区间', articleId: statisticsArticleId },
+  { source: 'concept:bayes-rule', target: 'concept:naive-bayes', label: '朴素贝叶斯', articleId: naiveBayesArticleId, articleTitle: naiveBayesTitle },
+  { source: 'concept:expectation-variance', target: 'concept:value-function', label: '价值函数', articleId: null, articleTitle: null },
+  { source: 'concept:expectation-variance', target: 'concept:confidence-interval', label: '置信区间', articleId: statisticsArticleId, articleTitle: statisticsTitle },
 ];
 
 test('probability bindings and cross-domain reading routes preserve editorial maturity', () => {
@@ -32,6 +34,7 @@ test('probability bindings and cross-domain reading routes preserve editorial ma
     expect(matches[0].knowledgeUnit.conceptIds).toContain(id);
   }
   for (const bridge of probabilityBridges) {
+    expect(Boolean(bridge.articleId)).toBe(Boolean(bridge.articleTitle));
     const nodes = graph.nodes.filter(node => node.id === bridge.target);
     expect(nodes).toHaveLength(1);
     expect(nodes[0].articleBindings).toEqual(bridge.articleId ? [{ articleId: bridge.articleId, coverage: 'explanation' }] : []);
@@ -133,6 +136,41 @@ test('classification metrics adds one navigation leaf and only two concept expla
   }
 });
 
+test('supervised Bayes leaf preserves the AI overview parent and owns exactly two explanations', () => {
+  const articles = JSON.parse(readFileSync('content/articles.json', 'utf8')).articles;
+  const matches = articles.filter((article: { id: string }) => article.id === naiveBayesArticleId);
+  expect(matches).toHaveLength(1);
+  const unit = matches[0].knowledgeUnit;
+  expect(matches[0].title).toBe(naiveBayesTitle);
+  expect(unit.reviewStatus).toBe('needs-independent-review');
+  expect([...unit.conceptIds].sort()).toEqual(['concept:naive-bayes', 'concept:supervised-learning']);
+  expect(unit.placements).toEqual([{ hubId: 'hub:ai-overview', path: 'orientation/naive-bayes' }]);
+  expect(graph.nodes.filter(node => node.kind === 'concept' && node.articleBindings.some(ref => ref.articleId === naiveBayesArticleId)).map(node => node.id).sort()).toEqual([...unit.conceptIds].sort());
+  for (const id of unit.conceptIds) {
+    const node = graph.nodes.find(node => node.id === id)!;
+    expect(node.articleBindings).toEqual([{ articleId: naiveBayesArticleId, coverage: 'explanation' }]);
+    expect(node.contentStatus).toBe('outline');
+    expect(node.evidenceStatus).toBe('not-reviewed');
+  }
+  const parent = graph.nodes.find(node => node.id === 'branch:ai-overview:orientation')!;
+  expect(parent.label).toBe('基础与认识');
+  expect(parent.parentId).toBe('hub:ai-overview');
+  expect(parent.articleBindings).toEqual([{ articleId: 'overview', coverage: 'overview' }]);
+  expect(parent.resourceRefs).toEqual([{ articleId: 'overview', role: 'existing-orientation' }]);
+  expect(parent.embeddedArticleId).toBeUndefined();
+  const branch = graph.nodes.find(node => node.id === 'branch:ai-overview:orientation/naive-bayes')!;
+  expect(branch.kind).toBe('branch');
+  expect(branch.parentId).toBe(parent.id);
+  expect(branch.embeddedArticleId).toBe(naiveBayesArticleId);
+  expect([...branch.conceptRefs!].sort()).toEqual([...unit.conceptIds].sort());
+  expect(inventory.originalScope.addedNodeIds).toContain(branch.id);
+  for (const source of ['concept:bayes-rule', 'concept:supervised-learning']) {
+    const edges = graph.edges.filter(edge => edge.source === source && edge.target === 'concept:naive-bayes' && edge.type === 'recommended_before');
+    expect(edges).toHaveLength(1);
+    expect(edges[0].assertionStatus).toBe('editorial');
+  }
+});
+
 test('content inventory distinguishes full network candidates from default map admission', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.og-network-host')).toHaveAttribute('data-layout', 'ready');
@@ -143,6 +181,8 @@ test('content inventory distinguishes full network candidates from default map a
 });
 
 const units = [
+  { article: naiveBayesArticleId, concept: 'concept:supervised-learning', branch: 'branch:ai-overview:orientation/naive-bayes' },
+  { article: naiveBayesArticleId, concept: 'concept:naive-bayes', branch: 'branch:ai-overview:orientation/naive-bayes' },
   { article: metricsArticleId, concept: 'concept:accuracy-f1', branch: 'branch:llm:rankings/metrics' },
   { article: metricsArticleId, concept: 'concept:precision-recall', branch: 'branch:llm:rankings/metrics' },
   { article: dataSplitArticleId, concept: 'concept:train-validation-test', branch: 'branch:llm:training/samples' },
@@ -193,6 +233,11 @@ for (const width of [390, 1440]) for (const unit of units) {
       await expect(article.locator('.markdown-body')).toContainText('macro_f1_strict');
       await expect(article.locator('.markdown-body')).toContainText('needs-independent-review');
     }
+    if (unit.article === naiveBayesArticleId) {
+      await expect(article.locator('h1')).toHaveText(naiveBayesTitle);
+      await expect(article.locator('.markdown-body')).toContainText('320/401');
+      await expect(article.locator('.markdown-body')).toContainText('needs-independent-review');
+    }
     await expect(article.locator('.katex-error')).toHaveCount(0);
     expect(await article.locator('.markdown-body a[href^="https://"]').count()).toBeGreaterThanOrEqual(2);
     expect(await article.locator('.markdown-body a[href^="?view=garden"]').count()).toBeGreaterThanOrEqual(2);
@@ -218,7 +263,7 @@ for (const width of [390, 1440]) for (const unit of units) {
 }
 
 for (const width of [390, 1440]) {
-  test(`probability onward links distinguish real statistical reading from remaining outlines / ${width}px`, async ({ page }) => {
+  test(`probability onward links distinguish real teaching units from remaining outlines / ${width}px`, async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
@@ -235,16 +280,16 @@ for (const width of [390, 1440]) {
       expect(new URL(page.url()).searchParams.get('scope')).toBe(bridge.target);
       if (bridge.articleId) {
         await expect(destination.locator('.ws-empty')).toHaveCount(0);
-        await destination.getByRole('button', { name: statisticsTitle, exact: true }).click();
+        await destination.getByRole('button', { name: bridge.articleTitle!, exact: true }).click();
         const nextArticle = page.locator(`[data-document="${bridge.articleId}"]`);
-        await expect(nextArticle.locator('h1')).toHaveText(statisticsTitle);
+        await expect(nextArticle.locator('h1')).toHaveText(bridge.articleTitle!);
         await expect(nextArticle.locator('.markdown-body')).toBeVisible();
         await page.reload();
-        await expect(nextArticle.locator('h1')).toHaveText(statisticsTitle);
+        await expect(nextArticle.locator('h1')).toHaveText(bridge.articleTitle!);
         await page.goBack();
         await expect(destination.locator('h1')).toHaveText(bridge.label);
         await page.goForward();
-        await expect(nextArticle.locator('h1')).toHaveText(statisticsTitle);
+        await expect(nextArticle.locator('h1')).toHaveText(bridge.articleTitle!);
         await page.goBack();
         await page.goBack();
       } else {
@@ -267,7 +312,7 @@ for (const width of [390, 1440]) {
       if (bridge.articleId) {
         await expect(page.locator('.og-coverage-note')).toContainText('不代表内容已经核验完成');
         await page.locator('.og-read-button').click();
-        await expect(page.locator(`[data-document="${bridge.articleId}"] h1`)).toHaveText(statisticsTitle);
+        await expect(page.locator(`[data-document="${bridge.articleId}"] h1`)).toHaveText(bridge.articleTitle!);
         await page.getByRole('button', { name: '返回知识地图', exact: true }).click();
         await expect(page.locator('.kg-node[data-active="true"]')).toHaveAttribute('data-node-id', bridge.target);
       } else {
@@ -338,5 +383,44 @@ for (const width of [390, 1440]) test(`classification metrics reuses probability
     await expect(metrics.locator('h1')).toHaveText(metricsTitle);
     await expect(page.locator('[data-document]')).toHaveCount(1);
   }
+  expect(errors).toEqual([]);
+});
+
+for (const width of [390, 1440]) test(`AI overview keeps its folder and reuses classifier backlinks / ${width}px`, async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+  await page.setViewportSize({ width, height: 900 });
+  await page.goto('/?view=garden&scope=branch:ai-overview:orientation');
+  const parent = page.locator('[data-folder="branch:ai-overview:orientation"]');
+  await expect(parent.locator('h1')).toHaveText('基础与认识');
+  await expect(page.locator('[data-document]')).toHaveCount(0);
+  expect(await parent.locator('.ws-folder-rows button').count()).toBeGreaterThanOrEqual(2);
+  await parent.locator('[data-folder-entry]').filter({ hasText: '朴素贝叶斯' }).click();
+  const naiveBayes = page.locator(`[data-document="${naiveBayesArticleId}"]`);
+  await expect(naiveBayes.locator('h1')).toHaveText(naiveBayesTitle);
+  await page.goBack();
+  await expect(parent.locator('h1')).toHaveText('基础与认识');
+  for (const source of [
+    { article: dataSplitArticleId, title: dataSplitTitle },
+    { article: metricsArticleId, title: metricsTitle },
+  ]) {
+    await page.goto(`/?view=article&article=${source.article}`);
+    const article = page.locator(`[data-document="${source.article}"]`);
+    await article.locator('.markdown-body a[href="?view=garden&scope=branch:ai-overview:orientation/naive-bayes"]').click();
+    await expect(naiveBayes.locator('.markdown-body')).toBeVisible();
+    await page.reload();
+    await expect(naiveBayes.locator('h1')).toHaveText(naiveBayesTitle);
+    await page.goBack();
+    await expect(article.locator('h1')).toHaveText(source.title);
+    await page.goForward();
+    await expect(naiveBayes.locator('h1')).toHaveText(naiveBayesTitle);
+  }
+  await naiveBayes.locator('.markdown-body a[href="?view=garden&scope=branch:llm:training/samples"]').first().click();
+  await expect(page.locator(`[data-document="${dataSplitArticleId}"] h1`)).toHaveText(dataSplitTitle);
+  await page.goBack();
+  await expect(naiveBayes.locator('h1')).toHaveText(naiveBayesTitle);
+  await expect(page.locator('[data-document]')).toHaveCount(1);
+  await expect(page.getByRole('tab')).toHaveCount(0);
   expect(errors).toEqual([]);
 });

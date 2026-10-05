@@ -374,6 +374,8 @@ print('示例检查通过')
 
 这些分数首先描述指定样本。要从样本推断今后的目标总体，还需说明抽样机制与不确定性；可接着阅读 [统计推断](?view=garden&scope=concept:statistical-inference) 和 [置信区间](?view=garden&scope=concept:confidence-interval)。那里对准确率的二项模型不能直接替 F1、宏平均或加权分数提供区间。
 
+想把这些计数接到一个从标签学习的模型，可读[监督学习与朴素贝叶斯](?view=garden&scope=branch:ai-overview:orientation/naive-bayes)：它在小型人工保留集上与全负基线准确率持平，适合练习为何还要看混淆矩阵与建模假设。
+
 ## 来源与核验范围
 
 [1] scikit-learn，[confusion_matrix](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html)。核对行真实、列预测、标签顺序与四格位置。

@@ -332,6 +332,48 @@
         ],
         "relatedResourceIds": []
       }
+    },
+    {
+      "id": "supervised-learning-naive-bayes",
+      "file": "content/models/classical/supervised-learning-naive-bayes.md",
+      "space": "models",
+      "category": "classical-supervised-learning",
+      "categoryName": "经典模型与监督学习",
+      "title": "监督学习怎样从标注样本得到分类器？朴素贝叶斯实算",
+      "subtitle": "从拟合状态与条件独立，到平滑、保留评估及模型概率的边界",
+      "date": "2026-10-05",
+      "tags": [
+        "监督学习",
+        "朴素贝叶斯",
+        "伯努利模型",
+        "条件独立",
+        "分类"
+      ],
+      "excerpt": "用两项二元属性拟合一个伯努利朴素贝叶斯分类器，区分训练、参数与预测，检查标签影响、平滑假设和与常数基线持平的保留评估。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "supervised-learning-naive-bayes",
+        "conceptIds": [
+          "concept:supervised-learning",
+          "concept:naive-bayes"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:ai-overview",
+            "path": "orientation/naive-bayes"
+          }
+        ],
+        "sourceUrls": [
+          "https://artint.info/3e/html/ArtInt3e.Ch7.S2.html",
+          "https://www.cs.cmu.edu/~tom/mlbook/NBayesLogReg.pdf",
+          "https://nlp.stanford.edu/IR-book/html/htmledition/the-bernoulli-model-1.html",
+          "https://scikit-learn.org/stable/modules/naive_bayes.html",
+          "https://www.cs.cmu.edu/~tom/mlbook/Joint_MLE_MAP.pdf",
+          "https://nlp.stanford.edu/IR-book/html/htmledition/properties-of-naive-bayes-1.html"
+        ],
+        "relatedResourceIds": []
+      }
     }
   ]
 }

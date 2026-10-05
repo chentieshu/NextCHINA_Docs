@@ -42,7 +42,7 @@ concept:reward-model,奖励模型,concept,C03,,,missing,false
 concept:rlhf,人类反馈强化学习,concept,C03,,,missing,false
 concept:self-supervised-learning,自监督学习,concept,C03,,,missing,false
 concept:sft,监督微调,concept,C03,,,missing,false
-concept:supervised-learning,监督学习,concept,C03,,,missing,false
+concept:supervised-learning,监督学习,concept,C03,supervised-learning-naive-bayes,supervised-learning-naive-bayes,bound-needs-review,true
 concept:synthetic-data,合成数据,concept,C03,,,missing,false
 concept:train-validation-test,训练、验证与测试集,concept,C03,train-validation-test-data-leakage,train-validation-test-data-leakage,bound-needs-review,true
 concept:transfer-learning,迁移学习,concept,C03,,,missing,false

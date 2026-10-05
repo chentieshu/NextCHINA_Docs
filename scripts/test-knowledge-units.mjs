@@ -14,6 +14,85 @@ const graph = attachTopicHubs(base, repositoryRoot, publishedArticleIds);
 const byId = new Map(graph.nodes.map(node => [node.id, node]));
 const results = [];
 const negatives = {
+  'supervised-learning-naive-bayes': `
+# Independent count/product, symmetry and boundary checks for the fitted model.
+from collections import Counter
+from fractions import Fraction
+from itertools import product
+from time import perf_counter
+start = perf_counter()
+xs = tuple(product((0, 1), repeat=2))
+allrows = tuple(product((0, 1), repeat=3))
+cases = 0
+for n in (2, 3, 4):
+    for rows in product(allrows, repeat=n):
+        if len({r[2] for r in rows}) != 2:
+            continue
+        fitted = fit(rows)
+        assert fit(tuple(reversed(rows))) == fitted
+        swapped_class = fit(tuple((a, b, 1-y) for a, b, y in rows))
+        swapped_features = fit(tuple((b, a, y) for a, b, y in rows))
+        complement_first = fit(tuple((1-a, b, y) for a, b, y in rows))
+        oracle = []
+        for x in xs:
+            # Tabulate successes independently for each class and queried value;
+            # this does not read theta or call masses for the reference result.
+            w = []
+            for y in (0, 1):
+                sub = tuple(r for r in rows if r[2] == y)
+                matches = [Counter(r[j] for r in sub)[x[j]] for j in (0, 1)]
+                w.append(Fraction(len(sub)*(matches[0]+1)*(matches[1]+1),
+                                  n*(len(sub)+2)**2))
+            expected = tuple(v/sum(w) for v in w)
+            assert masses(fitted, x) == tuple(w)
+            assert posterior(fitted, x) == expected
+            assert 0 < expected[0] < 1 and sum(expected) == 1
+            assert posterior(swapped_class, x) == expected[::-1]
+            assert posterior(swapped_features, x[::-1]) == expected
+            assert posterior(complement_first, (1-x[0], x[1])) == expected
+            assert predict(fitted, x) == int(w[1] > w[0])
+            oracle.append(w)
+        assert sum(sum(w) for w in oracle) == 1
+        cases += 1
+assert cases == 4000
+# Fixed alpha smoothing means row replication is NOT an invariance.
+assert fit(train*2).prior == model.prior
+assert fit(train*2).theta != model.theta
+assert fit(train*2).theta[0][0] == Fraction(3, 14)
+assert fit(train[:-1] + ((0, 0, 0),)).counts == (7, 3)
+# Every possible binary feature/label perturbation of one held-out row leaves
+# fitting unchanged; held-out predictions are allowed to respond to feature changes.
+for i in range(len(holdout)):
+    for row in allrows:
+        altered = holdout[:i] + (row,) + holdout[i+1:]
+        assert fit(train) == model
+        for r in altered:
+            assert sum(posterior(model, r[:2])) == 1
+invalid = [lambda: fit([]), lambda: fit(()), lambda: fit(train[:1]),
+           lambda: fit(train*101), lambda: fit(iter(train)), lambda: fit('bad'),
+           lambda: fit(((0, 0, 0), (1, 1, 0))),
+           lambda: fit(((0, 0, 1), (1, 1, 1))),
+           lambda: fit(((0, 0, 0), (1, 1))),
+           lambda: fit(((0, 0, 0), (1, 1, 1, 1))),
+           lambda: fit(((0, 0, 0), None))]
+for bad in (True, False, -1, 2, 0.0, 1.0, '1', None, float('nan'), float('inf')):
+    invalid += [lambda bad=bad: fit(((0, 0, 0), (bad, 1, 1))),
+                lambda bad=bad: fit(((0, 0, 0), (1, bad, 1))),
+                lambda bad=bad: fit(((0, 0, 0), (1, 1, bad))),
+                lambda bad=bad: posterior(model, (bad, 0)),
+                lambda bad=bad: predict(model, (0, bad))]
+for bad in (None, [], [0], [0, 1, 0], iter((0, 1)), '01', {0, 1}):
+    invalid.append(lambda bad=bad: masses(model, bad))
+for call in invalid:
+    try:
+        call()
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('invalid input accepted')
+assert fit(train*100).counts == (600, 400)
+print(f'PASS: {cases} exhaustive datasets; all four inputs; order, label, feature and bit symmetries; normalized joint distributions; {len(invalid)} rejections; 1000-row boundary. {perf_counter()-start:.3f}s')
+`,
   'classification-accuracy-precision-recall-f1': `
 # Independent regression appended to the article's sole Python example.
 from collections import Counter

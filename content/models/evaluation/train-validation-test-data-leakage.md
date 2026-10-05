@@ -245,6 +245,8 @@ print("ten boundary checks passed")
 
 **答案**：没有。分组不让未来字段在月初变得可用，置信区间也不修复这种时间泄漏。应回到预测时点重建可用特征，再按目标设计评估。
 
+接着可用[监督学习与朴素贝叶斯](?view=garden&scope=branch:ai-overview:orientation/naive-bayes)追踪一个实际拟合的分类器：哪些状态只由训练标签产生，为什么保留标签只进入计分。
+
 ## 来源与核验范围
 
 [1] scikit-learn，[3.1：Cross-validation: evaluating estimator performance](https://scikit-learn.org/stable/modules/cross_validation.html)。核对首节训练、验证、测试职责，3.1.2.2 的分层作用，3.1.2.4 的未见群组目标，以及 3.1.2.6 的时间结构。本页的人造实体数据与计分不是官方模型实验。

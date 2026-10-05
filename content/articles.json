@@ -248,6 +248,46 @@
         ],
         "relatedResourceIds": []
       }
+    },
+    {
+      "id": "train-validation-test-data-leakage",
+      "file": "content/models/evaluation/train-validation-test-data-leakage.md",
+      "space": "models",
+      "category": "evaluation-statistics",
+      "categoryName": "评测与统计基础",
+      "title": "训练、验证与测试：模型没见过答案，评估就可信吗？",
+      "subtitle": "信息职责、实体与时间切分、训练内预处理和适应性选择",
+      "date": "2026-10-05",
+      "tags": [
+        "数据划分",
+        "数据泄漏",
+        "泛化",
+        "评测",
+        "交叉验证"
+      ],
+      "excerpt": "从同样各六行却得到 6/6 与 3/6 的人造反例出发，检查目标总体、可用信息、预处理状态及测试反馈怎样影响评估结论。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "train-validation-test-data-leakage",
+        "conceptIds": [
+          "concept:train-validation-test",
+          "concept:data-leakage"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "training/samples"
+          }
+        ],
+        "sourceUrls": [
+          "https://scikit-learn.org/stable/modules/cross_validation.html",
+          "https://scikit-learn.org/stable/common_pitfalls.html#data-leakage",
+          "https://scikit-learn.org/stable/modules/compose.html#pipeline-chaining-estimators",
+          "https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html"
+        ],
+        "relatedResourceIds": []
+      }
     }
   ]
 }

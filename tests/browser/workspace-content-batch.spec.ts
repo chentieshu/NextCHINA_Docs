@@ -5,6 +5,8 @@ const networkNodeCount = graph.nodes.filter(node => !['root', 'group', 'path', '
 const inventory = JSON.parse(readFileSync('content/garden/content-inventory.json', 'utf8'));
 const probabilityArticleId = 'llm-conditional-probability';
 const statisticsArticleId = 'statistical-inference-confidence-interval';
+const dataSplitArticleId = 'train-validation-test-data-leakage';
+const dataSplitTitle = '训练、验证与测试：模型没见过答案，评估就可信吗？';
 const statisticsTitle = '测试集答对80%，能说明模型有多可靠？统计推断与置信区间';
 const probabilityTitle = '概率基础：从贝叶斯更新到期望与序列概率';
 const probabilityBridges = [
@@ -64,6 +66,32 @@ test('statistical bridge binds exactly its two canonical concepts without promot
   }
 });
 
+test('data split bridge owns only two explanations and preserves contamination as a reference', () => {
+  const articles = JSON.parse(readFileSync('content/articles.json', 'utf8')).articles;
+  const matches = articles.filter((article: { id: string }) => article.id === dataSplitArticleId);
+  expect(matches).toHaveLength(1);
+  const unit = matches[0].knowledgeUnit;
+  expect(matches[0].title).toBe(dataSplitTitle);
+  expect(unit.reviewStatus).toBe('needs-independent-review');
+  expect([...unit.conceptIds].sort()).toEqual(['concept:data-leakage', 'concept:train-validation-test']);
+  expect(unit.placements).toEqual([{ hubId: 'hub:llm', path: 'training/samples' }]);
+  for (const id of unit.conceptIds) {
+    const node = graph.nodes.find(node => node.id === id)!;
+    expect(node.articleBindings).toEqual([{ articleId: dataSplitArticleId, coverage: 'explanation' }]);
+    expect(node.contentStatus).toBe('outline');
+    expect(node.evidenceStatus).toBe('not-reviewed');
+  }
+  const branch = graph.nodes.find(node => node.id === 'branch:llm:training/samples')!;
+  expect(branch.embeddedArticleId).toBe(dataSplitArticleId);
+  expect(branch.conceptRefs).toContain('concept:data-contamination');
+  expect(branch.conceptRefs).toContain('concept:data-leakage');
+  expect(graph.nodes.find(node => node.id === 'concept:data-contamination')!.articleBindings.some(ref => ref.articleId === dataSplitArticleId)).toBe(false);
+  const teaching = graph.edges.filter(edge => edge.source === 'concept:train-validation-test' && edge.target === 'concept:data-leakage' && edge.type === 'recommended_before');
+  expect(teaching).toHaveLength(1);
+  expect(teaching[0].assertionStatus).toBe('editorial');
+  expect(graph.edges.some(edge => edge.source === branch.id && edge.target === 'concept:data-leakage' && edge.type === 'references')).toBe(true);
+});
+
 test('content inventory distinguishes full network candidates from default map admission', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.og-network-host')).toHaveAttribute('data-layout', 'ready');
@@ -74,6 +102,8 @@ test('content inventory distinguishes full network candidates from default map a
 });
 
 const units = [
+  { article: dataSplitArticleId, concept: 'concept:train-validation-test', branch: 'branch:llm:training/samples' },
+  { article: dataSplitArticleId, concept: 'concept:data-leakage', branch: 'branch:llm:training/samples' },
   { article: statisticsArticleId, concept: 'concept:statistical-inference', branch: 'branch:llm:rankings/methodology' },
   { article: statisticsArticleId, concept: 'concept:confidence-interval', branch: 'branch:llm:rankings/methodology' },
   { article: 'llm-derivatives', concept: 'concept:derivative', branch: 'branch:llm:math/derivatives' },
@@ -108,6 +138,11 @@ for (const width of [390, 1440]) for (const unit of units) {
     if (unit.article === statisticsArticleId) {
       await expect(article.locator('h1')).toHaveText(statisticsTitle);
       await expect(article.locator('.markdown-body')).toContainText('0.9405196171');
+      await expect(article.locator('.markdown-body')).toContainText('needs-independent-review');
+    }
+    if (unit.article === dataSplitArticleId) {
+      await expect(article.locator('h1')).toHaveText(dataSplitTitle);
+      await expect(article.locator('.markdown-body')).toContainText('固定归纳式评估协议');
       await expect(article.locator('.markdown-body')).toContainText('needs-independent-review');
     }
     await expect(article.locator('.katex-error')).toHaveCount(0);
@@ -196,3 +231,35 @@ for (const width of [390, 1440]) {
     expect(errors).toEqual([]);
   });
 }
+
+for (const width of [390, 1440]) test(`statistical and data-split readers connect through canonical routes / ${width}px`, async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+  await page.setViewportSize({ width, height: 900 });
+  await page.goto(`/?view=article&article=${statisticsArticleId}`);
+  const statistics = page.locator(`[data-document="${statisticsArticleId}"]`);
+  await expect(statistics.locator('h1')).toHaveText(statisticsTitle);
+  await statistics.locator('.markdown-body a[href="?view=garden&scope=concept:train-validation-test"]').click();
+  const folder = page.locator('[data-folder="concept:train-validation-test"]');
+  await expect(folder.locator('.ws-empty')).toHaveCount(0);
+  await folder.getByRole('button', { name: dataSplitTitle, exact: true }).click();
+  const dataSplit = page.locator(`[data-document="${dataSplitArticleId}"]`);
+  await expect(dataSplit.locator('.markdown-body')).toBeVisible();
+  await page.reload();
+  await expect(dataSplit.locator('h1')).toHaveText(dataSplitTitle);
+  await page.goBack();
+  await expect(folder).toBeVisible();
+  await page.goBack();
+  await expect(statistics.locator('h1')).toHaveText(statisticsTitle);
+  await page.goForward();
+  await folder.getByRole('button', { name: dataSplitTitle, exact: true }).click();
+  await dataSplit.locator('.markdown-body a[href="?view=garden&scope=branch:llm:rankings/methodology"]').first().click();
+  await expect(statistics.locator('h1')).toHaveText(statisticsTitle);
+  await page.goBack();
+  await expect(dataSplit.locator('h1')).toHaveText(dataSplitTitle);
+  await expect(page.locator('[data-document]')).toHaveCount(1);
+  await expect(dataSplit.locator('.ws-evidence')).toContainText('程序验证不等于专家复核');
+  await expect(page.getByRole('tab')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});

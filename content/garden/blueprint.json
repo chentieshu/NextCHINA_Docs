@@ -1783,6 +1783,12 @@
       "target": "concept:confidence-interval",
       "type": "recommended_before",
       "reason": "先区分固定参数与重复抽样的估计量，再理解区间构造方法的覆盖率；置信区间还需明确抽样假设与名义水平。"
+    },
+    {
+      "source": "concept:train-validation-test",
+      "target": "concept:data-leakage",
+      "type": "recommended_before",
+      "reason": "先区分训练拟合、验证选择与保留测试的职责，再追踪不应参与构建或选择的信息怎样跨过边界；这是一条学习建议，不把集合切分当成无泄漏保证。"
     }
   ],
   "articleBindings": [

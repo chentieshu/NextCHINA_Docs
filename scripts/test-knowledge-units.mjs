@@ -14,6 +14,166 @@ const graph = attachTopicHubs(base, repositoryRoot, publishedArticleIds);
 const byId = new Map(graph.nodes.map(node => [node.id, node]));
 const results = [];
 const negatives = {
+  'train-validation-test-data-leakage': `
+# Independent regression appended to the article's sole Python example.
+# Standard-library checks for the explicitly supported teaching domain.
+# Input scope follows the teaching example: finite tuples of well-formed Row
+# objects, A--F IDs, visits 1--3, bounded integer x and binary fixed entity labels.
+from collections import Counter
+from fractions import Fraction
+from itertools import product, permutations
+import inspect
+
+assert list(inspect.signature(require_new_entities).parameters) == ["parts"]
+assert list(inspect.signature(require_forward_time).parameters) == ["parts"]
+assert list(inspect.signature(fit_memory).parameters) == ["train"]
+assert list(inspect.signature(correct_count).parameters) == ["memory", "test"]
+assert list(inspect.signature(fit_mean).parameters) == ["data"]
+
+# Fixed fixture truth is written independently of the example's split builders.
+expected_ids = Counter((e, v) for e in "ABCDEF" for v in (1, 2, 3))
+assert len(rows) == 18
+assert Counter((r.entity, r.visit) for r in rows) == expected_ids
+assert {r.entity: (r.x, r.y) for r in rows} == {
+    "A": (0, 0), "B": (2, 1), "C": (10, 0),
+    "D": (12, 1), "E": (20, 0), "F": (22, 1),
+}
+for split in (row_split, group_split):
+    assert tuple(map(len, split)) == (6, 6, 6)
+    assert Counter((r.entity, r.visit) for p in split for r in p) == expected_ids
+    ids = [set((r.entity, r.visit) for r in p) for p in split]
+    assert all(not (ids[i] & ids[j]) for i in range(3) for j in range(i+1, 3))
+assert [{r.entity for r in p} for p in row_split] == [set("ABCDEF")]*3
+assert [{r.entity for r in p} for p in group_split] == [set("AB"), set("CD"), set("EF")]
+assert correct_count(fit_memory(row_split[0]), row_split[2]) == 6
+assert correct_count(fit_memory(group_split[0]), group_split[2]) == 3
+assert len({r.entity for r in group_split[2]}) == 2
+
+# All fixed binary label assignments have an exact combinatorial oracle.
+# This includes no gap at all (all labels zero), so a six-versus-three result
+# cannot accidentally become a universal theorem about score inflation.
+for labels in product((0, 1), repeat=6):
+    sample = tuple(Row(e, v, 0, y) for e, y in zip("ABCDEF", labels)
+                   for v in (1, 2, 3))
+    train_rows = sample[::3]
+    test_rows = sample[2::3]
+    assert fit_memory(train_rows) == dict(zip("ABCDEF", labels))
+    assert correct_count(fit_memory(train_rows), test_rows) == 6
+    entity_train, entity_test = sample[:6], sample[12:]
+    assert correct_count(fit_memory(entity_train), entity_test) == 3*(2-labels[4]-labels[5])
+    assert correct_count(fit_memory(entity_train), tuple(reversed(entity_test))) == 3*(2-labels[4]-labels[5])
+
+# Reordering the six training rows must not alter the learned mapping, mean,
+# or count. Enumerate every order, including repeated-entity training records.
+expected_memory = {"A": 0, "B": 1}
+for permuted_train in permutations(group_split[0]):
+    assert fit_memory(permuted_train) == expected_memory
+    assert fit_mean(permuted_train) == 1.0
+    assert correct_count(fit_memory(permuted_train), group_split[2]) == 3
+
+# Entity renaming within the stated domain preserves the overlap structure.
+for names in permutations("ABCDEF"):
+    rename = dict(zip("ABCDEF", names))
+    renamed = tuple(tuple(replace(r, entity=rename[r.entity]) for r in p) for p in group_split)
+    require_new_entities(renamed)
+    assert correct_count(fit_memory(renamed[0]), renamed[2]) == 3
+
+# Exhaustive nonempty subsets: cardinality and all-pairs order are independent
+# oracles rather than reproductions of the guards' pairwise-set/max-min code.
+def accepted(check, value):
+    try:
+        check(value)
+    except ValueError:
+        return False
+    return True
+
+entity_sets = [tuple(e for i, e in enumerate("ABC") if mask & (1 << i))
+               for mask in range(1, 8)]
+for parts_entities in product(entity_sets, repeat=3):
+    fixture = tuple(tuple(Row(e, i+1, 0, 0) for e in es)
+                    for i, es in enumerate(parts_entities))
+    all_entities = [e for es in parts_entities for e in es]
+    expected = len(all_entities) == len(set(all_entities))
+    assert accepted(require_new_entities, fixture) == expected
+
+visit_sets = [tuple(v for i, v in enumerate((1, 2, 3)) if mask & (1 << i))
+              for mask in range(1, 8)]
+for parts_visits in product(visit_sets, repeat=3):
+    fixture = tuple(tuple(Row(e, v, 0, 0) for v in reversed(vs))
+                    for e, vs in zip("ABC", parts_visits))
+    expected = all(a < b for i in range(3) for j in range(i+1, 3)
+                   for a in parts_visits[i] for b in parts_visits[j])
+    assert accepted(require_forward_time, fixture) == expected
+
+# Means: exact rational truth, order/translation properties, legal endpoints,
+# and zero variance. Centering has no division by a sample standard deviation.
+mean_cases = 0
+for xs in product((-1000, -1, 0, 1, 1000), repeat=3):
+    fixture = tuple(Row(e, 1, x, 0) for e, x in zip("ABC", xs))
+    expected = float(Fraction(sum(xs), len(xs)))
+    assert fit_mean(fixture) == expected
+    assert fit_mean(tuple(reversed(fixture))) == expected
+    mean_cases += 1
+for constant in (-1000, 0, 1000):
+    fixture = tuple(Row(e, 1, constant, 0) for e in "ABCDEF")
+    assert fit_mean(fixture) == float(constant)
+    assert tuple(r.x-fit_mean(fixture) for r in fixture) == (0,)*6
+
+# Holding train fixed: mutate one held-out record at a time or all holdouts.
+# All-input mean must change by the independent rational delta/n identity.
+fixed_train, fixed_val, fixed_test = group_split
+expected_train = Fraction(1)
+expected_all = Fraction(11)
+base_fitted = fit_mean(fixed_train)
+assert tuple(r.x-base_fitted for r in fixed_test) == (19, 19, 19, 21, 21, 21)
+for holdout_index in range(12):
+    holdouts = fixed_val + fixed_test
+    for delta in (-500, -1, 1, 500):
+        changed = tuple(replace(r, x=r.x+delta) if i == holdout_index else r
+                        for i, r in enumerate(holdouts))
+        assert fit_mean(fixed_train) == float(expected_train) == base_fitted
+        assert fit_memory(fixed_train) == expected_memory
+        expected_full = float(expected_all + Fraction(delta, 18))
+        assert fit_mean(fixed_train + changed) == expected_full
+for offset in (-500, -1, 0, 1, 500):
+    changed = tuple(replace(r, x=r.x+offset) for r in fixed_val+fixed_test)
+    assert fit_mean(fixed_train) == 1.0
+    assert fit_mean(fixed_train + changed) == float(expected_all + Fraction(2*offset, 3))
+    assert correct_count(fit_memory(fixed_train), changed[6:]) == 3
+# A canceling mutation can leave even the all-input mean unchanged. A single
+# unchanged perturbation is not sufficient proof that there is no dependence.
+holdouts = fixed_val + fixed_test
+cancelled = tuple(replace(r, x=r.x+(1 if i == 0 else -1 if i == 1 else 0))
+                  for i, r in enumerate(holdouts))
+assert fit_mean(fixed_train + cancelled) == 11.0
+
+# Precisely the documented rejection surface: wrong part count, empty parts,
+# target-specific overlap/time failures, empty fit/score, conflicting labels.
+rejection_calls = []
+for check in (require_new_entities, require_forward_time):
+    for bad_parts in ((), (fixed_train,), (fixed_train, fixed_val),
+                      (fixed_train, fixed_val, fixed_test, fixed_test)):
+        rejection_calls.append(lambda check=check, bad_parts=bad_parts: check(bad_parts))
+    for empty_index in range(3):
+        parts = tuple(() if i == empty_index else p for i, p in enumerate(group_split))
+        rejection_calls.append(lambda check=check, parts=parts: check(parts))
+rejection_calls += [lambda: require_new_entities(row_split),
+                    lambda: require_forward_time(group_split),
+                    lambda: fit_memory(()), lambda: correct_count({}, ()),
+                    lambda: fit_mean(()),
+                    lambda: fit_memory((Row("A", 1, 0, 0), Row("A", 2, 0, 1))),
+                    lambda: fit_memory((Row("A", 2, 0, 1), Row("A", 1, 0, 0)))]
+for bad in rejection_calls:
+    try:
+        bad()
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("documented boundary accepted")
+print("data split regression: exact fixture, 64 label assignments, 720 row orders, "
+      "720 renamings, 686 split truth cases, 125 exact means, 53 holdout mutations, "
+      f"zero variance and {len(rejection_calls)} rejections")
+`,
   'statistical-inference-confidence-interval': `
 # Regression addition appended to the article's one marked Python block.
 # Standard-library only.

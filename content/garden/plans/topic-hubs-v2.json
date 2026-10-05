@@ -73,7 +73,7 @@
       ]},
       {"id":"training","label":"数据、训练与后训练","children":[
         {"id":"data","label":"来源、许可、清洗、配比、合成与版本","conceptRefs":["concept:data-collection","concept:data-versioning"]},
-        {"id":"samples","label":"划分、标签移位、样本打包与污染","conceptRefs":["concept:train-validation-test","concept:data-contamination"]},
+        {"id":"samples","label":"划分、标签移位、样本打包与污染","conceptRefs":["concept:train-validation-test","concept:data-contamination","concept:data-leakage"]},
         {"id":"loop","label":"前向、损失、反向、梯度与更新","conceptRefs":["concept:backpropagation","concept:loss-objective"]},
         {"id":"budget","label":"预算、规模、泛化、精度与恢复","conceptRefs":["concept:overfitting","concept:checkpoint"]},
         {"id":"alignment","label":"SFT、奖励、RLHF、DPO 与可验证反馈","conceptRefs":["concept:sft","concept:rlhf","concept:dpo"]},

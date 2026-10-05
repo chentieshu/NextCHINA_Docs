@@ -1,6 +1,6 @@
 # AI 知识花园：事实源与内容清单
 
-本目录已接入生产 React 工作区。现行首页使用完整的单一知识网络和只读 SVG 点线引擎；原 602 节点范围完整保留，并发主线新增 27 个概念后，模型共 630 个节点（407 个概念），`normalizeNetwork` 得到 629 个候选。2026-10-05 第四批工作树默认地图准入为 186，另 443 个候选仍保留在模型和清单中；显式选择与用户筛选可改变实际显示。`root:ai` 不进入地图候选，不能把候选数称为默认可见数。React Flow/ELK 的历史模块仍在仓库，不代表当前首页依赖它们。现行交互见 [数字花园设计](../../docs/obsidian-digital-garden.md)，早期设计不作为上线状态证明。
+本目录已接入生产 React 工作区。现行首页使用完整的单一知识网络和只读 SVG 点线引擎；原 602 节点范围完整保留，并发主线新增 27 个概念后，模型共 630 个节点（407 个概念），`normalizeNetwork` 得到 629 个候选。2026-10-05 第五批工作树默认地图准入为 189，另 440 个候选仍保留在模型和清单中；显式选择与用户筛选可改变实际显示。`root:ai` 不进入地图候选，不能把候选数称为默认可见数。React Flow/ELK 的历史模块仍在仓库，不代表当前首页依赖它们。现行交互见 [数字花园设计](../../docs/obsidian-digital-garden.md)，早期设计不作为上线状态证明。
 
 ## 事实源
 
@@ -23,7 +23,7 @@ node scripts/test-garden.mjs
 npm run test:hubs
 npm run test:knowledge
 
-# 全部 630 个模型节点（629 个地图候选；当前 186 个默认准入）的可复现审计
+# 全部 630 个模型节点（629 个地图候选；当前 189 个默认准入）的可复现审计
 node scripts/audit-node-content.mjs --write
 # 仅重建忽略的 JSON，检查已跟踪 CSV 和索引
 node scripts/audit-node-content.mjs --prepare

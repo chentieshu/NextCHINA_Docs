@@ -6,7 +6,7 @@ branch:llm:training/budget,预算、规模、泛化、精度与恢复,branch,C03
 branch:llm:training/data,来源、许可、清洗、配比、合成与版本,branch,C03,,,navigation,false
 branch:llm:training/loop,前向、损失、反向、梯度与更新,branch,C03,llm-training-loop,llm-training-loop,bound-needs-review,true
 branch:llm:training/not-training,上下文学习、检索与更新参数的区别,branch,C03,,,navigation,false
-branch:llm:training/samples,划分、标签移位、样本打包与污染,branch,C03,,,navigation,false
+branch:llm:training/samples,划分、标签移位、样本打包与污染,branch,C03,train-validation-test-data-leakage,train-validation-test-data-leakage,bound-needs-review,true
 concept:actor-critic,Actor-Critic,concept,C03,,,missing,false
 concept:backpropagation,反向传播,concept,C03,llm-training-loop,llm-training-loop,bound-needs-review,true
 concept:batch-epoch,批次与训练轮次,concept,C03,,,missing,false
@@ -17,7 +17,7 @@ concept:contrastive-learning,对比学习,concept,C03,,,missing,false
 concept:data-cleaning,清洗与去重,concept,C03,,,missing,false
 concept:data-collection,采集与授权,concept,C03,,,missing,false
 concept:data-contamination,测试污染,concept,C03,,,missing,true
-concept:data-leakage,数据泄漏,concept,C03,,,missing,false
+concept:data-leakage,数据泄漏,concept,C03,train-validation-test-data-leakage,train-validation-test-data-leakage,bound-needs-review,true
 concept:data-versioning,数据版本,concept,C03,,,missing,false
 concept:distillation,知识蒸馏,concept,C03,,,missing,false
 concept:distribution-shift,分布变化,concept,C03,,,missing,false
@@ -44,7 +44,7 @@ concept:self-supervised-learning,自监督学习,concept,C03,,,missing,false
 concept:sft,监督微调,concept,C03,,,missing,false
 concept:supervised-learning,监督学习,concept,C03,,,missing,false
 concept:synthetic-data,合成数据,concept,C03,,,missing,false
-concept:train-validation-test,训练、验证与测试集,concept,C03,,,missing,false
+concept:train-validation-test,训练、验证与测试集,concept,C03,train-validation-test-data-leakage,train-validation-test-data-leakage,bound-needs-review,true
 concept:transfer-learning,迁移学习,concept,C03,,,missing,false
 concept:unsupervised-learning,无监督学习,concept,C03,,,missing,false
 concept:value-function,价值函数,concept,C03,,,missing,true

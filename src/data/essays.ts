@@ -15,6 +15,7 @@ import training from '../../content/models/llm/training-loop.md?raw';
 import kvCache from '../../content/models/llm/kv-cache.md?raw';
 import tensorShapes from '../../content/models/llm/tensor-shapes.md?raw';
 import conditionalProbability from '../../content/models/llm/conditional-probability.md?raw';
+import statisticalInferenceConfidenceInterval from '../../content/models/evaluation/statistical-inference-confidence-interval.md?raw';
 import entropyCrossEntropy from '../../content/models/llm/entropy-cross-entropy.md?raw';
 
 import derivatives from '../../content/models/llm/derivatives.md?raw';
@@ -35,6 +36,7 @@ const contentById: Record<string, string> = {
   'llm-kv-cache': kvCache,
   'llm-tensor-shapes': tensorShapes,
   'llm-conditional-probability': conditionalProbability,
+  'statistical-inference-confidence-interval': statisticalInferenceConfidenceInterval,
   'llm-entropy-cross-entropy': entropyCrossEntropy,
   'llm-derivatives': derivatives
 };

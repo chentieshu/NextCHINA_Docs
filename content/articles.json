@@ -209,6 +209,45 @@
         ],
         "relatedResourceIds": []
       }
+    },
+    {
+      "id": "statistical-inference-confidence-interval",
+      "file": "content/models/evaluation/statistical-inference-confidence-interval.md",
+      "space": "models",
+      "category": "evaluation-statistics",
+      "categoryName": "评测与统计基础",
+      "title": "测试集答对80%，能说明模型有多可靠？统计推断与置信区间",
+      "subtitle": "从抽样分布到 Wilson 区间、覆盖率与评测边界",
+      "date": "2026-10-05",
+      "tags": [
+        "统计推断",
+        "置信区间",
+        "标准误",
+        "Wilson",
+        "评测"
+      ],
+      "excerpt": "区分固定测试分数与总体推断，推导 Wilson 区间，精确枚举二项覆盖率，并检查独立性、泄漏与分布变化的边界。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "statistical-inference-confidence-interval",
+        "conceptIds": [
+          "concept:statistical-inference",
+          "concept:confidence-interval"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "rankings/methodology"
+          }
+        ],
+        "sourceUrls": [
+          "https://www.itl.nist.gov/div898/handbook/eda/section3/eda352.htm",
+          "https://www.itl.nist.gov/div898/handbook/prc/section2/prc241.htm",
+          "https://scikit-learn.org/stable/modules/cross_validation.html"
+        ],
+        "relatedResourceIds": []
+      }
     }
   ]
 }

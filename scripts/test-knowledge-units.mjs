@@ -14,6 +14,100 @@ const graph = attachTopicHubs(base, repositoryRoot, publishedArticleIds);
 const byId = new Map(graph.nodes.map(node => [node.id, node]));
 const results = [];
 const negatives = {
+  'statistical-inference-confidence-interval': `
+# Regression addition appended to the article's one marked Python block.
+# Standard-library only.
+import inspect
+import math
+from decimal import Decimal, localcontext
+from fractions import Fraction
+
+assert list(inspect.signature(wilson95).parameters) == ["successes", "trials"]
+Z95_REFERENCE = Decimal("1.9599639845400542355245944305205515279555500778695")
+
+# Independent high-precision oracle: solve the score inequality's quadratic
+# in parameter p in count space, rather than reusing a float implementation.
+def score_quadratic_roots(successes, trials):
+    with localcontext() as ctx:
+        ctx.prec = 60
+        k, n, z = Decimal(successes), Decimal(trials), Z95_REFERENCE
+        a = n + z*z
+        b = -(2*k + z*z)
+        c = k*k/n
+        root_discriminant = (b*b - 4*a*c).sqrt()
+        low = Decimal(0) if successes == 0 else (-b-root_discriminant)/(2*a)
+        high = Decimal(1) if successes == trials else (-b+root_discriminant)/(2*a)
+        return float(low), float(high)
+
+reference_cases = [(k, n) for n in (1, 2, 3, 5, 20, 100, 1000, 9999, 10000)
+                   for k in sorted({0, 1, n//4, n//2, n-1, n})]
+for k, n in reference_cases:
+    actual = wilson95(k, n)
+    expected = score_quadratic_roots(k, n)
+    assert all(math.isclose(a, b, rel_tol=0, abs_tol=3e-15)
+               for a, b in zip(actual, expected)), (k, n, actual, expected)
+
+interval_cases = 0
+for n in [*range(1, 251), 499, 500, 999, 1000]:
+    previous = (-1.0, -1.0)
+    for k in range(n+1):
+        low, high = wilson95(k, n)
+        assert type(low) is type(high) is float
+        assert 0 <= low <= k/n <= high <= 1
+        assert previous[0] <= low and previous[1] <= high
+        reverse_low, reverse_high = wilson95(n-k, n)
+        assert math.isclose(low, 1-reverse_high, rel_tol=0, abs_tol=3e-15)
+        assert math.isclose(high, 1-reverse_low, rel_tol=0, abs_tol=3e-15)
+        if k == 0: assert low == 0.0
+        if k == n: assert high == 1.0
+        previous = (low, high)
+        interval_cases += 1
+
+# n=100,p=4/5 repeated-sampling coverage is an exactly weighted finite sum.
+# Acceptance is obtained independently from the score inequality, using exact
+# rationals and the separately supplied 95% normal quantile.
+p = Fraction(4, 5)
+n = 100
+z2 = Fraction(Z95_REFERENCE)**2
+score_acceptance = [k for k in range(n+1)
+                    if n*(Fraction(k, n)-p)**2 <= z2*p*(1-p)]
+interval_acceptance = [k for k in range(n+1)
+                       if wilson95(k,n)[0] <= float(p) <= wilson95(k,n)[1]]
+assert score_acceptance == interval_acceptance == list(range(73, 88))
+exact_coverage = Fraction(sum(math.comb(n,k)*4**k for k in score_acceptance), 5**n)
+assert math.isclose(float(exact_coverage), 0.9405196171395281, rel_tol=0, abs_tol=1e-16)
+assert float(exact_coverage) < 0.95
+
+# Same empirical success rate, truly larger independent n: narrower interval.
+small = wilson95(80,100)
+large = wilson95(320,400)
+assert large[1]-large[0] < small[1]-small[0]
+assert math.isclose(small[0], 0.71117083440684117, rel_tol=0, abs_tol=3e-15)
+assert math.isclose(small[1], 0.86663306666896746, rel_tol=0, abs_tol=3e-15)
+assert math.isclose(wilson95(20,20)[0], 0.83887484194718061, rel_tol=0, abs_tol=3e-15)
+assert wilson95(20,20)[1] == 1.0
+
+class IntSubclass(int):
+    pass
+
+bad_counts = [True, False, 1.0, "1", None, [], {}, complex(1),
+              float("nan"), float("inf"), -float("inf"), IntSubclass(1)]
+rejection_calls = [lambda bad=bad: wilson95(bad,100) for bad in bad_counts]
+rejection_calls += [lambda bad=bad: wilson95(0,bad) for bad in bad_counts]
+rejection_calls += [lambda: wilson95(-1,100), lambda: wilson95(101,100),
+                    lambda: wilson95(0,0), lambda: wilson95(0,-1),
+                    lambda: wilson95(0,10001), lambda: wilson95(0,10**1000),
+                    lambda: wilson95(10**1000,100)]
+for bad in rejection_calls:
+    try: bad()
+    except ValueError: pass
+    else: raise AssertionError("invalid Wilson count or documented bound accepted")
+for confidence in (0.0, 0.95, 1.0, float("nan")):
+    try: wilson95(80,100,confidence=confidence)
+    except TypeError: pass
+    else: raise AssertionError("fixed Wilson95 API accepted confidence keyword")
+
+print(f"statistical regression: {interval_cases} interval cases, {len(reference_cases)} Decimal references, exact coverage and {len(rejection_calls)} count rejections")`,
   derivatives: `
 from fractions import Fraction
 import random

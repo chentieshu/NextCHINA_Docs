@@ -4,11 +4,13 @@ import { graph } from '../../src/features/garden/data';
 const networkNodeCount = graph.nodes.filter(node => !['root', 'group', 'path', 'document'].includes(node.kind)).length;
 const inventory = JSON.parse(readFileSync('content/garden/content-inventory.json', 'utf8'));
 const probabilityArticleId = 'llm-conditional-probability';
+const statisticsArticleId = 'statistical-inference-confidence-interval';
+const statisticsTitle = '测试集答对80%，能说明模型有多可靠？统计推断与置信区间';
 const probabilityTitle = '概率基础：从贝叶斯更新到期望与序列概率';
 const probabilityBridges = [
-  { source: 'concept:bayes-rule', target: 'concept:naive-bayes', label: '朴素贝叶斯' },
-  { source: 'concept:expectation-variance', target: 'concept:value-function', label: '价值函数' },
-  { source: 'concept:expectation-variance', target: 'concept:confidence-interval', label: '置信区间' },
+  { source: 'concept:bayes-rule', target: 'concept:naive-bayes', label: '朴素贝叶斯', articleId: null },
+  { source: 'concept:expectation-variance', target: 'concept:value-function', label: '价值函数', articleId: null },
+  { source: 'concept:expectation-variance', target: 'concept:confidence-interval', label: '置信区间', articleId: statisticsArticleId },
 ];
 
 test('probability bindings and cross-domain reading routes preserve editorial maturity', () => {
@@ -28,7 +30,7 @@ test('probability bindings and cross-domain reading routes preserve editorial ma
   for (const bridge of probabilityBridges) {
     const nodes = graph.nodes.filter(node => node.id === bridge.target);
     expect(nodes).toHaveLength(1);
-    expect(nodes[0].articleBindings).toEqual([]);
+    expect(nodes[0].articleBindings).toEqual(bridge.articleId ? [{ articleId: bridge.articleId, coverage: 'explanation' }] : []);
     expect(nodes[0].embeddedArticleId).toBeUndefined();
     expect(nodes[0].contentStatus).toBe('outline');
     expect(nodes[0].evidenceStatus).toBe('not-reviewed');
@@ -36,6 +38,29 @@ test('probability bindings and cross-domain reading routes preserve editorial ma
     const edges = graph.edges.filter(edge => edge.source === bridge.source && edge.target === bridge.target && edge.type === 'recommended_before');
     expect(edges).toHaveLength(1);
     expect(edges[0].assertionStatus).toBe('editorial');
+  }
+});
+
+test('statistical bridge binds exactly its two canonical concepts without promoting review', () => {
+  const articles = JSON.parse(readFileSync('content/articles.json', 'utf8')).articles;
+  const matches = articles.filter((article: { id: string }) => article.id === statisticsArticleId);
+  expect(matches).toHaveLength(1);
+  const unit = matches[0].knowledgeUnit;
+  expect(matches[0].title).toBe(statisticsTitle);
+  expect(unit.reviewStatus).toBe('needs-independent-review');
+  expect([...unit.conceptIds].sort()).toEqual(['concept:confidence-interval', 'concept:statistical-inference']);
+  expect(unit.placements).toEqual([{ hubId: 'hub:llm', path: 'rankings/methodology' }]);
+  for (const id of unit.conceptIds) {
+    const node = graph.nodes.find(node => node.id === id)!;
+    expect(node.articleBindings).toEqual([{ articleId: statisticsArticleId, coverage: 'explanation' }]);
+    expect(node.contentStatus).toBe('outline');
+    expect(node.evidenceStatus).toBe('not-reviewed');
+  }
+  for (const [source, target] of [['concept:expectation-variance', 'concept:statistical-inference'], ['concept:statistical-inference', 'concept:confidence-interval']]) {
+    const edges = graph.edges.filter(edge => edge.source === source && edge.target === target && edge.type === 'recommended_before');
+    expect(edges).toHaveLength(1);
+    expect(edges[0].assertionStatus).toBe('editorial');
+    expect(edges[0].reason!.length).toBeGreaterThan(15);
   }
 });
 
@@ -49,6 +74,8 @@ test('content inventory distinguishes full network candidates from default map a
 });
 
 const units = [
+  { article: statisticsArticleId, concept: 'concept:statistical-inference', branch: 'branch:llm:rankings/methodology' },
+  { article: statisticsArticleId, concept: 'concept:confidence-interval', branch: 'branch:llm:rankings/methodology' },
   { article: 'llm-derivatives', concept: 'concept:derivative', branch: 'branch:llm:math/derivatives' },
   { article: 'llm-tensor-shapes', concept: 'concept:matrix-multiplication', branch: 'branch:llm:math/tensor-shapes' },
   { article: 'llm-conditional-probability', concept: 'concept:conditional-probability', branch: 'branch:llm:math/probability' },
@@ -78,6 +105,11 @@ for (const width of [390, 1440]) for (const unit of units) {
       await expect(article.locator('.markdown-body')).toContainText('needs-independent-review');
       await expect(page.locator('[data-document]')).toHaveCount(1);
     }
+    if (unit.article === statisticsArticleId) {
+      await expect(article.locator('h1')).toHaveText(statisticsTitle);
+      await expect(article.locator('.markdown-body')).toContainText('0.9405196171');
+      await expect(article.locator('.markdown-body')).toContainText('needs-independent-review');
+    }
     await expect(article.locator('.katex-error')).toHaveCount(0);
     expect(await article.locator('.markdown-body a[href^="https://"]').count()).toBeGreaterThanOrEqual(2);
     expect(await article.locator('.markdown-body a[href^="?view=garden"]').count()).toBeGreaterThanOrEqual(2);
@@ -103,7 +135,7 @@ for (const width of [390, 1440]) for (const unit of units) {
 }
 
 for (const width of [390, 1440]) {
-  test(`probability onward links reach honest outlined destinations / ${width}px`, async ({ page }) => {
+  test(`probability onward links distinguish real statistical reading from remaining outlines / ${width}px`, async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
@@ -117,12 +149,28 @@ for (const width of [390, 1440]) {
       await link.click();
       const destination = page.locator(`[data-folder="${bridge.target}"]`);
       await expect(destination.locator('h1')).toHaveText(bridge.label);
-      await expect(destination.locator('.ws-empty')).toContainText('独立内容尚待完善');
-      await expect(page.locator('[data-document], .markdown-body')).toHaveCount(0);
       expect(new URL(page.url()).searchParams.get('scope')).toBe(bridge.target);
-      await page.reload();
-      await expect(destination.locator('.ws-empty')).toContainText('不会把同一篇总览冒充所有子章节');
-      await page.goBack();
+      if (bridge.articleId) {
+        await expect(destination.locator('.ws-empty')).toHaveCount(0);
+        await destination.getByRole('button', { name: statisticsTitle, exact: true }).click();
+        const nextArticle = page.locator(`[data-document="${bridge.articleId}"]`);
+        await expect(nextArticle.locator('h1')).toHaveText(statisticsTitle);
+        await expect(nextArticle.locator('.markdown-body')).toBeVisible();
+        await page.reload();
+        await expect(nextArticle.locator('h1')).toHaveText(statisticsTitle);
+        await page.goBack();
+        await expect(destination.locator('h1')).toHaveText(bridge.label);
+        await page.goForward();
+        await expect(nextArticle.locator('h1')).toHaveText(statisticsTitle);
+        await page.goBack();
+        await page.goBack();
+      } else {
+        await expect(destination.locator('.ws-empty')).toContainText('独立内容尚待完善');
+        await expect(page.locator('[data-document], .markdown-body')).toHaveCount(0);
+        await page.reload();
+        await expect(destination.locator('.ws-empty')).toContainText('不会把同一篇总览冒充所有子章节');
+        await page.goBack();
+      }
       await expect(article.locator('h1')).toHaveText(probabilityTitle);
       await expect(page.locator('[data-document]')).toHaveCount(1);
 
@@ -132,9 +180,17 @@ for (const width of [390, 1440]) {
       await expect(page.locator('.og-network-host')).toHaveAttribute('data-layout', 'ready');
       await expect(page.locator('.kg-node[data-active="true"]')).toHaveAttribute('data-node-id', bridge.target);
       await expect(page.locator('.og-inspector h2')).toHaveText(bridge.label);
-      await expect(page.locator('.og-note-badges')).toContainText('知识提纲');
-      await expect(page.locator('.og-coverage-note')).toContainText('尚无直接绑定的独立讲解');
-      await expect(page.locator('.og-read-button')).toHaveCount(0);
+      await expect(page.locator('.og-note-badges')).toContainText(bridge.articleId ? '有独立讲解资料' : '知识提纲');
+      if (bridge.articleId) {
+        await expect(page.locator('.og-coverage-note')).toContainText('不代表内容已经核验完成');
+        await page.locator('.og-read-button').click();
+        await expect(page.locator(`[data-document="${bridge.articleId}"] h1`)).toHaveText(statisticsTitle);
+        await page.getByRole('button', { name: '返回知识地图', exact: true }).click();
+        await expect(page.locator('.kg-node[data-active="true"]')).toHaveAttribute('data-node-id', bridge.target);
+      } else {
+        await expect(page.locator('.og-coverage-note')).toContainText('尚无直接绑定的独立讲解');
+        await expect(page.locator('.og-read-button')).toHaveCount(0);
+      }
       await expect(page.getByRole('tab')).toHaveCount(0);
     }
     expect(errors).toEqual([]);

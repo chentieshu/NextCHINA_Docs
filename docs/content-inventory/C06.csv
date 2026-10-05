@@ -9,7 +9,7 @@ branch:llm:rankings,能力、评测与榜单,branch,C06,aa-intelligence;arena-te
 branch:llm:rankings/capabilities,写作、知识、数学、代码、指令、多语言与长文,branch,C06,,,navigation,false
 branch:llm:rankings/composite,综合指标及组成条件,branch,C06,aa-intelligence,,navigation,true
 branch:llm:rankings/efficiency,时延、速度、吞吐与费用条件,branch,C06,,,navigation,false
-branch:llm:rankings/methodology,任务、配置、判分、置信区间与污染,branch,C06,,,navigation,false
+branch:llm:rankings/methodology,任务、配置、判分、置信区间与污染,branch,C06,statistical-inference-confidence-interval,statistical-inference-confidence-interval,bound-needs-review,true
 branch:llm:rankings/specialized,专项模型能力榜：待逐项核验与接入,branch,C06,,,navigation,false
 branch:llm:rankings/system-results,相关 Agent 系统评测，不与模型能力混排,branch,C06,terminal-bench,,navigation,true
 branch:llm:rankings/text-preference,文本人类偏好快照,branch,C06,arena-text,,navigation,true
@@ -18,7 +18,7 @@ concept:accuracy-f1,准确率与 F1,concept,C06,,,missing,false
 concept:api-pricing,API 计价,concept,C06,model-api-prices,,missing,true
 concept:benchmark-protocol,评测协议,concept,C06,,,missing,true
 concept:calibration,校准,concept,C06,,,missing,false
-concept:confidence-interval,置信区间,concept,C06,,,missing,true
+concept:confidence-interval,置信区间,concept,C06,statistical-inference-confidence-interval,statistical-inference-confidence-interval,bound-needs-review,true
 concept:contamination-audit,污染审计,concept,C06,,,missing,false
 concept:evaluation-dataset,评价数据集,concept,C06,,,missing,false
 concept:fairness-evaluation,公平性评价,concept,C06,,,missing,false

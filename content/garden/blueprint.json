@@ -1771,6 +1771,18 @@
       "target": "concept:confidence-interval",
       "type": "recommended_before",
       "reason": "先区分分布方差与估计量的抽样误差，再学习置信区间及其假设；知道方差本身不自动给出有效区间。"
+    },
+    {
+      "source": "concept:expectation-variance",
+      "target": "concept:statistical-inference",
+      "type": "recommended_before",
+      "reason": "先理解随机变量的期望与方差，再区分总体参数、样本统计量和估计量的抽样波动；统计推断还需要说明抽样机制与假设。"
+    },
+    {
+      "source": "concept:statistical-inference",
+      "target": "concept:confidence-interval",
+      "type": "recommended_before",
+      "reason": "先区分固定参数与重复抽样的估计量，再理解区间构造方法的覆盖率；置信区间还需明确抽样假设与名义水平。"
     }
   ],
   "articleBindings": [

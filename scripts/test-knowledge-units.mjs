@@ -14,6 +14,129 @@ const graph = attachTopicHubs(base, repositoryRoot, publishedArticleIds);
 const byId = new Map(graph.nodes.map(node => [node.id, node]));
 const results = [];
 const negatives = {
+  'classification-accuracy-precision-recall-f1': `
+# Independent regression appended to the article's sole Python example.
+from collections import Counter
+from itertools import product
+assert len(scores) == len(y_true) == 100
+for t, m in [(50, ((81, 9), (2, 8))), (75, ((89, 1), (6, 4))),
+             (101, ((90, 0), (10, 0))), (40, ((81, 9), (0, 10)))]:
+    assert reports[t]['matrix'] == m
+assert reports[50]['per_class'][1]['f1'] == Fraction(16, 27)
+assert reports[75]['per_class'][1]['f1'] == Fraction(8, 15)
+assert reports[101]['accuracy'] == Fraction(9, 10)
+assert threshold_labels((40, 41, 39), 40) == (1, 1, 0)
+assert threshold_labels((0, 100), 0) == (1, 1)
+assert threshold_labels((0, 100), 101) == (0, 0)
+p50, p75 = reports[50]['per_class'][1], reports[75]['per_class'][1]
+assert p50['fp'] + 5 * p50['fn'] == 19 < 31 == p75['fp'] + 5 * p75['fn']
+assert 3 * p50['fp'] + p50['fn'] == 29 > 9 == 3 * p75['fp'] + p75['fn']
+# Recall/count monotonicity is guaranteed for fixed scores; precision is not.
+prev = summarize(confusion(y_true, threshold_labels(scores, 0)))['per_class'][1]
+for t in range(1, 102):
+    cur = summarize(confusion(y_true, threshold_labels(scores, t)))['per_class'][1]
+    assert cur['tp'] <= prev['tp'] and cur['fp'] <= prev['fp']
+    assert cur['fn'] >= prev['fn'] and cur['tn'] >= prev['tn']
+    prev = cur
+assert reports[40]['per_class'][1]['precision'] > p50['precision'] < p75['precision']
+# Undefined values and genuine zeros are distinct.
+for matrix, expected in [(((3, 0), (0, 0)), (None, None, None)),
+                         (((2, 0), (1, 0)), (None, 0, 0)),
+                         (((2, 1), (0, 0)), (0, None, 0)),
+                         (((0, 1), (1, 0)), (0, 0, 0))]:
+    r = summarize(matrix)['per_class'][1]
+    assert (r['precision'], r['recall'], r['f1']) == expected
+assert summarize(((3, 0), (0, 0)))['accuracy'] == 1
+assert summarize(((3, 0), (0, 0)))['macro_f1_strict'] is None
+assert summarize(((3, 0), (0, 0)))['weighted_f1'] == 1
+# Independent per-observation oracle, rather than reusing the implementation.
+binary_cases = 0
+for n in range(1, 6):
+    for pairs in product(((0, 0), (0, 1), (1, 0), (1, 1)), repeat=n):
+        truth, pred = tuple(zip(*pairs))
+        r = summarize(confusion(truth, pred))
+        c = Counter(pairs)
+        assert r['matrix'] == ((c[0, 0], c[0, 1]), (c[1, 0], c[1, 1]))
+        assert r['accuracy'] == Fraction(sum(a == b for a, b in pairs), n)
+        p = r['per_class'][1]
+        predicted_positive, actual_positive = sum(pred), sum(truth)
+        joint_positive = sum(a * b for a, b in pairs)
+        assert p['precision'] == (Fraction(joint_positive, predicted_positive) if predicted_positive else None)
+        assert p['recall'] == (Fraction(joint_positive, actual_positive) if actual_positive else None)
+        d = actual_positive + predicted_positive
+        assert p['f1'] == (Fraction(2 * joint_positive, d) if d else None)
+        assert r['micro_precision'] == r['micro_recall'] == r['micro_f1'] == r['accuracy']
+        assert confusion(tuple(reversed(truth)), tuple(reversed(pred))) == r['matrix']
+        q = summarize(confusion(pred, truth))['per_class'][1]
+        assert q['precision'] == p['recall'] and q['recall'] == p['precision']
+        assert q['f1'] == p['f1']
+        repeated = summarize(confusion(truth * 2, pred * 2))
+        assert repeated['accuracy'] == r['accuracy']
+        assert repeated['per_class'][1]['f1'] == p['f1']
+        binary_cases += 1
+assert binary_cases == 1364
+for tn, fp, fn, tp in product(range(4), repeat=4):
+    if tn + fp + fn + tp == 0:
+        continue
+    r = summarize(((tn, fp), (fn, tp)))
+    extra_tn = summarize(((tn + 1, fp), (fn, tp)))
+    for key in ('precision', 'recall', 'f1'):
+        assert r['per_class'][1][key] == extra_tn['per_class'][1][key]
+    assert extra_tn['accuracy'] >= r['accuracy']
+    swapped = summarize(((tp, fn), (fp, tn)))
+    assert swapped['accuracy'] == r['accuracy']
+    assert swapped['per_class'][1] == r['per_class'][0]
+for pairs in product(tuple(product(range(3), repeat=2)), repeat=3):
+    truth, pred = tuple(zip(*pairs))
+    r = summarize(confusion(truth, pred, 3))
+    assert sum(row['support'] for row in r['per_class']) == 3
+    assert sum(row['fp'] for row in r['per_class']) == sum(row['fn'] for row in r['per_class'])
+    assert r['micro_precision'] == r['micro_recall'] == r['micro_f1'] == r['accuracy']
+    for row in r['per_class']:
+        assert row['tp'] + row['fp'] + row['fn'] + row['tn'] == 3
+assert multiclass['accuracy'] == Fraction(10, 11)
+assert tuple(row['f1'] for row in multiclass['per_class']) == (Fraction(20, 21), Fraction(1, 6), Fraction(18, 19))
+macro_p = sum(row['precision'] for row in multiclass['per_class']) / 3
+macro_r = sum(row['recall'] for row in multiclass['per_class']) / 3
+assert multiclass['macro_f1_strict'] != 2 * macro_p * macro_r / (macro_p + macro_r)
+assert multiclass['weighted_f1'] > multiclass['macro_f1_strict']
+for name, pi in (('10%', Fraction(1, 10)), ('1%', Fraction(1, 100))):
+    p = base_rate_reports[name]['per_class'][1]
+    assert p['recall'] == Fraction(4, 5)
+    assert Fraction(p['fp'], p['fp'] + p['tn']) == Fraction(1, 10)
+    assert p['precision'] == Fraction(4, 5)*pi/(Fraction(4, 5)*pi+Fraction(1, 10)*(1-pi))
+assert base_rate_reports['10%']['per_class'][1]['precision'] == Fraction(8, 17)
+assert base_rate_reports['1%']['per_class'][1]['precision'] == Fraction(8, 107)
+bad_inputs = [
+    lambda: confusion([], []), lambda: confusion([0], [0, 1]),
+    lambda: confusion([False], [0]), lambda: confusion([0.0], [0]),
+    lambda: confusion(['0'], [0]), lambda: confusion([[0]], [0]),
+    lambda: confusion([2], [0]), lambda: confusion([-1], [0]),
+    lambda: confusion([0], [0], True), lambda: confusion([0], [0], 1),
+    lambda: confusion([0], [0], 6), lambda: confusion([0]*10001, [0]*10001),
+    lambda: confusion(iter([0]), [0]), lambda: summarize([]),
+    lambda: summarize([[1]]), lambda: summarize([[0, 0], [0, 0]]),
+    lambda: summarize([[1, 0], [0]]), lambda: summarize([[1, 0], [0, -1]]),
+    lambda: summarize([[True, 0], [0, 1]]), lambda: summarize([[1.0, 0], [0, 1]]),
+    lambda: summarize([[10000, 0], [0, 1]]),
+    lambda: threshold_labels([], 50), lambda: threshold_labels([0]*10001, 50),
+    lambda: threshold_labels([50.0], 50), lambda: threshold_labels([float('nan')], 50),
+    lambda: threshold_labels([float('inf')], 50), lambda: threshold_labels([True], 50),
+    lambda: threshold_labels([101], 50), lambda: threshold_labels([-1], 50),
+    lambda: threshold_labels([50], 50.0), lambda: threshold_labels([50], -1),
+    lambda: threshold_labels([50], 102), lambda: threshold_labels([50], True),
+]
+for action in bad_inputs:
+    try:
+        action()
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('invalid input accepted')
+assert summarize(confusion([0]*10000, [0]*10000, 5))['accuracy'] == 1
+print('REGRESSION PASS:', binary_cases, 'binary cases; 255 count matrices;',
+      '729 multiclass cases; 101 threshold steps;', len(bad_inputs), 'rejection cases')
+`,
   'train-validation-test-data-leakage': `
 # Independent regression appended to the article's sole Python example.
 # Standard-library checks for the explicitly supported teaching domain.

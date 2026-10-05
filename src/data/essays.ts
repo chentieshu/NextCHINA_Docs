@@ -17,6 +17,7 @@ import tensorShapes from '../../content/models/llm/tensor-shapes.md?raw';
 import conditionalProbability from '../../content/models/llm/conditional-probability.md?raw';
 import statisticalInferenceConfidenceInterval from '../../content/models/evaluation/statistical-inference-confidence-interval.md?raw';
 import trainValidationTestDataLeakage from '../../content/models/evaluation/train-validation-test-data-leakage.md?raw';
+import classificationMetrics from '../../content/models/evaluation/classification-accuracy-precision-recall-f1.md?raw';
 import entropyCrossEntropy from '../../content/models/llm/entropy-cross-entropy.md?raw';
 
 import derivatives from '../../content/models/llm/derivatives.md?raw';
@@ -39,6 +40,7 @@ const contentById: Record<string, string> = {
   'llm-conditional-probability': conditionalProbability,
   'statistical-inference-confidence-interval': statisticalInferenceConfidenceInterval,
   'train-validation-test-data-leakage': trainValidationTestDataLeakage,
+  'classification-accuracy-precision-recall-f1': classificationMetrics,
   'llm-entropy-cross-entropy': entropyCrossEntropy,
   'llm-derivatives': derivatives
 };

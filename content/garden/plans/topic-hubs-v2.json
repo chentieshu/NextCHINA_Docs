@@ -95,6 +95,7 @@
       ]},
       {"id":"rankings","label":"能力、评测与榜单","children":[
         {"id":"capabilities","label":"写作、知识、数学、代码、指令、多语言与长文"},
+        {"id":"metrics","label":"分类指标：混淆矩阵、准确率、精确率、召回率与 F1","conceptRefs":["concept:accuracy-f1","concept:precision-recall"]},
         {"id":"methodology","label":"任务、配置、判分、置信区间与污染","conceptRefs":["concept:benchmark-protocol","concept:confidence-interval"]},
         {"id":"text-preference","label":"文本人类偏好快照","legacyDataRef":"data:arena-text"},
         {"id":"composite","label":"综合指标及组成条件","legacyDataRef":"data:aa-intelligence"},

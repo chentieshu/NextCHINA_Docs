@@ -288,6 +288,50 @@
         ],
         "relatedResourceIds": []
       }
+    },
+    {
+      "id": "classification-accuracy-precision-recall-f1",
+      "file": "content/models/evaluation/classification-accuracy-precision-recall-f1.md",
+      "space": "models",
+      "category": "evaluation-statistics",
+      "categoryName": "评测与统计基础",
+      "title": "准确率90%，为什么仍漏掉全部目标？精确率、召回率与 F1",
+      "subtitle": "从混淆矩阵、阈值与类别比例，到零分母和宏微平均",
+      "date": "2026-10-05",
+      "tags": [
+        "分类指标",
+        "混淆矩阵",
+        "精确率",
+        "召回率",
+        "F1"
+      ],
+      "excerpt": "用 100 条人造消息区分四种分类指标，检查全负基线、精确率非单调、基础比例与多类别平均，并明确验证选择和报告边界。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "classification-accuracy-precision-recall-f1",
+        "conceptIds": [
+          "concept:accuracy-f1",
+          "concept:precision-recall"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "rankings/metrics"
+          }
+        ],
+        "sourceUrls": [
+          "https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html",
+          "https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_recall_fscore_support.html",
+          "https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html",
+          "https://nlp.stanford.edu/IR-book/html/htmledition/evaluation-of-text-classification-1.html",
+          "https://scikit-learn.org/stable/modules/classification_threshold.html",
+          "https://www.probabilitycourse.com/chapter1/1_4_3_bayes_rule.php",
+          "https://scikit-learn.org/stable/modules/model_evaluation.html#precision-recall-f-measure-metrics",
+          "https://scikit-learn.org/stable/modules/cross_validation.html"
+        ],
+        "relatedResourceIds": []
+      }
     }
   ]
 }

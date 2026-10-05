@@ -6,6 +6,8 @@ const inventory = JSON.parse(readFileSync('content/garden/content-inventory.json
 const probabilityArticleId = 'llm-conditional-probability';
 const statisticsArticleId = 'statistical-inference-confidence-interval';
 const dataSplitArticleId = 'train-validation-test-data-leakage';
+const metricsArticleId = 'classification-accuracy-precision-recall-f1';
+const metricsTitle = '准确率90%，为什么仍漏掉全部目标？精确率、召回率与 F1';
 const dataSplitTitle = '训练、验证与测试：模型没见过答案，评估就可信吗？';
 const statisticsTitle = '测试集答对80%，能说明模型有多可靠？统计推断与置信区间';
 const probabilityTitle = '概率基础：从贝叶斯更新到期望与序列概率';
@@ -92,6 +94,45 @@ test('data split bridge owns only two explanations and preserves contamination a
   expect(graph.edges.some(edge => edge.source === branch.id && edge.target === 'concept:data-leakage' && edge.type === 'references')).toBe(true);
 });
 
+test('classification metrics adds one navigation leaf and only two concept explanations', () => {
+  const articles = JSON.parse(readFileSync('content/articles.json', 'utf8')).articles;
+  const matches = articles.filter((article: { id: string }) => article.id === metricsArticleId);
+  expect(matches).toHaveLength(1);
+  const unit = matches[0].knowledgeUnit;
+  expect(matches[0].title).toBe(metricsTitle);
+  expect(unit.reviewStatus).toBe('needs-independent-review');
+  expect([...unit.conceptIds].sort()).toEqual(['concept:accuracy-f1', 'concept:precision-recall']);
+  expect(unit.placements).toEqual([{ hubId: 'hub:llm', path: 'rankings/metrics' }]);
+  for (const id of unit.conceptIds) {
+    const nodes = graph.nodes.filter(node => node.id === id);
+    expect(nodes).toHaveLength(1);
+    expect(nodes[0].kind).toBe('concept');
+    expect(nodes[0].articleBindings).toEqual([{ articleId: metricsArticleId, coverage: 'explanation' }]);
+    expect(nodes[0].contentStatus).toBe('outline');
+    expect(nodes[0].evidenceStatus).toBe('not-reviewed');
+  }
+  expect(graph.nodes.filter(node => node.kind === 'concept' && node.articleBindings.some(ref => ref.articleId === metricsArticleId)).map(node => node.id).sort()).toEqual([...unit.conceptIds].sort());
+  const branches = graph.nodes.filter(node => node.id === 'branch:llm:rankings/metrics');
+  expect(branches).toHaveLength(1);
+  expect(branches[0].kind).toBe('branch');
+  expect(branches[0].parentId).toBe('branch:llm:rankings');
+  expect(branches[0].embeddedArticleId).toBe(metricsArticleId);
+  expect([...branches[0].conceptRefs!].sort()).toEqual([...unit.conceptIds].sort());
+  expect(inventory.originalScope.addedNodeIds).toContain(branches[0].id);
+  expect(inventory.originalScope.originalModelNodeIds).not.toContain(branches[0].id);
+  const refs = graph.edges.filter(edge => edge.source === branches[0].id && edge.type === 'references');
+  expect(refs.map(edge => edge.target).sort()).toEqual([...unit.conceptIds].sort());
+  for (const [source, target] of [['concept:bayes-rule', 'concept:precision-recall'], ['concept:precision-recall', 'concept:accuracy-f1']]) {
+    const edges = graph.edges.filter(edge => edge.source === source && edge.target === target && edge.type === 'recommended_before');
+    expect(edges).toHaveLength(1);
+    expect(edges[0].assertionStatus).toBe('editorial');
+  }
+  for (const id of ['concept:calibration', 'concept:ranking-metrics']) {
+    expect(unit.conceptIds).not.toContain(id);
+    expect(graph.nodes.find(node => node.id === id)!.articleBindings.some(ref => ref.articleId === metricsArticleId)).toBe(false);
+  }
+});
+
 test('content inventory distinguishes full network candidates from default map admission', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.og-network-host')).toHaveAttribute('data-layout', 'ready');
@@ -102,6 +143,8 @@ test('content inventory distinguishes full network candidates from default map a
 });
 
 const units = [
+  { article: metricsArticleId, concept: 'concept:accuracy-f1', branch: 'branch:llm:rankings/metrics' },
+  { article: metricsArticleId, concept: 'concept:precision-recall', branch: 'branch:llm:rankings/metrics' },
   { article: dataSplitArticleId, concept: 'concept:train-validation-test', branch: 'branch:llm:training/samples' },
   { article: dataSplitArticleId, concept: 'concept:data-leakage', branch: 'branch:llm:training/samples' },
   { article: statisticsArticleId, concept: 'concept:statistical-inference', branch: 'branch:llm:rankings/methodology' },
@@ -143,6 +186,11 @@ for (const width of [390, 1440]) for (const unit of units) {
     if (unit.article === dataSplitArticleId) {
       await expect(article.locator('h1')).toHaveText(dataSplitTitle);
       await expect(article.locator('.markdown-body')).toContainText('固定归纳式评估协议');
+      await expect(article.locator('.markdown-body')).toContainText('needs-independent-review');
+    }
+    if (unit.article === metricsArticleId) {
+      await expect(article.locator('h1')).toHaveText(metricsTitle);
+      await expect(article.locator('.markdown-body')).toContainText('macro_f1_strict');
       await expect(article.locator('.markdown-body')).toContainText('needs-independent-review');
     }
     await expect(article.locator('.katex-error')).toHaveCount(0);
@@ -261,5 +309,34 @@ for (const width of [390, 1440]) test(`statistical and data-split readers connec
   await expect(page.locator('[data-document]')).toHaveCount(1);
   await expect(dataSplit.locator('.ws-evidence')).toContainText('程序验证不等于专家复核');
   await expect(page.getByRole('tab')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+for (const width of [390, 1440]) test(`classification metrics reuses probability, statistics and split readers / ${width}px`, async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
+  await page.setViewportSize({ width, height: 900 });
+  const metrics = page.locator(`[data-document="${metricsArticleId}"]`);
+  for (const target of [
+    { node: 'concept:bayes-rule', article: probabilityArticleId, title: probabilityTitle },
+    { node: 'concept:confidence-interval', article: statisticsArticleId, title: statisticsTitle },
+    { node: 'concept:train-validation-test', article: dataSplitArticleId, title: dataSplitTitle },
+  ]) {
+    await page.goto(`/?view=article&article=${metricsArticleId}`);
+    await expect(metrics.locator('.markdown-body')).toBeVisible();
+    await metrics.locator(`.markdown-body a[href="?view=garden&scope=${target.node}"]`).first().click();
+    const folder = page.locator(`[data-folder="${target.node}"]`);
+    await expect(folder.locator('.ws-empty')).toHaveCount(0);
+    await folder.getByRole('button', { name: target.title, exact: true }).click();
+    await expect(page.locator(`[data-document="${target.article}"] h1`)).toHaveText(target.title);
+    await page.reload();
+    await expect(page.locator(`[data-document="${target.article}"] .markdown-body`)).toBeVisible();
+    await page.goBack();
+    await expect(folder).toBeVisible();
+    await page.goBack();
+    await expect(metrics.locator('h1')).toHaveText(metricsTitle);
+    await expect(page.locator('[data-document]')).toHaveCount(1);
+  }
   expect(errors).toEqual([]);
 });

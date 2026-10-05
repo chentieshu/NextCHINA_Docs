@@ -1789,6 +1789,18 @@
       "target": "concept:data-leakage",
       "type": "recommended_before",
       "reason": "先区分训练拟合、验证选择与保留测试的职责，再追踪不应参与构建或选择的信息怎样跨过边界；这是一条学习建议，不把集合切分当成无泄漏保证。"
+    },
+    {
+      "source": "concept:bayes-rule",
+      "target": "concept:precision-recall",
+      "type": "recommended_before",
+      "reason": "沿基础比例这条阅读路线，先用贝叶斯规则区分正类比例与条件方向，再理解固定召回率和误报率下精确率为何变化；这不是计算混淆矩阵的必要条件。"
+    },
+    {
+      "source": "concept:precision-recall",
+      "target": "concept:accuracy-f1",
+      "type": "recommended_before",
+      "reason": "先区分精确率与召回率的两个分母，再解释 F1 的调和组合及它与包含真负例的准确率有何不同；F1 不等于实际错误成本。"
     }
   ],
   "articleBindings": [

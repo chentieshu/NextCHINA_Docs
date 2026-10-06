@@ -10,10 +10,11 @@ branch:llm:rankings/calibration,概率校准、Brier 分数与分箱边界,branc
 branch:llm:rankings/capabilities,写作、知识、数学、代码、指令、多语言与长文,branch,C06,,,navigation,false
 branch:llm:rankings/composite,综合指标及组成条件,branch,C06,aa-intelligence,,navigation,true
 branch:llm:rankings/datasets,评价数据集：目标、覆盖与参考版本,branch,C06,evaluation-dataset-target-coverage,evaluation-dataset-target-coverage,bound-needs-review,true
-branch:llm:rankings/efficiency,时延、速度、吞吐与费用条件,branch,C06,,,navigation,false
+branch:llm:rankings/efficiency,时延、速度、吞吐与费用条件,branch,C06,serving-timing-throughput-tails,serving-timing-throughput-tails,bound-needs-review,true
 branch:llm:rankings/methodology,任务、配置、判分、置信区间与污染,branch,C06,statistical-inference-confidence-interval,statistical-inference-confidence-interval,bound-needs-review,true
 branch:llm:rankings/metrics,分类指标：混淆矩阵、准确率、精确率、召回率与 F1,branch,C06,classification-accuracy-precision-recall-f1,classification-accuracy-precision-recall-f1,bound-needs-review,true
 branch:llm:rankings/protocol,评测协议：资源、运行证据与可比结论,branch,C06,benchmark-protocol-comparable-runs,benchmark-protocol-comparable-runs,bound-needs-review,true
+branch:llm:rankings/ranking-metrics,排序指标：MRR、NDCG 与相关性标注,branch,C06,ranking-mrr-ndcg-judgments,ranking-mrr-ndcg-judgments,bound-needs-review,true
 branch:llm:rankings/specialized,专项模型能力榜：待逐项核验与接入,branch,C06,,,navigation,false
 branch:llm:rankings/system-results,相关 Agent 系统评测，不与模型能力混排,branch,C06,terminal-bench,,navigation,true
 branch:llm:rankings/text-preference,文本人类偏好快照,branch,C06,arena-text,,navigation,true
@@ -32,11 +33,11 @@ concept:judge-bias,评审模型偏差,concept,C06,,,missing,false
 concept:multimodal-metrics,多模态质量指标,concept,C06,,,missing,false
 concept:precision-recall,精确率与召回率,concept,C06,classification-accuracy-precision-recall-f1,classification-accuracy-precision-recall-f1,bound-needs-review,true
 concept:quality-cost-frontier,质量成本边界,concept,C06,,,missing,false
-concept:ranking-metrics,MRR 与 NDCG,concept,C06,,,missing,false
+concept:ranking-metrics,MRR 与 NDCG,concept,C06,ranking-mrr-ndcg-judgments,ranking-mrr-ndcg-judgments,bound-needs-review,true
 concept:robustness,鲁棒性,concept,C06,,,missing,false
 concept:safety-evaluation,安全评价,concept,C06,,,missing,false
-concept:tail-latency,尾部时延,concept,C06,,,missing,false
+concept:tail-latency,尾部时延,concept,C06,serving-timing-throughput-tails,serving-timing-throughput-tails,bound-needs-review,true
 concept:terminal-bench,终端任务基准,concept,C06,terminal-bench,,missing,true
-concept:throughput,吞吐,concept,C06,,,missing,true
-concept:tps,生成速度,concept,C06,,,missing,false
-concept:ttft,首 Token 时延,concept,C06,,,missing,true
+concept:throughput,吞吐,concept,C06,serving-timing-throughput-tails,serving-timing-throughput-tails,bound-needs-review,true
+concept:tps,生成速度,concept,C06,serving-timing-throughput-tails,serving-timing-throughput-tails,bound-needs-review,true
+concept:ttft,首 Token 时延,concept,C06,serving-timing-throughput-tails,serving-timing-throughput-tails,bound-needs-review,true

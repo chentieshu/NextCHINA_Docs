@@ -37,6 +37,9 @@ import probabilityCalibration from '../../content/models/evaluation/probability-
 import evaluationDatasetTargetCoverageContent from '../../content/models/evaluation/evaluation-dataset-target-coverage.md?raw';
 import benchmarkProtocolComparableRunsContent from '../../content/models/evaluation/benchmark-protocol-comparable-runs.md?raw';
 
+import rankingMetricsContent from '../../content/models/evaluation/ranking-mrr-ndcg-judgments.md?raw';
+import servingTimingContent from '../../content/models/evaluation/serving-timing-throughput-tails.md?raw';
+
 const contentById: Record<string, string> = {
   'apple-style-premium-product-video': premiumVideoMarkdown,
   'llm-how-it-works': llmMarkdown,
@@ -71,7 +74,9 @@ const contentById: Record<string, string> = {
   'constrained-optimization-projection-kkt': constrainedOptimization,
   'probability-calibration-brier-bins': probabilityCalibration,
   'evaluation-dataset-target-coverage': evaluationDatasetTargetCoverageContent,
-  'benchmark-protocol-comparable-runs': benchmarkProtocolComparableRunsContent
+  'benchmark-protocol-comparable-runs': benchmarkProtocolComparableRunsContent,
+  'ranking-mrr-ndcg-judgments': rankingMetricsContent,
+  'serving-timing-throughput-tails': servingTimingContent
 };
 
 export const ESSAY_CHAPTERS: DocChapter[] = articleRegistry.articles.map(article => {

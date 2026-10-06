@@ -906,6 +906,90 @@
         ],
         "relatedResourceIds": []
       }
+    },
+    {
+      "id": "ranking-mrr-ndcg-judgments",
+      "file": "content/models/evaluation/ranking-mrr-ndcg-judgments.md",
+      "space": "models",
+      "category": "evaluation-statistics",
+      "categoryName": "评测与统计基础",
+      "title": "MRR 与 NDCG：第一条可用结果，还是前几条整体质量？",
+      "subtitle": "从相关性等级、截断与理想分母，到缺失标注和并列排序",
+      "date": "2026-10-05",
+      "tags": [
+        "排序评价",
+        "MRR",
+        "NDCG",
+        "相关性标注",
+        "评价协议"
+      ],
+      "excerpt": "从完整的查询与文档等级表推导倒数排名和归一化折损收益，用短列表、零分母、收益反转及并列反例检查约定，并运行有界标准库计算器。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "ranking-mrr-ndcg-judgments",
+        "conceptIds": [
+          "concept:ranking-metrics"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "rankings/ranking-metrics"
+          }
+        ],
+        "sourceUrls": [
+          "https://trec.nist.gov/pubs/trec8/papers/qa_report.pdf",
+          "https://nlp.stanford.edu/IR-book/pdf/08eval.pdf",
+          "https://scikit-learn.org/1.9/modules/generated/sklearn.metrics.ndcg_score.html"
+        ],
+        "relatedResourceIds": []
+      }
+    },
+    {
+      "id": "serving-timing-throughput-tails",
+      "file": "content/models/evaluation/serving-timing-throughput-tails.md",
+      "space": "models",
+      "category": "evaluation-statistics",
+      "categoryName": "评测与统计基础",
+      "title": "首 Token、生成速度与尾部时延：从事件日志算清分子分母",
+      "subtitle": "区分内容块、成功终止、并发吞吐、经验分位数与超时样本",
+      "date": "2026-10-05",
+      "tags": [
+        "TTFT",
+        "Token/s",
+        "吞吐",
+        "尾部时延",
+        "评测协议",
+        "精确计算"
+      ],
+      "excerpt": "用原创客户端轨迹分别计算首输出时延、两种请求速率、共同窗口吞吐与尾部分位数，核对多 Token 块、结束消息、失败样本和聚合权重。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "serving-timing-throughput-tails",
+        "conceptIds": [
+          "concept:ttft",
+          "concept:tps",
+          "concept:throughput",
+          "concept:tail-latency"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "rankings/efficiency"
+          }
+        ],
+        "sourceUrls": [
+          "https://docs.nvidia.com/aiperf/reference/ai-perf-metrics-reference",
+          "https://research.google/pubs/the-tail-at-scale/",
+          "https://barroso.org/publications/TheTailAtScale.pdf",
+          "https://docs.mlcommons.org/inference/submission/",
+          "https://docs.nvidia.com/deeplearning/triton-inference-server/user-guide/docs/perf_analyzer/genai-perf/README.html",
+          "https://docs.python.org/3.12/library/time.html#time.monotonic",
+          "https://docs.python.org/3.12/library/fractions.html"
+        ],
+        "relatedResourceIds": []
+      }
     }
   ]
 }

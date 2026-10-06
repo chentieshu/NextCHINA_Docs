@@ -114,12 +114,13 @@
         {"id":"datasets","label":"评价数据集：目标、覆盖与参考版本","conceptRefs":["concept:evaluation-dataset"]},
         {"id":"protocol","label":"评测协议：资源、运行证据与可比结论","conceptRefs":["concept:benchmark-protocol"]},
         {"id":"metrics","label":"分类指标：混淆矩阵、准确率、精确率、召回率与 F1","conceptRefs":["concept:accuracy-f1","concept:precision-recall"]},
+        {"id":"ranking-metrics","label":"排序指标：MRR、NDCG 与相关性标注","conceptRefs":["concept:ranking-metrics"]},
         {"id":"calibration","label":"概率校准、Brier 分数与分箱边界","conceptRefs":["concept:calibration"]},
         {"id":"methodology","label":"任务、配置、判分、置信区间与污染","conceptRefs":["concept:benchmark-protocol","concept:confidence-interval"]},
         {"id":"text-preference","label":"文本人类偏好快照","legacyDataRef":"data:arena-text"},
         {"id":"composite","label":"综合指标及组成条件","legacyDataRef":"data:aa-intelligence"},
         {"id":"specialized","label":"专项模型能力榜：待逐项核验与接入"},
-        {"id":"efficiency","label":"时延、速度、吞吐与费用条件","conceptRefs":["concept:ttft","concept:tps","concept:throughput"]},
+        {"id":"efficiency","label":"时延、速度、吞吐与费用条件","conceptRefs":["concept:ttft","concept:tps","concept:throughput","concept:tail-latency"]},
         {"id":"system-results","label":"相关 Agent 系统评测，不与模型能力混排","legacyDataRef":"data:terminal-bench"}
       ]},
       {"id":"models","label":"模型、版本与演化","children":[

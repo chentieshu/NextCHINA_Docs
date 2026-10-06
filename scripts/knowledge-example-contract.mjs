@@ -32,7 +32,9 @@ export const exampleChecks = [
   ['constrained-optimization-projection-kkt', 'constrained-optimization-projection-kkt', 'python'],
   ['probability-calibration-brier-bins', 'probability-calibration-brier-bins', 'python'],
   ['evaluation-dataset-target-coverage', 'evaluation-dataset-target-coverage', 'observable-case'],
-  ['benchmark-protocol-comparable-runs', 'benchmark-protocol-comparable-runs', 'observable-case']
+  ['benchmark-protocol-comparable-runs', 'benchmark-protocol-comparable-runs', 'observable-case'],
+  ['ranking-mrr-ndcg-judgments', 'ranking-mrr-ndcg-judgments', 'python'],
+  ['serving-timing-throughput-tails', 'serving-timing-throughput-tails', 'python']
 ];
 const pilotId = 'ai-ml-dl-boundaries';
 const sourceUrls = [

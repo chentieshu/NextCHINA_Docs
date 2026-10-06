@@ -10,6 +10,8 @@ import { validateExampleChecks, checkObservableCase, testExampleContract, testPi
 
 import { checkLearningSignalsCase, testLearningSignalsContract } from './learning-signals-case-contract.mjs';
 import { loadPythonFixtureSuffixes, testPythonFixtureRegistrations } from './knowledge-python-fixtures.mjs';
+import { checkEvaluationDatasetCase, checkBenchmarkProtocolCase, testEvaluationDatasetContract,
+  testBenchmarkProtocolContract, testEvaluationFoundationsRegistrations } from './evaluation-foundations-case-contract.mjs';
 
 const units = readKnowledgeUnits(repositoryRoot);
 assert.ok(units.length > 0, 'No independent units');
@@ -1134,8 +1136,17 @@ try {
     assert.ok(links.length >= 2, 'Independent pages need onward reading links');
     for (const [, link] of links) assert.ok(byId.has(new URLSearchParams(link.slice(1)).get('scope')), `Broken knowledge link: ${link}`);
     if (exampleKinds.get(article.id) === 'observable-case') {
-      observableCaseResults.push(article.id === 'ai-ml-dl-boundaries'
-        ? checkObservableCase(article, markdown) : checkLearningSignalsCase(article, markdown));
+      switch (article.id) {
+        case 'ai-ml-dl-boundaries':
+          observableCaseResults.push(checkObservableCase(article, markdown)); break;
+        case 'unsupervised-self-supervised-learning':
+          observableCaseResults.push(checkLearningSignalsCase(article, markdown)); break;
+        case 'evaluation-dataset-target-coverage':
+          observableCaseResults.push(checkEvaluationDatasetCase(article, markdown)); break;
+        case 'benchmark-protocol-comparable-runs':
+          observableCaseResults.push(checkBenchmarkProtocolCase(article, markdown)); break;
+        default: assert.fail(`Unknown observable-case article: ${article.id}`);
+      }
       continue;
     }
     const blocks = [...markdown.matchAll(/^```python\r?\n(# nextchina-example: ([a-z0-9-]+)\r?\n[\s\S]*?)^```\s*$/gm)];
@@ -1175,9 +1186,17 @@ try {
   const learningSignals = units.find(article => article.id === 'unsupervised-self-supervised-learning');
   const learningSignalsContract = testLearningSignalsContract(units, Object.keys(numericChecks),
     readFileSync(path.join(repositoryRoot, learningSignals.file), 'utf8'));
+  const evaluationDataset = units.find(article => article.id === 'evaluation-dataset-target-coverage');
+  const benchmarkProtocol = units.find(article => article.id === 'benchmark-protocol-comparable-runs');
+  const evaluationDatasetContract = testEvaluationDatasetContract(units, Object.keys(numericChecks),
+    readFileSync(path.join(repositoryRoot, evaluationDataset.file), 'utf8'));
+  const benchmarkProtocolContract = testBenchmarkProtocolContract(units, Object.keys(numericChecks),
+    readFileSync(path.join(repositoryRoot, benchmarkProtocol.file), 'utf8'));
+  const evaluationFoundationsRegistrations = testEvaluationFoundationsRegistrations(units, Object.keys(numericChecks));
   const report = { status: 'pass', independentArticles: units.length, runnableExamples: results.length,
     metadataNegativeCases: mutations.length, fixtureRegistrationNegativeCases, attentionMatchesGardenFixture: true, results,
     observableCaseFamilies: observableCaseResults.length, observableCaseResults, exampleContractNegativeCases, pilotVisibilityNegativeCases, learningSignalsContract,
+    evaluationDatasetContract, benchmarkProtocolContract, evaluationFoundationsRegistrations,
     externalModelCalls: 0, commercialMeasurements: false, expertReview: false };
   mkdirSync(path.join(repositoryRoot, 'test-results'), { recursive: true });
   writeFileSync(path.join(repositoryRoot, 'test-results/knowledge-units.json'), JSON.stringify(report, null, 2));

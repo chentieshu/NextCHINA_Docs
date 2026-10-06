@@ -111,6 +111,8 @@
       ]},
       {"id":"rankings","label":"能力、评测与榜单","children":[
         {"id":"capabilities","label":"写作、知识、数学、代码、指令、多语言与长文"},
+        {"id":"datasets","label":"评价数据集：目标、覆盖与参考版本","conceptRefs":["concept:evaluation-dataset"]},
+        {"id":"protocol","label":"评测协议：资源、运行证据与可比结论","conceptRefs":["concept:benchmark-protocol"]},
         {"id":"metrics","label":"分类指标：混淆矩阵、准确率、精确率、召回率与 F1","conceptRefs":["concept:accuracy-f1","concept:precision-recall"]},
         {"id":"calibration","label":"概率校准、Brier 分数与分箱边界","conceptRefs":["concept:calibration"]},
         {"id":"methodology","label":"任务、配置、判分、置信区间与污染","conceptRefs":["concept:benchmark-protocol","concept:confidence-interval"]},

@@ -30,7 +30,9 @@ export const exampleChecks = [
   ['eigen-svd-low-rank', 'eigen-svd-low-rank', 'python'],
   ['compression-prefix-codes', 'compression-prefix-codes', 'python'],
   ['constrained-optimization-projection-kkt', 'constrained-optimization-projection-kkt', 'python'],
-  ['probability-calibration-brier-bins', 'probability-calibration-brier-bins', 'python']
+  ['probability-calibration-brier-bins', 'probability-calibration-brier-bins', 'python'],
+  ['evaluation-dataset-target-coverage', 'evaluation-dataset-target-coverage', 'observable-case'],
+  ['benchmark-protocol-comparable-runs', 'benchmark-protocol-comparable-runs', 'observable-case']
 ];
 const pilotId = 'ai-ml-dl-boundaries';
 const sourceUrls = [
@@ -54,7 +56,9 @@ export function validateExampleChecks(units, pythonIds, registrations = exampleC
     if (kind === 'python') assert.ok(numeric.has(exampleId), `Missing numeric checks: ${exampleId}`);
     else {
       assert.ok(!numeric.has(exampleId), `Cannot reassign numeric example: ${exampleId}`);
-      const exactPairs = [[pilotId, pilotId], ['unsupervised-self-supervised-learning', 'unsupervised-self-supervised-learning']];
+      const exactPairs = [[pilotId, pilotId], ['unsupervised-self-supervised-learning', 'unsupervised-self-supervised-learning'],
+        ['evaluation-dataset-target-coverage', 'evaluation-dataset-target-coverage'],
+        ['benchmark-protocol-comparable-runs', 'benchmark-protocol-comparable-runs']];
       assert.ok(exactPairs.some(([article, example]) => articleId === article && exampleId === example), 'Unknown observable-case article/example pair');
     }
     byArticle.set(articleId, entry); byExample.set(exampleId, entry);

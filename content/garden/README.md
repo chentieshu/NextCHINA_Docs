@@ -1,6 +1,6 @@
 # AI 知识花园：事实源与内容清单
 
-本目录已接入生产 React 工作区。现行首页使用完整的单一知识网络和只读 SVG 点线引擎；原 602 节点范围完整保留，并发主线新增 27 个概念，内容组织先后补 metrics、naive-bayes、ai-ml-dl、learning-signals、floating-point、mutual-information、complexity、regularization、adamw、eigen-svd、compression、constrained-optimization 与 calibration 十三个导航叶；模型共 643 个节点（407 个概念、126 个分支），`normalizeNetwork` 得到 642 个候选。2026-10-05 第十五批工作树默认地图准入为 221，另 421 个候选仍保留在模型和清单中；显式选择与用户筛选可改变实际显示。`root:ai` 不进入地图候选，不能把候选数称为默认可见数。React Flow/ELK 的历史模块仍在仓库，不代表当前首页依赖它们。现行交互见 [数字花园设计](../../docs/obsidian-digital-garden.md)，早期设计不作为上线状态证明。
+本目录已接入生产 React 工作区。现行首页使用完整的单一知识网络和只读 SVG 点线引擎；原 602 节点范围完整保留，并发主线新增 27 个概念，内容组织先后补 metrics、naive-bayes、ai-ml-dl、learning-signals、floating-point、mutual-information、complexity、regularization、adamw、eigen-svd、compression、constrained-optimization、calibration、datasets 与 protocol 十五个导航叶；模型共 645 个节点（407 个概念、128 个分支），`normalizeNetwork` 得到 644 个候选。2026-10-05 第十六批工作树默认地图准入为 224，另 420 个候选仍保留在模型和清单中；显式选择与用户筛选可改变实际显示。`root:ai` 不进入地图候选，不能把候选数称为默认可见数。React Flow/ELK 的历史模块仍在仓库，不代表当前首页依赖它们。现行交互见 [数字花园设计](../../docs/obsidian-digital-garden.md)，早期设计不作为上线状态证明。
 
 第十三批历史快照（`8a80b0c1`）新增正则化与 AdamW 两篇分别经过来源、数学和代码审阅的课，只绑定既有 `concept:regularization` 与 `concept:adamw`。正则化放在原预算目录的子叶，AdamW 位于训练循环之后；预算目录的 ID、标签、过拟合与检查点引用不变。实测 **43 个页面（28 篇 MD、15 个生成页面）**、**20 篇独立单元覆盖 51/407 个概念**，356 个概念仍缺独立绑定；141 个节点有直接资料，其中 84 个概念。模型 639 个节点、638 个候选、213 个默认准入，425 个未准入候选仍保留；原 603 个 ID 全部保留。
 
@@ -12,15 +12,25 @@
 
 第十四批历史计数冻结于提交 `6560caea`，不随后续批次改写。该 SHA 的本地完整冻结验收为 **389 项开发测试通过、1582 秒**，以及 **341 项生产测试通过＋3 项设计性跳过、1298 秒**；两套各用 2 个 worker，先开发后生产串行，总计 **2880 秒（48 分钟）**。[push topic-plan 检查](https://github.com/chentieshu/NextCHINA_Docs/actions/runs/37353873280) 已通过；没有合并或部署。
 
-当前第十五批工作树新增约束优化与概率校准两篇分别审阅的独立课，只绑定既有 `concept:constrained-optimization` 与 `concept:calibration`。约束优化叶位于原 math 的谱分解之后，校准叶位于原 rankings 的 metrics 与 methodology 之间；所有旧 ID、父归属、兄弟相对顺序及 tensor-shapes → floating-point → probability 连续三项保留。正常审计实测 **47 个页面（32 篇 MD、15 个生成页面）**、**24 篇独立单元覆盖 55/407 个概念**，352 个仍缺独立绑定；149 个节点有直接资料，其中 88 个概念。模型 **643 个节点、642 个候选、221 个默认准入**，421 个未准入候选仍保留；原 603 个 ID 全部保留。
+第十五批历史快照（`f7471e6d`）新增约束优化与概率校准两篇分别审阅的独立课，只绑定既有 `concept:constrained-optimization` 与 `concept:calibration`。约束优化叶位于原 math 的谱分解之后，校准叶位于原 rankings 的 metrics 与 methodology 之间；所有旧 ID、父归属、兄弟相对顺序及 tensor-shapes → floating-point → probability 连续三项保留。正常审计实测 **47 个页面（32 篇 MD、15 个生成页面）**、**24 篇独立单元覆盖 55/407 个概念**，352 个仍缺独立绑定；149 个节点有直接资料，其中 88 个概念。模型 **643 个节点、642 个候选、221 个默认准入**，421 个未准入候选仍保留；原 603 个 ID 全部保留。
 
 第十五批只增加两个目录边与两条 references，不增加规范概念、全局建议、路径局部建议或类型化语义边。正则化与分类指标各补一个窄回链；两课之间不建立依赖。实际知识检查为 **22 个 Python 执行＋2 个案例家族结构／链接检查**，原 14 个内联后缀、6 个既有外部后缀、全部旧代码与案例检查器保留；登记负例为 **50**，学习信号契约为 **235**，原 77／16／5 个其他负例不变。旧优化课结构检查中，约束优化“没有绑定”的过期快照预期明确替换为该课的准确绑定，其余有效断言和目录行为保留；分类指标对自身不覆盖校准的排除断言仍不变。
 
-C01 的 27 个概念现在均有独立绑定，但仍是 **bound-needs-review**，批次保持 open；这不表示数学教学已经穷尽或独立专家审阅完成。C06 为 **4/23** 个概念有独立绑定，仍有 19 个缺口。全部单元继续保留 `needs-independent-review`，专家复核为 0；源码、数值、渲染、目标浏览器检查、完整冻结验收、分支发布与部署分别报告，工作树不代表部署。
+第十五批快照中，C01 的 27 个概念均有独立绑定，但仍是 **bound-needs-review**，批次保持 open；这不表示数学教学已经穷尽或独立专家审阅完成。C06 为 **4/23** 个概念有独立绑定，仍有 19 个缺口。全部单元继续保留 `needs-independent-review`，专家复核为 0；源码、数值、渲染、目标浏览器检查、完整冻结验收、分支发布与部署分别报告，工作树不代表部署。
 
-当前 **907 条边**为 642 条目录边、39 条全局建议、57 条路径局部建议、91 条 references、45 条 related、18 条 represents 和 15 条类型化语义关系。后者仍为 9 条有限定来源、6 条待澄清；不把导航或编辑阅读次序冒称新的科学语义关系。
+第十五批历史快照冻结于 `f7471e6d`，不随后续批次改写。本地完整冻结验收为 **434 项开发测试通过、1980 秒**，以及 **386 项生产测试通过＋3 项设计性跳过、1644 秒**；两套各用 2 个 worker，先开发后生产串行，总计 **3624 秒（60.4 分钟）**。该 SHA 的 [push topic-plan 检查](https://github.com/chentieshu/NextCHINA_Docs/actions/runs/37367225932) 首次尝试已终止为 failure，其中 validate-plan 作业为 cancelled；没有记录到执行步骤，日志不可取得，不能据此归因于测试断言或代码。相同 SHA 的唯一授权重试（attempt 2）也于 2026-10-05 20:42:04 UTC 终止为 failure；validate-plan 作业于 20:42:03 被取消，runner 名称为空、执行步骤为空。两次都没有已执行的代码／测试断言失败证据，取消原因未获确认；不再重试，也不将此次结果标为通过。官方 runner 分配延迟事件仅提供背景，不能证明本作业取消的具体原因。没有 PR、合并或部署。
 
-以下两段保留第十二批 `5c834dcb` 的历史叙述与计数，不以其中“当前”指代第十五批。
+当前第十六批工作树新增评价数据集与评测协议两篇分别经过来源、论证和手算审阅的观察案例，只绑定既有 `concept:evaluation-dataset` 与 `concept:benchmark-protocol`，规范父级均保留为 `topic:evaluation-protocols`。在原 rankings 下新增 datasets、protocol 两个最小叶，位于 capabilities 之后、metrics 之前；calibration、methodology 及全部旧兄弟相对顺序不变。正常审计实测 **49 个页面（34 篇 MD、15 个生成页面）**、**26 篇独立单元覆盖 57/407 个概念**，350 个仍缺独立绑定；153 个节点有直接资料，其中 90 个概念。模型 **645 个节点、644 个候选、224 个默认准入**，420 个未准入候选仍保留；原 603 个 ID 全部保留。
+
+本批仅增加两个目录边与两条 references，不增加规范概念、全局建议、路径局部建议或类型化语义边。数据集课以 20 条虚构包裹照片记录说明目标、抽样单位、覆盖和参考版本；83/100 与 78/100 是按既定构成标准化的样本描述，不是一百次新观察或部署赢家。协议课以 8 项虚构任务说明失败分母、两次尝试、选择过程、带工具系统与版本化重计；7/8 的参考辅助诊断不代表可部署选择器。两课没有 Markdown Python 实验或模型执行，互为阅读输入而不新增全局依赖。
+
+本批采用已独立审阅的精确 observable-case 登记与显式分派，旧 22 个 Python 例子、14 个内联后缀、8 个文件后缀、执行隔离设置及两个旧案例检查器均保留。当前 `npm run validate` 实测通过，知识检查分别报告 **22 个实际 Python 执行＋4 个案例家族结构／链接检查**；新两族各计 0 个执行例子，手算和来源审阅不计入模型运行。数据集／协议／登记的 355／449／44 个新负例用于限定删除与误接线回归，故意错误的科学推断仍可通过结构检查。源码／知识验证已通过；浏览器目标验收、完整冻结套件、发布与部署仍分别记录，不能借用前批通过记录。
+
+C06 现为 **6/23** 个概念有独立绑定，仍有 17 个缺口；其 41 个节点含 23 个概念、18 个分支。C01 已有绑定与全部单元均继续为 `needs-independent-review`，专家复核仍为 0，批次保持 open。统计课原有两条规范概念链接进入已填充的资料文件夹，需显式点击新课；methodology 继续引用评测协议并展示原置信区间课，导航引用不冒充独立覆盖。
+
+当前 **911 条边**为 644 条目录边、39 条全局建议、57 条路径局部建议、93 条 references、45 条 related、18 条 represents 和 15 条类型化语义关系。后者仍为 9 条有限定来源、6 条待澄清；不把导航或编辑阅读次序冒称新的科学语义关系。
+
+以下两段保留第十二批 `5c834dcb` 的历史叙述与计数，不以其中“当前”指代第十六批。
 
 第十二批新增 `algorithm-complexity-cost-model` 与 `mutual-information` 两篇独立基础课，只绑定既有复杂度与互信息概念，并在原 LLM math 下各加一个最小叶。当前 41 个页面（26 篇 MD、15 个生成页面），18 篇独立单元覆盖 49/407 个概念，缺口 358；137 个节点有直接资料，其中 82 个概念。只新增两个目录边、两条 references 及一条有范围和理由的 KL → 互信息阅读建议，不更改规范归属或语义边，不为两篇课创造相互依赖。893 条边分为 636 目录、37 全局建议、57 路径局部建议、85 references，其他类型不变。
 
@@ -32,10 +42,10 @@ C01 的 27 个概念现在均有独立绑定，但仍是 **bound-needs-review**�
 
 - `blueprint.json`：14 个领域、77 个主题、407 个规范概念、编辑关联、建议先学、学习路径及已有资源绑定
 - `master-outline.json`：学习阶段、规范知识复用与知识单元完成契约
-- `plans/topic-hubs-v2.json` 与 `hub-integration.json`：18 个专题和 126 个实际分支的结构、引用及资料放置；目录不等于独立正文
+- `plans/topic-hubs-v2.json` 与 `hub-integration.json`：18 个专题和 128 个实际分支的结构、引用及资料放置；目录不等于独立正文
 - `microscopes/attention-3x2.json`：可验证的人工教学计算输入与约束，不是商业模型实测或已经完成的交互模拟器
 - `../articles.json` 的 `knowledgeUnit`：独立知识单元的规范概念、已有分支、来源 URL、例子及审查状态；正文仍在原 MD
-- [分批 CSV 清单](../../docs/content-inventory/README.md)：18 个已跟踪小文件，记录全部 643 个节点的身份、类型、批次、直接文章、独立覆盖和默认准入，不手改
+- [分批 CSV 清单](../../docs/content-inventory/README.md)：18 个已跟踪小文件，记录全部 645 个节点的身份、类型、批次、直接文章、独立覆盖和默认准入，不手改
 - `content-inventory.json`：忽略的可复现完整审计产物，保留来源定位、全部类型化边与覆盖细节；安装/构建自动重建。审计定义见 [内容整理计划](../../docs/content-organization-plan.md)
 
 所有概念只定义一次。文章在不同专题出现时复用同一 articleId；产品价格、榜单与其他易变事实仍由 `content/data/**` 管理，不复制进节点。正文日期、来源访问日期和榜单快照日期分别保留。
@@ -49,7 +59,7 @@ node scripts/test-garden.mjs
 npm run test:hubs
 npm run test:knowledge
 
-# 全部 643 个模型节点（642 个地图候选；当前 221 个默认准入）的可复现审计
+# 全部 645 个模型节点（644 个地图候选；当前 224 个默认准入）的可复现审计
 node scripts/audit-node-content.mjs --write
 # 仅重建忽略的 JSON，检查已跟踪 CSV 和索引
 node scripts/audit-node-content.mjs --prepare

@@ -34,6 +34,9 @@ import compression from '../../content/models/foundations/compression-prefix-cod
 import constrainedOptimization from '../../content/models/foundations/constrained-optimization-projection-kkt.md?raw';
 import probabilityCalibration from '../../content/models/evaluation/probability-calibration-brier-bins.md?raw';
 
+import evaluationDatasetTargetCoverageContent from '../../content/models/evaluation/evaluation-dataset-target-coverage.md?raw';
+import benchmarkProtocolComparableRunsContent from '../../content/models/evaluation/benchmark-protocol-comparable-runs.md?raw';
+
 const contentById: Record<string, string> = {
   'apple-style-premium-product-video': premiumVideoMarkdown,
   'llm-how-it-works': llmMarkdown,
@@ -66,7 +69,9 @@ const contentById: Record<string, string> = {
   'unsupervised-self-supervised-learning': learningSignals,
   'ai-ml-dl-boundaries': aiMlDlBoundaries,
   'constrained-optimization-projection-kkt': constrainedOptimization,
-  'probability-calibration-brier-bins': probabilityCalibration
+  'probability-calibration-brier-bins': probabilityCalibration,
+  'evaluation-dataset-target-coverage': evaluationDatasetTargetCoverageContent,
+  'benchmark-protocol-comparable-runs': benchmarkProtocolComparableRunsContent
 };
 
 export const ESSAY_CHAPTERS: DocChapter[] = articleRegistry.articles.map(article => {

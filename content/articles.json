@@ -829,6 +829,83 @@
         ],
         "relatedResourceIds": []
       }
+    },
+    {
+      "id": "evaluation-dataset-target-coverage",
+      "file": "content/models/evaluation/evaluation-dataset-target-coverage.md",
+      "space": "models",
+      "category": "evaluation-statistics",
+      "categoryName": "评测与统计基础",
+      "title": "评价数据集：这份试卷代表谁、漏掉了什么？",
+      "subtitle": "从任务、抽样单位与参考版本，读懂分层得分和覆盖边界",
+      "date": "2026-10-05",
+      "tags": [
+        "评价数据集",
+        "目标量",
+        "抽样覆盖",
+        "参考标签",
+        "观察案例"
+      ],
+      "excerpt": "用二十条虚构包裹照片记录，比较平衡集合与预定工作量的描述分数，并随缺失夜间、对象关联和参考修订证据调整结论。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "evaluation-dataset-target-coverage",
+        "conceptIds": [
+          "concept:evaluation-dataset"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "rankings/datasets"
+          }
+        ],
+        "sourceUrls": [
+          "https://arxiv.org/pdf/1803.09010v8",
+          "https://datasets-benchmarks-proceedings.neurips.cc/paper_files/paper/2021/file/084b6fbb10729ed4da8c3d3f5a3ae7c9-Paper-round2.pdf",
+          "https://www.cs.mcgill.ca/~jpineau/ReproducibilityChecklist.pdf"
+        ],
+        "relatedResourceIds": []
+      }
+    },
+    {
+      "id": "benchmark-protocol-comparable-runs",
+      "file": "content/models/evaluation/benchmark-protocol-comparable-runs.md",
+      "space": "models",
+      "category": "evaluation-statistics",
+      "categoryName": "评测与统计基础",
+      "title": "评测协议：两个分数在什么条件下可以比较？",
+      "subtitle": "从任务、资源与逐项日志，辨别分母、重试、系统边界和重计结果",
+      "date": "2026-10-05",
+      "tags": [
+        "评测协议",
+        "执行证据",
+        "资源预算",
+        "观察案例",
+        "结论边界"
+      ],
+      "excerpt": "用八项明确虚构的包裹分流任务，核对一次尝试、超时分母、两次生成、测试后选择与带工具系统，并在遗漏输入和判分修复后改写结论。",
+      "knowledgeUnit": {
+        "kind": "independent-explanation",
+        "reviewStatus": "needs-independent-review",
+        "exampleId": "benchmark-protocol-comparable-runs",
+        "conceptIds": [
+          "concept:benchmark-protocol"
+        ],
+        "placements": [
+          {
+            "hubId": "hub:llm",
+            "path": "rankings/protocol"
+          }
+        ],
+        "sourceUrls": [
+          "https://arxiv.org/pdf/2211.09110v2",
+          "https://arxiv.org/pdf/1911.02549v2",
+          "https://www.cs.mcgill.ca/~jpineau/ReproducibilityChecklist.pdf",
+          "https://jmlr.org/papers/volume22/20-303/20-303.pdf"
+        ],
+        "relatedResourceIds": []
+      }
     }
   ]
 }

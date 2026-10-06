@@ -26,7 +26,7 @@ concept:calibration,校准,concept,C06,probability-calibration-brier-bins,probab
 concept:confidence-interval,置信区间,concept,C06,statistical-inference-confidence-interval,statistical-inference-confidence-interval,bound-needs-review,true
 concept:contamination-audit,污染审计,concept,C06,,,missing,false
 concept:evaluation-dataset,评价数据集,concept,C06,evaluation-dataset-target-coverage,evaluation-dataset-target-coverage,bound-needs-review,true
-concept:fairness-evaluation,公平性评价,concept,C06,,,missing,false
+concept:fairness-evaluation,公平性评价,concept,C06,fairness-evaluation-group-rates,fairness-evaluation-group-rates,bound-needs-review,true
 concept:human-evaluation,人工评价,concept,C06,,,missing,false
 concept:human-preference-board,人类偏好榜,concept,C06,arena-text,,missing,true
 concept:judge-bias,评审模型偏差,concept,C06,,,missing,false
@@ -34,7 +34,7 @@ concept:multimodal-metrics,多模态质量指标,concept,C06,,,missing,false
 concept:precision-recall,精确率与召回率,concept,C06,classification-accuracy-precision-recall-f1,classification-accuracy-precision-recall-f1,bound-needs-review,true
 concept:quality-cost-frontier,质量成本边界,concept,C06,,,missing,false
 concept:ranking-metrics,MRR 与 NDCG,concept,C06,ranking-mrr-ndcg-judgments,ranking-mrr-ndcg-judgments,bound-needs-review,true
-concept:robustness,鲁棒性,concept,C06,,,missing,false
+concept:robustness,鲁棒性,concept,C06,robustness-perturbation-scope,robustness-perturbation-scope,bound-needs-review,true
 concept:safety-evaluation,安全评价,concept,C06,,,missing,false
 concept:tail-latency,尾部时延,concept,C06,serving-timing-throughput-tails,serving-timing-throughput-tails,bound-needs-review,true
 concept:terminal-bench,终端任务基准,concept,C06,terminal-bench,,missing,true

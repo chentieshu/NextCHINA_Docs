@@ -16,6 +16,8 @@ export const pythonFixtureRegistrations = [
   ['probability-calibration-brier-bins', 'scripts/knowledge-fixtures/probability-calibration-brier-bins.py'],
   ['ranking-mrr-ndcg-judgments', 'scripts/knowledge-fixtures/ranking-mrr-ndcg-judgments.py'],
   ['serving-timing-throughput-tails', 'scripts/knowledge-fixtures/serving-timing-throughput-tails.py'],
+  ['fairness-evaluation-group-rates', 'scripts/knowledge-fixtures/fairness-evaluation-group-rates.py'],
+  ['robustness-perturbation-scope', 'scripts/knowledge-fixtures/robustness-perturbation-scope.py'],
 ];
 
 export function loadPythonFixtureSuffixes(root, inlineIds, registrations = pythonFixtureRegistrations) {

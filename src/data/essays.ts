@@ -40,6 +40,9 @@ import benchmarkProtocolComparableRunsContent from '../../content/models/evaluat
 import rankingMetricsContent from '../../content/models/evaluation/ranking-mrr-ndcg-judgments.md?raw';
 import servingTimingContent from '../../content/models/evaluation/serving-timing-throughput-tails.md?raw';
 
+import fairnessEvaluationContent from '../../content/models/evaluation/fairness-evaluation-group-rates.md?raw';
+import robustnessContent from '../../content/models/evaluation/robustness-perturbation-scope.md?raw';
+
 const contentById: Record<string, string> = {
   'apple-style-premium-product-video': premiumVideoMarkdown,
   'llm-how-it-works': llmMarkdown,
@@ -76,7 +79,9 @@ const contentById: Record<string, string> = {
   'evaluation-dataset-target-coverage': evaluationDatasetTargetCoverageContent,
   'benchmark-protocol-comparable-runs': benchmarkProtocolComparableRunsContent,
   'ranking-mrr-ndcg-judgments': rankingMetricsContent,
-  'serving-timing-throughput-tails': servingTimingContent
+  'serving-timing-throughput-tails': servingTimingContent,
+  'fairness-evaluation-group-rates': fairnessEvaluationContent,
+  'robustness-perturbation-scope': robustnessContent
 };
 
 export const ESSAY_CHAPTERS: DocChapter[] = articleRegistry.articles.map(article => {

@@ -43,6 +43,7 @@
       {"id":"orientation","label":"基础与认识","children":[
         {"id":"ai-ml-dl","label":"AI、机器学习与深度学习的边界","conceptRefs":["concept:artificial-intelligence","concept:machine-learning","concept:deep-learning"]},
         {"id":"naive-bayes","label":"监督学习：用朴素贝叶斯训练分类器","conceptRefs":["concept:supervised-learning","concept:naive-bayes"]},
+        {"id":"linear-models","label":"线性与逻辑回归：拟合数值与事件概率","conceptRefs":["concept:linear-models"]},
         {"id":"learning-signals","label":"无监督与自监督：训练信号从哪里来","conceptRefs":["concept:unsupervised-learning","concept:self-supervised-learning"]},
           {"id":"fairness-evaluation","label":"公平性评价","conceptRefs":["concept:fairness-evaluation"]},
           {"id":"robustness","label":"鲁棒性评价","conceptRefs":["concept:robustness"]}
@@ -92,6 +93,7 @@
         {"id":"loop","label":"前向、损失、反向、梯度与更新","conceptRefs":["concept:backpropagation","concept:loss-objective","concept:sgd","concept:learning-rate"]},
         {"id":"adamw","label":"AdamW、矩估计与解耦权重衰减","conceptRefs":["concept:adamw"]},
         {"id":"budget","label":"预算、规模、泛化、精度与恢复","conceptRefs":["concept:overfitting","concept:checkpoint"],"children":[
+          {"id":"overfitting","label":"过拟合与欠拟合","conceptRefs":["concept:overfitting"]},
           {"id":"regularization","label":"正则化、L2 惩罚与泛化边界","conceptRefs":["concept:regularization"]}
         ]},
         {"id":"alignment","label":"SFT、奖励、RLHF、DPO 与可验证反馈","conceptRefs":["concept:sft","concept:rlhf","concept:dpo"]},

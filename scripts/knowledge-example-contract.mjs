@@ -36,7 +36,9 @@ export const exampleChecks = [
   ['ranking-mrr-ndcg-judgments', 'ranking-mrr-ndcg-judgments', 'python'],
   ['serving-timing-throughput-tails', 'serving-timing-throughput-tails', 'python'],
   ['fairness-evaluation-group-rates', 'fairness-evaluation-group-rates', 'python'],
-  ['robustness-perturbation-scope', 'robustness-perturbation-scope', 'python']
+  ['robustness-perturbation-scope', 'robustness-perturbation-scope', 'python'],
+  ['linear-logistic-regression', 'linear-logistic-regression', 'python'],
+  ['overfitting-underfitting-capacity', 'overfitting-underfitting-capacity', 'python'],
 ];
 const pilotId = 'ai-ml-dl-boundaries';
 const sourceUrls = [

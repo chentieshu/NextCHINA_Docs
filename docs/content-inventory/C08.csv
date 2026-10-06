@@ -24,7 +24,7 @@ concept:hmm-kalman,HMM 与 Kalman 滤波,concept,C08,,,missing,false
 concept:kernel-methods,核方法,concept,C08,,,missing,false
 concept:knn,k 近邻,concept,C08,,,missing,false
 concept:knowledge-representation,知识表示,concept,C08,,,missing,false
-concept:linear-models,线性与逻辑回归,concept,C08,,,missing,false
+concept:linear-models,线性与逻辑回归,concept,C08,linear-logistic-regression,linear-logistic-regression,bound-needs-review,true
 concept:mcts,蒙特卡洛树搜索,concept,C08,,,missing,false
 concept:mlp,多层感知机,concept,C08,,,missing,false
 concept:moe,混合专家,concept,C08,llm-how-it-works,,missing,true

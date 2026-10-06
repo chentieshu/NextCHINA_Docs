@@ -18,6 +18,8 @@ export const pythonFixtureRegistrations = [
   ['serving-timing-throughput-tails', 'scripts/knowledge-fixtures/serving-timing-throughput-tails.py'],
   ['fairness-evaluation-group-rates', 'scripts/knowledge-fixtures/fairness-evaluation-group-rates.py'],
   ['robustness-perturbation-scope', 'scripts/knowledge-fixtures/robustness-perturbation-scope.py'],
+  ['linear-logistic-regression', 'scripts/knowledge-fixtures/linear-logistic-regression.py'],
+  ['overfitting-underfitting-capacity', 'scripts/knowledge-fixtures/overfitting-underfitting-capacity.py'],
 ];
 
 export function loadPythonFixtureSuffixes(root, inlineIds, registrations = pythonFixtureRegistrations) {

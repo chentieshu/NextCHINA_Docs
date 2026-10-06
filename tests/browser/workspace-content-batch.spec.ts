@@ -726,7 +726,7 @@ for (const width of [390, 1440]) test(`AI boundaries direct and leaf readers pre
   const parent = page.locator('[data-folder="branch:ai-overview:orientation"]');
   await expect(parent.locator('h1')).toHaveText('基础与认识');
   await expect(page.locator('[data-document]')).toHaveCount(0);
-  await expect(parent.locator('.ws-folder-rows button')).toHaveCount(6);
+  await expect(parent.locator('.ws-folder-rows button')).toHaveCount(7);
   await parent.locator(`[data-folder-entry="${aiBoundariesBranch}"]`).click();
   await checkAiBoundaryReader(page);
   await page.goBack();
@@ -970,7 +970,7 @@ for (const width of [390, 1440]) test(`learning signals direct and leaf readers 
   await page.goto('/?view=garden&scope=branch:ai-overview:orientation');
   const parent = page.locator('[data-folder="branch:ai-overview:orientation"]');
   await expect(parent.locator('h1')).toHaveText('基础与认识');
-  await expect(parent.locator('.ws-folder-rows button')).toHaveCount(6);
+  await expect(parent.locator('.ws-folder-rows button')).toHaveCount(7);
   for (const [entry, target] of [
     [learningSignalsBranch, learningSignalsId], [aiBoundariesBranch, aiBoundariesArticleId],
     ['branch:ai-overview:orientation/naive-bayes', naiveBayesArticleId],

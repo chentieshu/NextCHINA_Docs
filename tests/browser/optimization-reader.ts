@@ -70,17 +70,19 @@ export function registerOptimizationTests(unit: OptimizationLesson) {
     expect(budget.embeddedArticleId).toBeUndefined();
     expect(budget.articleBindings).toEqual([]);
     expect(budget.resourceRefs).toEqual([]);
-    expect(graph.nodes.filter(node => node.parentId === budget.id).map(node => node.id)).toEqual(['branch:llm:training/budget/regularization']);
+    expect(graph.nodes.filter(node => node.parentId === budget.id).map(node => node.id)).toEqual(['branch:llm:training/budget/overfitting', 'branch:llm:training/budget/regularization']);
     const siblings = graph.nodes.filter(node => node.parentId === 'branch:llm:training').map(node => node.id);
     expect(siblings).toEqual(['data', 'samples', 'loop', 'adamw', 'budget', 'alignment', 'adaptation', 'not-training'].map(path => `branch:llm:training/${path}`));
     for (const [path, id] of [['loop', 'llm-training-loop'], ['samples', 'train-validation-test-data-leakage']]) {
       expect(graph.nodes.find(node => node.id === `branch:llm:training/${path}`)!.embeddedArticleId).toBe(id);
     }
-    for (const id of ['concept:overfitting', 'concept:linear-models', 'concept:checkpoint']) {
+    for (const id of ['concept:checkpoint']) {
       expect(graph.nodes.find(node => node.id === id)!.articleBindings).toEqual([]);
     }
     // This concept now owns its reviewed lesson; all other prior assertions remain.
-    expect(graph.nodes.find(node => node.id === 'concept:constrained-optimization')!.articleBindings)
+    for (const [concept, article] of [['concept:linear-models', 'linear-logistic-regression'], ['concept:overfitting', 'overfitting-underfitting-capacity']])
+    expect(graph.nodes.find(node => node.id === concept)!.articleBindings).toEqual([{ articleId: article, coverage: 'explanation' }]);
+  expect(graph.nodes.find(node => node.id === 'concept:constrained-optimization')!.articleBindings)
       .toEqual([{ articleId: 'constrained-optimization-projection-kkt', coverage: 'explanation' }]);
   });
 

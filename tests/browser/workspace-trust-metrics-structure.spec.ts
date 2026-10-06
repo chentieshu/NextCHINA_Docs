@@ -346,6 +346,7 @@ const expectedFolderEntries = [
   'file:branch:ai-overview:orientation:overview',
   'branch:ai-overview:orientation/ai-ml-dl',
   'branch:ai-overview:orientation/naive-bayes',
+  'branch:ai-overview:orientation/linear-models',
   'branch:ai-overview:orientation/learning-signals',
   'branch:ai-overview:orientation/fairness-evaluation',
   'branch:ai-overview:orientation/robustness',
@@ -390,12 +391,13 @@ function assertRequiredRows(actual: unknown, required: string[][], kind: 'exampl
     assert.equal(matches.length, 1, `Required ${kind} row duplicated: ${expected[0]}`);
     assert.deepEqual(matches[0], expected, `Required ${kind} row mismatch: ${expected[0]}`);
   }
-  assert.equal(actual.length, required.length, `Unexpected ${kind} registration count`);
-  assert.deepEqual(actual, required, `Required ${kind} registration order changed`);
+  const ids = new Set(required.map(row => row[0]));
+  assert.deepEqual(actual.filter(row => ids.has(row[0])), required, `Required ${kind} registration order changed`);
 }
 function orderedUnits() {
   const actual = units();
-  assert.deepEqual(actual.map((article: { id: string }) => article.id).sort(),
+  const required = new Set(requiredExamples.map(row => row[0]));
+  assert.deepEqual(actual.filter((article: { id: string }) => required.has(article.id)).map((article: { id: string }) => article.id).sort(),
     requiredExamples.map(row => row[0]).sort(), 'Required knowledge-unit identities changed');
   return requiredExamples.map(([id]) => actual.find((article: { id: string }) => article.id === id));
 }
@@ -403,9 +405,47 @@ function checkLiveRegistries(examples: string[][] = exampleChecks, fixtures: str
   assertRequiredRows(examples, requiredExamples, 'example');
   assertRequiredRows(fixtures, requiredFixtures, 'fixture');
   const loaded = loadPythonFixtureSuffixes(process.cwd(), inlineNumericIds, fixtures);
-  assert.deepEqual([...inlineNumericIds, ...Object.keys(loaded)], requiredNumericIds,
+  const liveNumericIds = [...inlineNumericIds, ...Object.keys(loaded)];
+  assert.deepEqual(liveNumericIds.filter(id => requiredNumericIds.includes(id)), requiredNumericIds,
     'Required Python check identities or order changed');
-  validateExampleChecks(orderedUnits(), requiredNumericIds, examples);
+  orderedUnits(); // The historical unit set remains an independent omission/duplicate oracle.
+  validateExampleChecks(units(), liveNumericIds, examples);
+}
+
+// Keep the sealed batch17 signatures historical as independent lessons are appended.
+// Only registered later units and their declared navigation contributions are projected out.
+// Extra organizers, semantic edges and mutations of old objects still reach the old digests.
+function postBatch17Additions() {
+  checkLiveRegistries();
+  const oldIds = new Set(requiredPreBatch18Examples.map(row => row[0]));
+  const additions = units().filter((article: { id: string }) => !oldIds.has(article.id));
+  const articleIds = new Set<string>(additions.map((article: { id: string }) => article.id));
+  const declaredBindings = new Map<string, Set<string>>();
+  for (const article of additions) for (const concept of article.knowledgeUnit.conceptIds) {
+    if (!declaredBindings.has(concept)) declaredBindings.set(concept, new Set());
+    declaredBindings.get(concept)!.add(article.id);
+  }
+  const placements = additions.flatMap((article: { knowledgeUnit: { placements: { hubId: string; path: string }[] } }) => article.knowledgeUnit.placements);
+  const leafIds = new Set<string>(placements.map((place: { hubId: string; path: string }) => `branch:${place.hubId.slice(4)}:${place.path}`));
+  const edgeIds = new Set<string>();
+  for (const id of leafIds) {
+    const leaf = graph.nodes.find(node => node.id === id)!;
+    expect(leaf, `Declared later leaf ${id}`).toBeTruthy();
+    edgeIds.add(`nav:${leaf.parentId}>${id}`);
+    for (const concept of leaf.conceptRefs ?? []) edgeIds.add(`references:${id}>${concept}`);
+  }
+  return { articleIds, leafIds, edgeIds, placements, declaredBindings };
+}
+function projectHistoricalOutline(outline: ReturnType<typeof readJson>) {
+  for (const place of postBatch17Additions().placements) {
+    const parts = place.path.split('/');
+    let siblings = outline.hubOutlines[place.hubId];
+    for (const part of parts.slice(0, -1)) siblings = siblings.find((node: { id: string }) => node.id === part).children;
+    const index = siblings.findIndex((node: { id: string }) => node.id === parts.at(-1));
+    expect(index, `Declared later outline ${place.path}`).toBeGreaterThanOrEqual(0);
+    siblings.splice(index, 1);
+  }
+  return outline;
 }
 
 // This is source/graph preservation coverage, not numerical, reader, pixel or suite evidence.
@@ -578,12 +618,14 @@ test('trust pair owns precisely two existing canonical explanations and two popu
   expect(parent.resourceRefs).toEqual([{ articleId: 'overview', role: 'existing-orientation' }]);
   expect(parent.conceptRefs).toEqual([]);
   const oldIds = oldOrientationChildren.map(item => `${parentId}/${item.id}`);
-  expect(graph.nodes.filter(node => node.parentId === parentId).map(node => node.id)).toEqual([...oldIds, ...leaves]);
+  expect(graph.nodes.filter(node => node.parentId === parentId).map(node => node.id)).toEqual(expectedFolderEntries.slice(1));
+  expect(expectedFolderEntries.slice(1).filter(id => [...oldIds, ...leaves].includes(id))).toEqual([...oldIds, ...leaves]);
   for (const [leaf, article] of [['ai-ml-dl', 'ai-ml-dl-boundaries'], ['naive-bayes', 'supervised-learning-naive-bayes'], ['learning-signals', 'unsupervised-self-supervised-learning']])
     expect(byId.get(`${parentId}/${leaf}`)!.embeddedArticleId).toBe(article);
   const outline = readJson('content/garden/plans/topic-hubs-v2.json').hubOutlines['hub:ai-overview'][0];
   expect(outline.id).toBe('orientation');
-  expect(outline.children).toEqual([...oldOrientationChildren, ...pair.map(item => ({ id: item.leaf, label: item.label, conceptRefs: [item.conceptId] }))]);
+  expect(outline.children.filter((child: { id: string }) => [...oldOrientationChildren.map(node => node.id), ...pair.map(item => item.leaf)].includes(child.id)))
+    .toEqual([...oldOrientationChildren, ...pair.map(item => ({ id: item.leaf, label: item.label, conceptRefs: [item.conceptId] }))]);
 });
 
 test('all 407 canonical identities parents labels and the original 603 identities remain fixed', () => {
@@ -626,7 +668,7 @@ test('exact four scoped navigation/reference edges preserve old edge objects ord
     .toEqual([...pairEdgeIds].sort());
   // Hash every old edge, including routeId/scope/evidence/status, in its old relative order.
   // This also rejects extra canonical-only prerequisites, reciprocal pair edges or altered old references.
-  expect(digest(graph.edges.filter(edge => !pairEdgeIds.has(edge.id)))).toBe(baseline.edges);
+  expect(digest(graph.edges.filter(edge => !postBatch17Additions().edgeIds.has(edge.id)))).toBe(baseline.edges);
   const metricsId = 'classification-accuracy-precision-recall-f1';
   const metrics = registry().articles.find((article: { id: string }) => article.id === metricsId);
   expect(metrics.knowledgeUnit.conceptIds).toEqual(['concept:accuracy-f1', 'concept:precision-recall']);
@@ -638,14 +680,14 @@ test('exact four scoped navigation/reference edges preserve old edge objects ord
 
 test('released batch17 nodes resources article objects spaces outlines runner and old assertions are preserved', () => {
   const baseline = releasedBaseline();
-  const oldNodes = graph.nodes.filter(node => !leaves.includes(node.id)).map(node => {
-    if (!pair.some(item => item.conceptId === node.id)) return node;
-    return { ...node, articleBindings: node.articleBindings.filter(ref => !pairIds.has(ref.articleId)) };
-  });
+  const additions = postBatch17Additions();
+  const oldNodes = graph.nodes.filter(node => !additions.leafIds.has(node.id)).map(node => ({
+    ...node, articleBindings: node.articleBindings.filter(ref => !additions.declaredBindings.get(node.id)?.has(ref.articleId)),
+  }));
   expect(digest(oldNodes)).toBe(baseline.nodes);
   const articleRegistry = registry();
-  expect(articleRegistry.articles.slice(-2).map((article: { id: string }) => article.id)).toEqual(pair.map(item => item.articleId));
-  articleRegistry.articles = articleRegistry.articles.filter((article: { id: string }) => !pairIds.has(article.id));
+  expect(articleRegistry.articles.filter((article: { id: string }) => pairIds.has(article.id)).map((article: { id: string }) => article.id)).toEqual(pair.map(item => item.articleId));
+  articleRegistry.articles = articleRegistry.articles.filter((article: { id: string }) => !additions.articleIds.has(article.id));
   expect(digest(articleRegistry)).toBe(baseline.articleRegistry);
   expect(fileSignature(articleRegistry.articles.map((article: { file: string }) => article.file))).toBe(baseline.oldArticleFiles);
   expect(fileSignature(requiredPreBatch18Fixtures.map(row => row[1]))).toBe(baseline.oldFixtureFiles);
@@ -653,29 +695,28 @@ test('released batch17 nodes resources article objects spaces outlines runner an
   const spaces = readJson('content/spaces.json');
   const models = spaces.spaces.filter((space: { id: string }) => space.id === 'models');
   expect(models).toHaveLength(1);
-  expect(models[0].chapterIds.slice(-2)).toEqual(pair.map(item => item.articleId));
+  expect(models[0].chapterIds.filter((id: string) => pairIds.has(id))).toEqual(pair.map(item => item.articleId));
   for (const item of pair) expect(models[0].chapterIds.filter((id: string) => id === item.articleId)).toHaveLength(1);
-  models[0].chapterIds = models[0].chapterIds.filter((id: string) => !pairIds.has(id));
+  models[0].chapterIds = models[0].chapterIds.filter((id: string) => !additions.articleIds.has(id));
   expect(digest(spaces)).toBe(baseline.spaces);
-  const outline = readJson('content/garden/plans/topic-hubs-v2.json');
+  const outline = projectHistoricalOutline(readJson('content/garden/plans/topic-hubs-v2.json'));
   const orientation = outline.hubOutlines['hub:ai-overview'][0];
-  orientation.children = orientation.children.filter((item: { id: string }) => !pair.some(unit => unit.leaf === item.id));
   expect(digest(orientation.children)).toBe(baseline.orientationChildren);
   expect(digest(outline)).toBe(baseline.outline);
-  const resources = Object.fromEntries(Object.entries(graph.hubResources ?? {}).filter(([id]) => !pairIds.has(id)));
+  const resources = Object.fromEntries(Object.entries(graph.hubResources ?? {}).filter(([id]) => !additions.articleIds.has(id)));
   expect(digest(resources)).toBe(baseline.hubResources);
   const runner = readFileSync('scripts/test-knowledge-units.mjs', 'utf8');
   expect(sha256(runner)).toBe(baseline.runnerBytes);
   expect(runner).toContain("spawnSync('python3', ['-I', '-c', code], { cwd: temp, encoding: 'utf8', timeout: 8000,");
   expect(runner).toContain("maxBuffer: 128 * 1024, env: { PATH: process.env.PATH, LANG: 'C.UTF-8', PYTHONIOENCODING: 'utf-8' }");
   const oldSpec = readFileSync('tests/browser/workspace-content-batch.spec.ts', 'utf8');
-  const after = "await expect(parent.locator('.ws-folder-rows button')).toHaveCount(6);";
+  const after = /await expect\(parent\.locator\('\.ws-folder-rows button'\)\)\.toHaveCount\(\d+\);/g;
   const before = "await expect(parent.locator('.ws-folder-rows button')).toHaveCount(4);";
-  expect(oldSpec.split(after).length - 1).toBe(2);
-  expect(sha256(oldSpec.replaceAll(after, before))).toBe(baseline.legacyContentSpecBytes);
+  expect([...oldSpec.matchAll(after)]).toHaveLength(2);
+  expect(sha256(oldSpec.replace(after, before))).toBe(baseline.legacyContentSpecBytes);
 });
 
-for (const width of [390, 1440]) test(`orientation has exactly six ordered identities and all six reader/history routes / ${width}px`, async ({ page }) => {
+for (const width of [390, 1440]) test(`orientation preserves ordered identities and every reader/history route / ${width}px`, async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width, height: 900 });
@@ -685,14 +726,14 @@ for (const width of [390, 1440]) test(`orientation has exactly six ordered ident
     await expect(folder).toBeVisible();
     await expect(folder.locator('h1')).toHaveText('基础与认识');
     await expect(page.locator('[data-document]')).toHaveCount(0);
-    await expect(folder.locator('.ws-folder-rows button')).toHaveCount(6);
-    await expect(folder.locator('[data-folder-entry]')).toHaveCount(6);
+    await expect(folder.locator('.ws-folder-rows button')).toHaveCount(expectedFolderEntries.length);
+    await expect(folder.locator('[data-folder-entry]')).toHaveCount(expectedFolderEntries.length);
     expect(await folder.locator('[data-folder-entry]').evaluateAll(elements => elements.map(element => element.getAttribute('data-folder-entry')))).toEqual(expectedFolderEntries);
     const params = new URL(page.url()).searchParams;
     expect(params.get('view')).toBe('garden'); expect(params.get('scope')).toBe(parentId);
   };
   await checkFolder();
-  const articleIds = ['overview', 'ai-ml-dl-boundaries', 'supervised-learning-naive-bayes',
+  const articleIds = ['overview', 'ai-ml-dl-boundaries', 'supervised-learning-naive-bayes', 'linear-logistic-regression',
     'unsupervised-self-supervised-learning', 'fairness-evaluation-group-rates', 'robustness-perturbation-scope'];
   for (const [index, entry] of expectedFolderEntries.entries()) {
     const articleId = articleIds[index];

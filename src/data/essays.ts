@@ -43,6 +43,9 @@ import servingTimingContent from '../../content/models/evaluation/serving-timing
 import fairnessEvaluationContent from '../../content/models/evaluation/fairness-evaluation-group-rates.md?raw';
 import robustnessContent from '../../content/models/evaluation/robustness-perturbation-scope.md?raw';
 
+import linearModelsContent from '../../content/models/classical/linear-logistic-regression.md?raw';
+import overfittingContent from '../../content/models/foundations/overfitting-underfitting-capacity.md?raw';
+
 const contentById: Record<string, string> = {
   'apple-style-premium-product-video': premiumVideoMarkdown,
   'llm-how-it-works': llmMarkdown,
@@ -81,7 +84,9 @@ const contentById: Record<string, string> = {
   'ranking-mrr-ndcg-judgments': rankingMetricsContent,
   'serving-timing-throughput-tails': servingTimingContent,
   'fairness-evaluation-group-rates': fairnessEvaluationContent,
-  'robustness-perturbation-scope': robustnessContent
+  'robustness-perturbation-scope': robustnessContent,
+  'linear-logistic-regression': linearModelsContent,
+  'overfitting-underfitting-capacity': overfittingContent
 };
 
 export const ESSAY_CHAPTERS: DocChapter[] = articleRegistry.articles.map(article => {

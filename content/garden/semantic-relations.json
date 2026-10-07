@@ -1,0 +1,463 @@
+{
+  "schemaVersion": 1,
+  "defaults": {
+    "asOf": "2026-10-07",
+    "assertionStatus": "source-checked",
+    "reviewStatus": "needs-independent-review"
+  },
+  "sources": [
+    {
+      "id": "transformer-2017",
+      "title": "Attention Is All You Need",
+      "url": "https://arxiv.org/html/1706.03762v7",
+      "locator": "§3.1–3.4, §5: original encoder–decoder Transformer"
+    },
+    {
+      "id": "rag-2020",
+      "title": "Retrieval-Augmented Generation",
+      "url": "https://arxiv.org/html/2005.11401v4",
+      "locator": "§2 retriever/generator, §3 QA evaluation; not every RAG implementation"
+    },
+    {
+      "id": "dpr-2020",
+      "title": "Dense Passage Retrieval",
+      "url": "https://arxiv.org/abs/2004.04906",
+      "locator": "Bi-encoder dense retrieval; contrastive training of question/passage representations"
+    },
+    {
+      "id": "nucleus-2019",
+      "title": "The Curious Case of Neural Text Degeneration",
+      "url": "https://arxiv.org/abs/1904.09751",
+      "locator": "Nucleus sampling and comparison with top-k/beam decoding"
+    },
+    {
+      "id": "generation-docs",
+      "title": "Transformers generation strategies",
+      "url": "https://huggingface.co/docs/transformers/en/generation_strategies",
+      "locator": "Sampling and beam search; configuration semantics"
+    },
+    {
+      "id": "instructgpt-2022",
+      "title": "Training language models with human feedback",
+      "url": "https://arxiv.org/abs/2203.02155",
+      "locator": "Supervised demonstrations, reward model and PPO-based RLHF"
+    },
+    {
+      "id": "dpo-2023",
+      "title": "Direct Preference Optimization",
+      "url": "https://arxiv.org/abs/2305.18290",
+      "locator": "Preference optimization objective; no explicit reward-model training required by DPO"
+    },
+    {
+      "id": "ppo-2017",
+      "title": "Proximal Policy Optimization Algorithms",
+      "url": "https://arxiv.org/abs/1707.06347",
+      "locator": "Policy-gradient surrogate objective and clipped policy updates"
+    },
+    {
+      "id": "react-2022",
+      "title": "ReAct",
+      "url": "https://arxiv.org/abs/2210.03629",
+      "locator": "Interaction with external tools and task/environment evaluation"
+    },
+    {
+      "id": "ragas-2023",
+      "title": "RAGAS",
+      "url": "https://arxiv.org/html/2309.15217v1",
+      "locator": "Separate retrieval context quality, faithfulness and answer relevance"
+    },
+    {
+      "id": "dqn-2013",
+      "title": "Playing Atari with Deep Reinforcement Learning",
+      "url": "https://arxiv.org/abs/1312.5602",
+      "locator": "Q-learning with convolutional value approximation"
+    }
+  ],
+  "entityTypes": {
+    "concept:multi-head": "mechanism",
+    "concept:transformer": "architecture",
+    "concept:mlp": "mechanism",
+    "concept:residual-normalization": "mechanism",
+    "concept:token-embedding": "mechanism",
+    "concept:self-attention": "mechanism",
+    "concept:dot-product": "mechanism",
+    "concept:matrix-multiplication": "mechanism",
+    "concept:softmax": "mechanism",
+    "concept:causal-mask": "mechanism",
+    "concept:cross-entropy": "objective",
+    "concept:llm": "model-family",
+    "concept:autoregression": "mechanism",
+    "concept:sft": "algorithm",
+    "concept:rlhf": "algorithm",
+    "concept:dpo": "algorithm",
+    "concept:reward-model": "model-family",
+    "concept:ppo": "algorithm",
+    "concept:policy-gradient": "algorithm",
+    "concept:dqn": "algorithm",
+    "concept:q-learning": "algorithm",
+    "concept:cnn": "architecture",
+    "concept:rag": "system",
+    "concept:embedding-model": "model-family",
+    "concept:vector-index": "mechanism",
+    "concept:contrastive-learning": "objective",
+    "concept:benchmark-protocol": "evaluation",
+    "concept:evidence-attribution": "evaluation",
+    "concept:agent": "system",
+    "concept:tool-calling": "mechanism",
+    "concept:decoding": "algorithm",
+    "concept:temperature": "mechanism",
+    "concept:top-k-sampling": "algorithm",
+    "concept:top-p-sampling": "algorithm",
+    "concept:beam-search": "algorithm"
+  },
+  "assertions": [
+    {
+      "source": "concept:multi-head",
+      "target": "concept:transformer",
+      "type": "part_of",
+      "reason": "原始 Transformer 的组成模块，而非目录归属。",
+      "scope": "Vaswani 2017 编码器—解码器结构；不把所有后续变体视为相同结构。",
+      "evidenceRefs": [
+        "transformer-2017"
+      ]
+    },
+    {
+      "source": "concept:mlp",
+      "target": "concept:transformer",
+      "type": "part_of",
+      "reason": "原始 Transformer 的组成模块，而非目录归属。",
+      "scope": "Vaswani 2017 编码器—解码器结构；不把所有后续变体视为相同结构。",
+      "evidenceRefs": [
+        "transformer-2017"
+      ]
+    },
+    {
+      "source": "concept:residual-normalization",
+      "target": "concept:transformer",
+      "type": "part_of",
+      "reason": "原始 Transformer 的组成模块，而非目录归属。",
+      "scope": "Vaswani 2017 编码器—解码器结构；不把所有后续变体视为相同结构。",
+      "evidenceRefs": [
+        "transformer-2017"
+      ]
+    },
+    {
+      "source": "concept:token-embedding",
+      "target": "concept:transformer",
+      "type": "part_of",
+      "reason": "原始 Transformer 的组成模块，而非目录归属。",
+      "scope": "Vaswani 2017 编码器—解码器结构；不把所有后续变体视为相同结构。",
+      "evidenceRefs": [
+        "transformer-2017"
+      ]
+    },
+    {
+      "source": "concept:self-attention",
+      "target": "concept:dot-product",
+      "type": "uses",
+      "reason": "缩放点积注意力通过该运算计算权重或加权输出。",
+      "scope": "标准缩放点积自注意力；不泛化到所有注意力替代算法。",
+      "evidenceRefs": [
+        "transformer-2017"
+      ]
+    },
+    {
+      "source": "concept:self-attention",
+      "target": "concept:matrix-multiplication",
+      "type": "uses",
+      "reason": "缩放点积注意力通过该运算计算权重或加权输出。",
+      "scope": "标准缩放点积自注意力；不泛化到所有注意力替代算法。",
+      "evidenceRefs": [
+        "transformer-2017"
+      ]
+    },
+    {
+      "source": "concept:self-attention",
+      "target": "concept:softmax",
+      "type": "uses",
+      "reason": "缩放点积注意力通过该运算计算权重或加权输出。",
+      "scope": "标准缩放点积自注意力；不泛化到所有注意力替代算法。",
+      "evidenceRefs": [
+        "transformer-2017"
+      ]
+    },
+    {
+      "source": "concept:causal-mask",
+      "target": "concept:self-attention",
+      "type": "part_of",
+      "reason": "阻止当前位置读取未来位置。",
+      "scope": "自回归解码器的掩码自注意力；编码器自注意力不一定因果。",
+      "evidenceRefs": [
+        "transformer-2017"
+      ]
+    },
+    {
+      "source": "concept:transformer",
+      "target": "concept:cross-entropy",
+      "type": "trained_with",
+      "reason": "原论文以带标签平滑的交叉熵训练翻译模型。",
+      "scope": "原始 Transformer 翻译训练配方；架构本身并不唯一决定损失。",
+      "evidenceRefs": [
+        "transformer-2017"
+      ]
+    },
+    {
+      "source": "concept:llm",
+      "target": "concept:transformer",
+      "type": "uses",
+      "reason": "该语言模型子类采用 Transformer 架构。",
+      "scope": "Transformer-based LLM；不是所有语言模型的普遍定义。",
+      "evidenceRefs": [
+        "transformer-2017"
+      ]
+    },
+    {
+      "source": "concept:llm",
+      "target": "concept:autoregression",
+      "type": "uses",
+      "reason": "将输出序列分解为逐 token 条件预测。",
+      "scope": "自回归语言模型；不覆盖所有非自回归文本模型。",
+      "evidenceRefs": [
+        "transformer-2017"
+      ]
+    },
+    {
+      "source": "concept:llm",
+      "target": "concept:sft",
+      "type": "trained_with",
+      "reason": "指令语言模型可采用此后训练阶段。",
+      "scope": "InstructGPT 论文中的训练流程，不表示所有 LLM 都经过此阶段。",
+      "evidenceRefs": [
+        "instructgpt-2022"
+      ]
+    },
+    {
+      "source": "concept:llm",
+      "target": "concept:rlhf",
+      "type": "trained_with",
+      "reason": "指令语言模型可采用此后训练阶段。",
+      "scope": "InstructGPT 论文中的训练流程，不表示所有 LLM 都经过此阶段。",
+      "evidenceRefs": [
+        "instructgpt-2022"
+      ]
+    },
+    {
+      "source": "concept:llm",
+      "target": "concept:dpo",
+      "type": "trained_with",
+      "reason": "用成对偏好直接优化策略模型。",
+      "scope": "采用 DPO 的语言模型后训练；不声称必须训练独立奖励模型。",
+      "evidenceRefs": [
+        "dpo-2023"
+      ]
+    },
+    {
+      "source": "concept:rlhf",
+      "target": "concept:reward-model",
+      "type": "uses",
+      "reason": "经典 RLHF 流程从人类排序拟合奖励模型。",
+      "scope": "InstructGPT 风格 RLHF；奖励信号并非真实性保证。",
+      "evidenceRefs": [
+        "instructgpt-2022"
+      ]
+    },
+    {
+      "source": "concept:rlhf",
+      "target": "concept:ppo",
+      "type": "uses",
+      "reason": "按学习到的奖励更新策略并控制偏离。",
+      "scope": "InstructGPT 风格 PPO-RLHF，不把所有 RLHF 等同于 PPO。",
+      "evidenceRefs": [
+        "instructgpt-2022",
+        "ppo-2017"
+      ]
+    },
+    {
+      "source": "concept:ppo",
+      "target": "concept:policy-gradient",
+      "type": "uses",
+      "reason": "PPO 使用策略梯度估计优化代理目标。",
+      "scope": "PPO 原论文的近端策略优化方法族。",
+      "evidenceRefs": [
+        "ppo-2017"
+      ]
+    },
+    {
+      "source": "concept:dqn",
+      "target": "concept:q-learning",
+      "type": "uses",
+      "reason": "用神经网络近似动作价值，进行 Q-learning 更新。",
+      "scope": "Mnih 2013 的深度 Q 网络。",
+      "evidenceRefs": [
+        "dqn-2013"
+      ]
+    },
+    {
+      "source": "concept:dqn",
+      "target": "concept:cnn",
+      "type": "uses",
+      "reason": "原始 Atari 实验用卷积网络处理图像输入。",
+      "scope": "像素输入的原始 Atari DQN；并非所有 DQN 都必须用 CNN。",
+      "evidenceRefs": [
+        "dqn-2013"
+      ]
+    },
+    {
+      "source": "concept:rag",
+      "target": "concept:embedding-model",
+      "type": "uses",
+      "reason": "检索增强系统把检索表示、索引和语言生成组合起来。",
+      "scope": "Lewis 2020 的稠密检索增强生成；词法检索型 RAG 未必使用向量索引。",
+      "evidenceRefs": [
+        "rag-2020"
+      ]
+    },
+    {
+      "source": "concept:rag",
+      "target": "concept:vector-index",
+      "type": "uses",
+      "reason": "检索增强系统把检索表示、索引和语言生成组合起来。",
+      "scope": "Lewis 2020 的稠密检索增强生成；词法检索型 RAG 未必使用向量索引。",
+      "evidenceRefs": [
+        "rag-2020"
+      ]
+    },
+    {
+      "source": "concept:rag",
+      "target": "concept:llm",
+      "type": "uses",
+      "reason": "检索增强系统把检索表示、索引和语言生成组合起来。",
+      "scope": "Lewis 2020 的稠密检索增强生成；词法检索型 RAG 未必使用向量索引。",
+      "evidenceRefs": [
+        "rag-2020"
+      ]
+    },
+    {
+      "source": "concept:embedding-model",
+      "target": "concept:contrastive-learning",
+      "type": "trained_with",
+      "reason": "用问题与相关段落、负样本的对比目标训练检索表示。",
+      "scope": "DPR 风格双编码器；不概括所有 Embedding 训练方式。",
+      "evidenceRefs": [
+        "dpr-2020"
+      ]
+    },
+    {
+      "source": "concept:rag",
+      "target": "concept:benchmark-protocol",
+      "type": "evaluated_by",
+      "reason": "按固定任务、数据划分与判分协议评估输出。",
+      "scope": "Lewis 2020 的开放域 QA 等任务协议，不代表当前任何商用 RAG 的成绩。",
+      "evidenceRefs": [
+        "rag-2020"
+      ]
+    },
+    {
+      "source": "concept:rag",
+      "target": "concept:evidence-attribution",
+      "type": "evaluated_by",
+      "reason": "分别评估检索上下文与回答对上下文的忠实性。",
+      "scope": "RAGAS 类评测中的来源支撑/忠实性维度；引用存在不等于事实正确。",
+      "evidenceRefs": [
+        "ragas-2023"
+      ]
+    },
+    {
+      "source": "concept:agent",
+      "target": "concept:tool-calling",
+      "type": "uses",
+      "reason": "将模型的行动选择连接到外部工具或环境。",
+      "scope": "ReAct 风格可交互智能体，不是所有 Agent 的统一实现。",
+      "evidenceRefs": [
+        "react-2022"
+      ]
+    },
+    {
+      "source": "concept:agent",
+      "target": "concept:benchmark-protocol",
+      "type": "evaluated_by",
+      "reason": "在指定任务和环境下评估整个智能体系统。",
+      "scope": "ReAct 论文评测协议；不把系统成绩归因于裸模型。",
+      "evidenceRefs": [
+        "react-2022"
+      ]
+    },
+    {
+      "source": "concept:decoding",
+      "target": "concept:softmax",
+      "type": "uses",
+      "reason": "解码过程可选用此分布处理或搜索步骤。",
+      "scope": "基于 logits 的自回归解码；策略是可选方案，不是全部必须同时启用。",
+      "evidenceRefs": [
+        "nucleus-2019",
+        "generation-docs"
+      ]
+    },
+    {
+      "source": "concept:decoding",
+      "target": "concept:temperature",
+      "type": "uses",
+      "reason": "解码过程可选用此分布处理或搜索步骤。",
+      "scope": "基于 logits 的自回归解码；策略是可选方案，不是全部必须同时启用。",
+      "evidenceRefs": [
+        "nucleus-2019",
+        "generation-docs"
+      ]
+    },
+    {
+      "source": "concept:decoding",
+      "target": "concept:top-k-sampling",
+      "type": "uses",
+      "reason": "解码过程可选用此分布处理或搜索步骤。",
+      "scope": "基于 logits 的自回归解码；策略是可选方案，不是全部必须同时启用。",
+      "evidenceRefs": [
+        "nucleus-2019",
+        "generation-docs"
+      ]
+    },
+    {
+      "source": "concept:decoding",
+      "target": "concept:top-p-sampling",
+      "type": "uses",
+      "reason": "解码过程可选用此分布处理或搜索步骤。",
+      "scope": "基于 logits 的自回归解码；策略是可选方案，不是全部必须同时启用。",
+      "evidenceRefs": [
+        "nucleus-2019",
+        "generation-docs"
+      ]
+    },
+    {
+      "source": "concept:decoding",
+      "target": "concept:beam-search",
+      "type": "uses",
+      "reason": "解码过程可选用此分布处理或搜索步骤。",
+      "scope": "基于 logits 的自回归解码；策略是可选方案，不是全部必须同时启用。",
+      "evidenceRefs": [
+        "nucleus-2019",
+        "generation-docs"
+      ]
+    },
+    {
+      "source": "concept:top-k-sampling",
+      "target": "concept:softmax",
+      "type": "uses",
+      "reason": "在指定实现中把 logits 转为概率后截断并重新归一化。",
+      "scope": "本文 logits 输入教学实现；一般采样器也可直接接受概率分布。",
+      "evidenceRefs": [
+        "nucleus-2019",
+        "generation-docs"
+      ]
+    },
+    {
+      "source": "concept:top-p-sampling",
+      "target": "concept:softmax",
+      "type": "uses",
+      "reason": "在指定实现中把 logits 转为概率后截断并重新归一化。",
+      "scope": "本文 logits 输入教学实现；一般采样器也可直接接受概率分布。",
+      "evidenceRefs": [
+        "nucleus-2019",
+        "generation-docs"
+      ]
+    }
+  ]
+}

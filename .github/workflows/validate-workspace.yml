@@ -9,6 +9,7 @@ on:
       - 'scripts/**'
       - 'package*.json'
       - '*config*'
+      - 'AGENTS.md'
       - '.github/workflows/validate-workspace.yml'
   workflow_dispatch:
 
@@ -26,6 +27,13 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
+      - name: Preserve tracked source for reproducible review
+        run: git archive --format=zip --output=review-source.zip HEAD
+      - uses: actions/upload-artifact@v4
+        with:
+          name: knowledge-source-snapshot
+          path: review-source.zip
+          retention-days: 7
       - uses: actions/setup-node@v6
         with:
           node-version: 24

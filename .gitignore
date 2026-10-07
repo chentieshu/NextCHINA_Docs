@@ -16,3 +16,8 @@ test-results/
 test-results-production/
 playwright-report/
 .markdown-render-test-*/
+
+# Content-addressed production audit / release metadata
+public/knowledge-health.json
+public/version.json
+review-source.zip

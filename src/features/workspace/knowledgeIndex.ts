@@ -1,3 +1,4 @@
+import { relationRole, graphDisplayLabel } from '../garden/graphContract.js';
 import type { GardenGraph, KnowledgeNode, KnowledgeEdge } from '../garden/domain';
 
 export type RelationRole = 'related' | 'before' | 'reference' | 'semantic';
@@ -44,9 +45,8 @@ export function buildKnowledgeIndex(graph: GardenGraph) {
     edgeIds.add(edge.id);
     if (!byId.has(edge.source) || !byId.has(edge.target)) { issues.push(`悬空关系：${edge.id}`); continue; }
     if (edge.type === 'browse_child') continue;
-    const role: RelationRole = edge.type === 'recommended_before' ? 'before'
-      : edge.type === 'references' || edge.type === 'represents' ? 'reference'
-      : edge.type === 'related' ? 'related' : 'semantic';
+    const role = relationRole(edge);
+    if (role === 'structure') continue;
     relations.push({ edge, role });
   }
   const adjacency = new Map<string, IndexedRelation[]>();
@@ -80,8 +80,8 @@ export function buildKnowledgeIndex(graph: GardenGraph) {
   const resourcesFor = (id: string): ReadingResource[] => {
     const resources = new Map(ownResources(id).map(ref => [ref.articleId, ref]));
     // Resource reuse is labelled separately; a hub reference is not an explanation.
-    for (const { edge, role } of adjacency.get(id) ?? []) if (role === 'reference') {
-      const other = edge.source === id ? edge.target : edge.source;
+    for (const { edge, role } of adjacency.get(id) ?? []) if (role === 'reference' && edge.source === id) {
+      const other = edge.target;
       for (const ref of ownResources(other)) if (!resources.has(ref.articleId)) resources.set(ref.articleId, { ...ref, scope: 'reference' });
     }
     for (const node of descendants(id)) for (const ref of ownResources(node.id)) {
@@ -92,7 +92,7 @@ export function buildKnowledgeIndex(graph: GardenGraph) {
   const search = (query: string) => {
     const text = query.trim().toLocaleLowerCase(), terms = text.split(/\s+/).filter(Boolean);
     if (!terms.length) return [];
-    return graph.nodes.filter(isKnowledge).filter(node => terms.every(term => `${node.label} ${node.id} ${node.summary ?? ''}`.toLocaleLowerCase().includes(term)))
+    return graph.nodes.filter(isKnowledge).filter(node => terms.every(term => `${graphDisplayLabel(node)} ${node.id} ${node.summary ?? ''}`.toLocaleLowerCase().includes(term)))
       .sort((a, b) => Number(b.label.toLocaleLowerCase() === text) - Number(a.label.toLocaleLowerCase() === text) || Number(b.kind === 'concept') - Number(a.kind === 'concept'));
   };
   return { graph, byId, children, groups, relations, adjacency, bundles: [...bundlesById.values()], internal,

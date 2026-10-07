@@ -137,18 +137,7 @@ export function globalKnowledgeProjection(focusId?: string | null): Projection {
     if (edge.type === 'browse_child' || citeEdge(edge)) continue;
     linkConcept(edge.source); linkConcept(edge.target);
   }
-  for (const path of graph.learningPaths ?? []) {
-    let previous: string | null = null;
-    for (const step of path.steps) {
-      linkConcept(step);
-      if (previous && previous !== step) {
-        const id = `recommended_before:${previous}>${step}`;
-        const exists = graph.edges.some(edge => edge.type === 'recommended_before' && edge.source === previous && edge.target === step);
-        if (!exists && !extra.has(id)) extra.set(id, { id, source: previous, target: step, type: 'recommended_before', assertionStatus: 'editorial', reason: path.label });
-      }
-      previous = step;
-    }
-  }
+  for (const path of graph.learningPaths ?? []) for (const step of path.steps) linkConcept(step);
   for (const node of graph.nodes) {
     if ((node.kind === 'concept' || node.kind === 'topic') && (node.articleBindings.length || (node.resourceRefs?.length ?? 0))) linkConcept(node.id);
   }

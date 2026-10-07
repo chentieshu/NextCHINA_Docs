@@ -1,13 +1,10 @@
+import { mapNodeEligible } from '../../src/features/garden/graphContract.js';
 import { test, expect, type Page } from '@playwright/test';
 import { graph } from '../../src/features/garden/data';
 import { buildKnowledgeIndex } from '../../src/features/workspace/knowledgeIndex';
 const index = buildKnowledgeIndex(graph);
 const displayNodes = graph.nodes.filter(n => !['root','group','path','document'].includes(n.kind));
-const visibleByDefault = displayNodes.filter(node => {
-  if (node.kind === 'domain' || node.articleBindings.length || node.resourceRefs?.length || node.embeddedArticleId) return true;
-  return graph.edges.some(edge => (edge.source === node.id || edge.target === node.id) &&
-    !['browse_child','references','represents','related'].includes(edge.type));
-});
+const visibleByDefault = displayNodes.filter(node => mapNodeEligible(node, graph.edges.filter(edge => edge.source === node.id || edge.target === node.id)));
 async function ready(page: Page) { await expect(page.locator('.og-network-host')).toHaveAttribute('data-layout','ready'); }
 async function choose(page: Page, text: string) { const search = page.getByRole('searchbox',{name:'搜索知识网络',exact:true}); await search.fill(text); await search.press('ArrowDown'); await page.keyboard.press('Enter'); }
 

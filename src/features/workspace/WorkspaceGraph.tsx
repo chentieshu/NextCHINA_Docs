@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Search, X, Network, Route, SlidersHorizontal, Plus, Minus, Maximize2, BookOpen, ArrowUpRight, LocateFixed } from 'lucide-react';
 import { routeUrl, type AppRoute } from '../../routing';
 import { graph } from '../garden/data';
+import { graphDisplayLabel } from '../garden/graphContract.js';
 import { coverageLabel, kindLabel, type KnowledgeNode } from '../garden/domain';
 import { documentRoute, folderRoute, type ExplorerModel } from './model';
 import { buildKnowledgeIndex, type IndexedRelation } from './knowledgeIndex';
@@ -98,7 +99,7 @@ export default function WorkspaceGraph({ model, selectedId = null, onOpen }: Pro
           const options = [...event.currentTarget.querySelectorAll<HTMLElement>('[role="option"]')], current = options.indexOf(document.activeElement as HTMLElement);
           if (options.length && ['ArrowDown','ArrowUp'].includes(event.key)) { event.preventDefault(); options[(current + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length]?.focus(); }
           if (event.key === 'Escape') { event.stopPropagation(); setQuery(''); search.current?.focus(); }
-        }}>{results.slice(0,searchLimit).map(node => <button type="button" role="option" aria-selected={node.id === selectedId} key={node.id} onClick={() => reveal(node.id)}><span>{node.label}<small>{index.domainOf(node.id)?.label}</small></span><small>{kindLabel[node.kind]}</small></button>)}{!results.length && <p role="status">没有找到知识点，可到左侧全文搜索文档。</p>}{results.length > searchLimit && <button type="button" onClick={() => setSearchLimit(value => value + 30)}>显示更多结果</button>}</div>}
+        }}>{results.slice(0,searchLimit).map(node => <button type="button" role="option" aria-selected={node.id === selectedId} key={node.id} onClick={() => reveal(node.id)}><span>{graphDisplayLabel(node)}<small>{index.domainOf(node.id)?.label}</small></span><small>{kindLabel[node.kind]}</small></button>)}{!results.length && <p role="status">没有找到知识点，可到左侧全文搜索文档。</p>}{results.length > searchLimit && <button type="button" onClick={() => setSearchLimit(value => value + 30)}>显示更多结果</button>}</div>}
       </div>
       <button type="button" className="og-toolbar-action" aria-label="AI 学习导航" aria-expanded={panel === 'navigation'} onClick={() => { setQuery(''); setPanel(current => current === 'navigation' ? null : 'navigation'); }}><Route /><span>学习导航</span></button>
       <button type="button" className="og-toolbar-action" aria-label="图谱设置" aria-expanded={panel === 'settings'} onClick={() => { setQuery(''); setPanel(current => current === 'settings' ? null : 'settings'); }}><SlidersHorizontal /><span>图谱设置</span></button>
@@ -118,7 +119,7 @@ export default function WorkspaceGraph({ model, selectedId = null, onOpen }: Pro
         {stats.total > 0 && stats.nodes === 0 && <div className="og-empty"><p>当前筛选没有知识点</p><button type="button" onClick={clearFilters}>清除筛选</button></div>}
       </div>
       {inspecting && <aside ref={inspector} className="og-inspector atlas-inspector" data-open="true" role="complementary" aria-label={activePanel === 'settings' ? '图谱显示设置' : activePanel === 'navigation' ? 'AI 学习导航' : '知识节点简报'}>
-        <header className="og-panel-header"><div><p>{activePanel === 'node' ? '知识笔记' : '探索工具'}</p><h2>{activePanel === 'settings' ? '图谱设置' : activePanel === 'navigation' ? 'AI 学习导航' : selected?.label}</h2></div><button type="button" aria-label={activePanel === 'settings' ? '关闭图谱设置' : activePanel === 'navigation' ? '关闭学习导航' : '关闭知识节点简报'} onClick={closePanel}><X /></button></header>
+        <header className="og-panel-header"><div><p>{activePanel === 'node' ? '知识笔记' : '探索工具'}</p><h2>{activePanel === 'settings' ? '图谱设置' : activePanel === 'navigation' ? 'AI 学习导航' : selected && graphDisplayLabel(selected)}</h2></div><button type="button" aria-label={activePanel === 'settings' ? '关闭图谱设置' : activePanel === 'navigation' ? '关闭学习导航' : '关闭知识节点简报'} onClick={closePanel}><X /></button></header>
         {activePanel === 'settings' ? <GraphSettings index={index} settings={settings} stats={stats} selectedId={selectedId} onChange={setSettings} onFit={() => controls.current?.fit()} /> : activePanel === 'navigation' ? <LearningNavigator index={index} onSelect={reveal} /> : selected && <NodeDetails key={selected.id} node={selected} model={model} onSelect={reveal} onRead={read} onOpen={onOpen} />}
       </aside>}
     </div>

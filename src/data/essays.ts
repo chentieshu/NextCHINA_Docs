@@ -1,38 +1,21 @@
 import type { DocChapter } from '../types';
 import articleRegistry from '../../content/articles.json';
-import premiumVideoMarkdown from '../../content/tutorials/video/apple-style-premium-product-video.md?raw';
-import llmMarkdown from '../../content/models/llm/llm-how-it-works.md?raw';
-import vlmMarkdown from '../../content/models/vlm/vlm-how-it-works.md?raw';
-import diffusionMarkdown from '../../content/models/generative/diffusion-dit.md?raw';
-import embeddingMarkdown from '../../content/models/embedding/embedding-models.md?raw';
-import audioMarkdown from '../../content/models/audio/audio-models.md?raw';
-import videoMarkdown from '../../content/models/video/video-models.md?raw';
-import worldMarkdown from '../../content/models/world/world-models.md?raw';
-import tokenization from '../../content/models/llm/tokenization.md?raw';
-import softmax from '../../content/models/llm/softmax-temperature.md?raw';
-import attention from '../../content/models/llm/attention-calculation.md?raw';
-import training from '../../content/models/llm/training-loop.md?raw';
-import kvCache from '../../content/models/llm/kv-cache.md?raw';
 
-const contentById: Record<string, string> = {
-  'apple-style-premium-product-video': premiumVideoMarkdown,
-  'llm-how-it-works': llmMarkdown,
-  'vlm-how-it-works': vlmMarkdown,
-  'diffusion-dit': diffusionMarkdown,
-  'embedding-models': embeddingMarkdown,
-  'audio-models': audioMarkdown,
-  'video-models': videoMarkdown,
-  'world-models': worldMarkdown,
-  'llm-tokenization': tokenization,
-  'llm-softmax-temperature': softmax,
-  'llm-attention-calculation': attention,
-  'llm-training-loop': training,
-  'llm-kv-cache': kvCache
-};
+// The registry owns article identity and file placement. Vite resolves raw files at
+// build time, so registering an article cannot leave a second import table stale.
+const markdownByPath = import.meta.glob<string>('../../content/**/*.md', {
+  query: '?raw', import: 'default', eager: true
+});
 
 export const ESSAY_CHAPTERS: DocChapter[] = articleRegistry.articles.map(article => {
-  const content = contentById[article.id];
-  if (!content) throw new Error(`Missing Markdown content for article: ${article.id}`);
+  const file = article.file;
+  if (!file.startsWith('content/') || file.split('/').includes('..') || !file.endsWith('.md')) {
+    throw new Error(`Invalid Markdown path for article: ${article.id}`);
+  }
+  const content = markdownByPath[`../../${file}`];
+  if (typeof content !== 'string' || !content.trim()) {
+    throw new Error(`Missing Markdown content for article: ${article.id} (${file})`);
+  }
   return {
     id: article.id, slug: article.id, title: article.title, subtitle: article.subtitle,
     category: article.category, categoryName: article.categoryName,

@@ -49,6 +49,17 @@ try {
       url.searchParams.set('release', expected);
       if (id) { url.searchParams.set('view', 'article'); url.searchParams.set('article', id); }
       const response = await page.goto(url.href, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      // Preserve browser navigation evidence even when a release assertion fails.
+      const evidencePath = `${output}/${id ?? 'map'}-${width}`;
+      writeFileSync(`${evidencePath}-navigation.json`, JSON.stringify({
+        requestedUrl: url.href, finalUrl: page.url(), status: response?.status(),
+        headers: response ? await response.allHeaders() : {}, title: await page.title(),
+        commit: await page.locator('meta[name="nextchina-commit"]').getAttribute('content', { timeout: 1000 }).catch(() => null),
+        errors: [...errors]
+      }, null, 2) + '\n');
+      if (response) writeFileSync(`${evidencePath}-response.html`, await response.text());
+      writeFileSync(`${evidencePath}-dom.html`, await page.content());
+      await page.screenshot({ path: `${evidencePath}-navigation.png` });
       assert.ok(response?.ok(), `Browser HTTP failure: ${url.href}`);
       assert.equal(await page.locator('meta[name="nextchina-commit"]').getAttribute('content'), expected);
       if (id) {

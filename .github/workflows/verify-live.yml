@@ -1,0 +1,48 @@
+name: Verify live release checker
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/verify-deployment.mjs'
+      - '.github/workflows/verify-live.yml'
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Exact commit already deployed to the public site
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-checker-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  live:
+    name: Verify live base release with proposed checker
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Read-only live verification
+        run: node scripts/verify-deployment.mjs
+        env:
+          EXPECTED_COMMIT: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || inputs.commit }}
+          DEPLOYMENT_URL: https://docs.nextchina.org
+      - name: Preserve live navigation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-checker-evidence
+          path: test-results-production/live/
+          retention-days: 7

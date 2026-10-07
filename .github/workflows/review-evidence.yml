@@ -1,0 +1,27 @@
+name: Knowledge review evidence
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Package tracked source only
+        run: |
+          mkdir -p review-evidence
+          git archive --format=zip HEAD -o review-evidence/source.zip
+          git rev-parse HEAD > review-evidence/commit.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: knowledge-review-source
+          path: review-evidence/
+          retention-days: 7

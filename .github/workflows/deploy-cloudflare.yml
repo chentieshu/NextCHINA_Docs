@@ -36,15 +36,6 @@ jobs:
         run: npm run test:browser -- --workers=2
       - name: Verify production chunks and layout worker
         run: npm run test:production -- --workers=2
-      - name: Upload rendering diagnostics
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: rendering-diagnostics
-          path: |
-            test-results/
-            test-results-production/
-          retention-days: 7
       - name: Deploy static assets with Wrangler
         run: npm run deploy:assets
         env:
@@ -55,3 +46,12 @@ jobs:
         env:
           EXPECTED_COMMIT: ${{ github.sha }}
           DEPLOYMENT_URL: https://docs.nextchina.org
+      - name: Preserve rendering and live release evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendering-diagnostics
+          path: |
+            test-results/
+            test-results-production/
+          retention-days: 7

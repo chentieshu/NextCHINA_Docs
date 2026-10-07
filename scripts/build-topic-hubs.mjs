@@ -18,6 +18,12 @@ export function buildTopicHubs(base, plan, config, publishedIds, datasets) {
   assert.equal(enabled.size, config.enabledHubs.length, 'Duplicate enabled hub');
   const seeds = plan.hubSeeds.filter(seed => enabled.has(seed.id));
   assert.equal(seeds.length, enabled.size, 'Unknown enabled hub');
+  const outlines = { ...plan.hubOutlines };
+  for (const [id, outline] of Object.entries(config.additionalOutlines ?? {})) {
+    assert.ok(enabled.has(id) && !outlines[id], `Invalid/duplicate additional outline: ${id}`);
+    assert.ok(Array.isArray(outline) && outline.length, `Empty additional outline: ${id}`);
+    outlines[id] = outline;
+  }
   const resources = {};
   const entryHubs = {};
   const add = node => {
@@ -84,7 +90,7 @@ export function buildTopicHubs(base, plan, config, publishedIds, datasets) {
     }
   };
   for (const seed of seeds) {
-    const outline = plan.hubOutlines[seed.id];
+    const outline = outlines[seed.id];
     if (outline) visit(seed.id, outline, seed.id);
     else {
       const sections = [...new Set(plan.articlePlacements.flatMap(record => record.placements.filter(p => p.hubId === seed.id).map(p => p.section)))];
@@ -108,8 +114,9 @@ export function buildTopicHubs(base, plan, config, publishedIds, datasets) {
   for (const ref of pendingRefs) edges.push({ ...ref, id: `${ref.type}:${ref.source}>${ref.target}`, assertionStatus: 'editorial' });
   for (const node of nodes) node.hubEntries = entryHubs[node.id] ?? [];
   return { ...base, nodes, edges, hubResources: resources,
-    hubIntegration: { stage: config.stage, detailedHubs: Object.keys(plan.hubOutlines).filter(id => enabled.has(id)), contentMigrated: false, factReverification: false },
-    stats: { ...base.stats, nodes: nodes.length, hubs: seeds.length, branches: nodes.filter(n => n.kind === 'branch').length } };
+    hubIntegration: { stage: config.stage, detailedHubs: Object.keys(outlines).filter(id => enabled.has(id)), contentMigrated: false, factReverification: false },
+    stats: { ...base.stats, nodes: nodes.length, hubs: seeds.length, branches: nodes.filter(n => n.kind === 'branch').length,
+      navigationEdges: edges.filter(e => e.type === 'browse_child').length, editorialRelations: edges.filter(e => e.type !== 'browse_child' && e.assertionStatus === 'editorial').length } };
 }
 
 export function attachTopicHubs(base, root, publishedIds) {

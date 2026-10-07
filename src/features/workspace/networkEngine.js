@@ -1,3 +1,4 @@
+import { relationRole, mapNodeEligible, graphDisplayLabel } from '../garden/graphContract.js';
 /** Read-only SVG renderer. Host focus never paints a viewport-sized outline. */
 import { normalizeNetwork, computeNetworkLayout } from './networkLayout.js';
 import { normalizeNetworkSettings } from './networkPreferences.js';
@@ -24,21 +25,11 @@ export function mountKnowledgeNetwork(host, graph, callbacks = {}) {
   let windowSize = { width: innerWidth, height: innerHeight }, single = null, pinch = null;
   const pointers = new Map(), nodeElements = new Map(), edgeElements = [];
   const domains = new Map(network.nodes.map(n => [n.id, network.domainOf(n.id)]));
-  const roleOf = edge => {
-    if (edge.type === 'browse_child') return 'structure';
-    if (edge.type === 'recommended_before') return 'before';
-    if (edge.type === 'references' || edge.type === 'represents') return 'reference';
-    return 'related';
-  };
-  const roles = new Map(network.edges.map(e => [e.id, roleOf(e)]));
-  const controlFor = { structure: 'structure', before: 'prerequisites', reference: 'references', related: 'relations' };
+  const roles = new Map(network.edges.map(e => [e.id, relationRole(e)]));
+  const controlFor = { structure: 'structure', before: 'prerequisites', reference: 'references', related: 'relations', semantic: 'relations' };
   const enabled = edge => settings[controlFor[roles.get(edge.id)]];
   const hasResource = node => Boolean(node.articleBindings?.length || node.resourceRefs?.length || node.embeddedArticleId);
-  const mapEligible = node => {
-    if (node.kind === 'domain' || hasResource(node)) return true;
-    return (network.adjacency.get(node.id) ?? []).some(edge =>
-      !['browse_child','references','represents','related'].includes(edge.type));
-  };
+  const mapEligible = node => mapNodeEligible(node, network.adjacency.get(node.id) ?? []);
   function refreshVisible() {
     const neighbors = new Set(selectedId ? [selectedId] : []);
     if (selectedId && settings.focusNeighbors) {
@@ -118,7 +109,7 @@ export function mountKnowledgeNetwork(host, graph, callbacks = {}) {
     candidates.sort((a, b) => b.priority - a.priority || a.node.id.localeCompare(b.node.id));
     const boxes = [], budget = Math.round(size.width * size.height / 16000 * settings.labels) + 8;
     for (const item of candidates) {
-      const width = (measure?.measureText(item.node.label).width ?? item.node.label.length * 12) + 10;
+      const width = (measure?.measureText(graphDisplayLabel(item.node)).width ?? graphDisplayLabel(item.node).length * 12) + 10;
       const leftward = item.p.x + item.r + width + 8 > size.width - panelWidth - 10;
       const left = leftward ? item.p.x - item.r - width - 7 : item.p.x + item.r + 7;
       const rect = { left, top: item.p.y - 10, right: left + width, bottom: item.p.y + 11 };
@@ -263,10 +254,10 @@ export function mountKnowledgeNetwork(host, graph, callbacks = {}) {
       lines.append(line); edgeElements.push({ edge, line });
     }
     for (const node of network.nodes) {
-      const root = element('g', { class: 'kg-node', role: 'button', tabindex: '-1', 'aria-label': `打开知识笔记：${node.label}`, 'data-node-id': node.id, 'data-kind': node.kind, 'data-group': domains.get(node.id)?.group ?? '', 'data-ready': hasResource(node) });
+      const root = element('g', { class: 'kg-node', role: 'button', tabindex: '-1', 'aria-label': `打开知识笔记：${graphDisplayLabel(node)}`, 'data-node-id': node.id, 'data-kind': node.kind, 'data-group': domains.get(node.id)?.group ?? '', 'data-ready': hasResource(node) });
       const ring = element('circle', { class: 'kg-ring', fill: 'none' }), dot = element('circle', { class: 'kg-dot' });
       const label = element('text', { class: 'kg-label', y: 4, 'aria-hidden': 'true' });
-      label.textContent = node.label; label.style.pointerEvents = 'auto';
+      label.textContent = graphDisplayLabel(node); label.style.pointerEvents = 'auto';
       // Inline labels and accessible names replace native SVG title tooltips.
       root.append(ring, dot, label); nodes.append(root); nodeElements.set(node.id, { root, ring, dot, label });
     }

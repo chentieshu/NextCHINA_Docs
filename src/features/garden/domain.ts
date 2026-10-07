@@ -10,13 +10,14 @@ export interface HubResource {
 export interface KnowledgeNode {
   id: string; label: string; kind: NodeKind; parentId: string | null;
   contentStatus: string; evidenceStatus: string; articleBindings: ArticleBinding[];
-  summary: string | null; group?: string; domainKind?: 'knowledge-domain' | 'editorial-entry';
+  summary: string | null; group?: string; displayLabel?: string; entityType?: string; domainKind?: 'knowledge-domain' | 'editorial-entry';
   hubId?: string; outlinePath?: string; conceptRefs?: string[]; hubRefs?: string[]; hubEntries?: string[];
   resourceRefs?: ResourceRef[]; embeddedArticleId?: string; microscopeId?: string | null;
 }
 export interface KnowledgeEdge {
   id: string; source: string; target: string; type: RelationKind;
   assertionStatus: string; reason?: string; routeId?: string; provenance?: string; scope?: string; asOf?: string;
+  evidenceRefs?: string[]; reviewStatus?: string;
 }
 export interface GardenGraph {
   schemaVersion: number; title: string; scopeNote: string;
@@ -25,6 +26,7 @@ export interface GardenGraph {
   learningPaths: { id: string; label: string; status: string; steps: string[] }[];
   stats: { domains: number; topics: number; concepts: number; nodes: number; articleBindings: number; learningPaths: number; hubs?: number; branches?: number; independentArticles?: number };
   hubResources?: Record<string, HubResource>;
+  evidenceSources?: Record<string, { id: string; title: string; url: string; locator: string }>;
 }
 export const kindLabel: Record<NodeKind, string> = {
   root: '全景', group: '阅读目的', path: '学习路径', domain: '领域', topic: '专题', concept: '概念',

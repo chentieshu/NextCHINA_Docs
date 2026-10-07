@@ -1,0 +1,53 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { loadGarden, repositoryRoot } from './validate-garden.mjs';
+import { attachTopicHubs } from './build-topic-hubs.mjs';
+import { enrichKnowledge } from './enrich-knowledge.mjs';
+import { mapNodeEligible, hasDirectExplanation, relationRole, knowledgeHealth } from '../src/features/garden/graphContract.js';
+const { graph: base, publishedArticleIds } = loadGarden();
+const input = attachTopicHubs(base, repositoryRoot, publishedArticleIds);
+const data = JSON.parse(readFileSync(new URL('../content/garden/semantic-relations.json', import.meta.url), 'utf8'));
+const before = JSON.stringify(input);
+const graph = enrichKnowledge(input, data);
+assert.equal(JSON.stringify(input), before, 'Enrichment must not mutate canonical authoring input');
+assert.deepEqual(enrichKnowledge(input, data), graph, 'Build must be deterministic');
+let negativeCases = 0;
+const reject = mutate => { const d = structuredClone(data); mutate(d); assert.throws(() => enrichKnowledge(input, d)); negativeCases++; };
+reject(d => d.assertions[0].target = 'concept:missing');
+reject(d => d.assertions.push(d.assertions[0]));
+reject(d => d.assertions[0].scope = '');
+reject(d => d.assertions[0].evidenceRefs = ['missing']);
+reject(d => d.assertions[0].evidenceRefs = []);
+reject(d => d.defaults.reviewStatus = 'expert-verified');
+reject(d => d.defaults.asOf = '2026-02-31');
+reject(d => d.assertions[0].type = 'made_up');
+reject(d => d.assertions[0].source = 'hub:llm');
+reject(d => d.entityTypes['concept:transformer'] = 'evaluation');
+reject(d => { const e = d.assertions.find(e => e.type === 'evaluated_by'); d.entityTypes[e.target] = 'algorithm'; });
+reject(d => { d.entityTypes['concept:transformer'] = 'mechanism'; d.assertions.push({ ...d.assertions[0], source: d.assertions[0].target, target: d.assertions[0].source }); });
+const orphan = { id: 'concept:test', kind: 'concept', articleBindings: [] };
+for (const type of ['browse_child','references','represents','related','recommended_before']) {
+  assert.equal(mapNodeEligible(orphan, [{type, assertionStatus:'editorial'}]), false, `${type} cannot promote an outline`);
+}
+assert.equal(mapNodeEligible(orphan, [{type:'uses',assertionStatus:'editorial'}]), false);
+assert.equal(mapNodeEligible(orphan, [graph.edges.find(e => e.assertionStatus === 'source-checked')]), true);
+assert.equal(mapNodeEligible({ ...orphan, articleBindings:[{coverage:'overview'}] }), false);
+assert.equal(mapNodeEligible({ ...orphan, articleBindings:[{coverage:'explanation'}] }), true);
+assert.equal(mapNodeEligible({ ...orphan, kind:'domain' }), true, 'Domains are anchors, not complete concepts');
+assert.equal(hasDirectExplanation({ ...orphan, embeddedArticleId:'catalogue' }), false);
+assert.equal(relationRole({type:'references'}), 'reference');
+assert.equal(relationRole({type:'uses'}), 'semantic');
+const labels = graph.nodes.map(n => n.displayLabel ?? n.label);
+assert.equal(new Set(labels).size, labels.length, 'Graph display names must be disambiguated');
+for (const route of graph.learningPaths) {
+  const edges = graph.edges.filter(e => e.routeId === route.id);
+  assert.equal(edges.length, route.steps.length-1);
+  for (let i=1;i<route.steps.length;i++) assert.ok(edges.some(e => e.source === route.steps[i-1] && e.target === route.steps[i]));
+}
+const health = knowledgeHealth(graph);
+assert.equal(health.nodes, graph.stats.nodes);
+assert.equal(health.edgeTypes.browse_child, graph.stats.navigationEdges);
+assert.equal(health.sourceCheckedSemanticEdges, data.assertions.length);
+assert.ok(health.defaultVisibleNodes < health.nodes, 'Do not reintroduce the outline wall');
+assert.ok(health.withIndependentExplanation > 15, 'Release must add direct content, not just names');
+console.log(JSON.stringify({status:'pass', suite:'semantic-evidence-and-admission', negativeCases, sourceCheckedAssertions:health.sourceCheckedSemanticEdges, independentConcepts:health.withIndependentExplanation}));

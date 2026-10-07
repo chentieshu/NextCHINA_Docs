@@ -52,7 +52,7 @@ test('one explorer covers every published document and preserves canonical owner
   expect(globalKnowledge.nodes.some(node=>node.id==='concept:softmax')).toBe(true);
   expect(globalKnowledge.nodes.some(node=>node.id==='concept:self-attention')).toBe(true);
   expect(globalKnowledge.total).toBeGreaterThan(globalKnowledge.nodes.length);
-  for (const edge of graph.edges.filter(edge=>edge.type!=='browse_child' && !/共享知识引用|相关专题入口/.test(edge.reason ?? ''))) {
+  for (const edge of graph.edges.filter(edge=>!['browse_child','references','represents'].includes(edge.type))) {
     expect(globalKnowledge.nodes.some(node=>node.id===edge.source), edge.id).toBe(true);
     expect(globalKnowledge.nodes.some(node=>node.id===edge.target), edge.id).toBe(true);
     expect(globalKnowledge.index?.some(item=>item.id===edge.id), edge.id).toBe(true);

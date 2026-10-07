@@ -4,11 +4,14 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 import { loadGarden, repositoryRoot } from './validate-garden.mjs';
 import { attachTopicHubs } from './build-topic-hubs.mjs';
+import { enrichKnowledge } from './enrich-knowledge.mjs';
+import { knowledgeHealth } from '../src/features/garden/graphContract.js';
 
 // Canonical MD/JSON -> checked graph + topic-navigation overlay, never stored facts twice.
 const { blueprint, graph: base, publishedArticleIds } = loadGarden();
 if (base.unmappedArticleIds.length) throw new Error(`Unmapped reading pages: ${base.unmappedArticleIds.join(', ')}`);
-const graph = attachTopicHubs(base, repositoryRoot, publishedArticleIds);
+const graph = enrichKnowledge(attachTopicHubs(base, repositoryRoot, publishedArticleIds),
+  JSON.parse(readFileSync(path.join(repositoryRoot, 'content/garden/semantic-relations.json'), 'utf8')));
 const questions = new Map(blueprint.domains.map(domain => [`domain:${domain.id}`, domain.question]));
 const output = { ...graph, groups: blueprint.groups, scopeNote: blueprint.scopeNote,
   viewPolicy: blueprint.viewPolicy,
@@ -16,6 +19,12 @@ const output = { ...graph, groups: blueprint.groups, scopeNote: blueprint.scopeN
 const destination = path.join(repositoryRoot, 'src/generated');
 mkdirSync(destination, { recursive: true });
 writeFileSync(path.join(destination, 'garden.json'), JSON.stringify(output) + '\n');
+
+const health = knowledgeHealth(output);
+const commit = /^[a-f0-9]{40}$/.test(process.env.GITHUB_SHA ?? '') ? process.env.GITHUB_SHA : null;
+mkdirSync(path.join(repositoryRoot, 'public'), { recursive: true });
+writeFileSync(path.join(repositoryRoot, 'public/knowledge-health.json'), JSON.stringify({ commit, ...health }, null, 2) + '\n');
+writeFileSync(path.join(repositoryRoot, 'public/version.json'), JSON.stringify({ commit, schemaVersion: 1, knowledgeNodes: graph.nodes.length }) + '\n');
 
 // Use ELK's unchanged, same-origin standalone Worker and a content-addressed filename.
 const require = createRequire(import.meta.url);

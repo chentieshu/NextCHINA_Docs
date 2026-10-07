@@ -36,7 +36,9 @@ assert.equal(new Set(result.edges.map(edge=>edge.id)).size,result.edges.length,'
 for (const edge of result.edges) assert.ok(byId.has(edge.source)&&byId.has(edge.target));
 assert.equal(byId.get(branchId('hub:video','tutorials')).resourceRefs[0].articleId,'apple-style-premium-product-video');
 assert.equal(byId.get('hub:rag').articleBindings.length,0);
-assert.equal(result.nodes.filter(n=>n.parentId==='hub:rag').length,0,'Do not fill other hubs with empty template sections');
+assert.equal(result.nodes.filter(n=>n.parentId==='hub:rag').length,config.additionalOutlines['hub:rag'].length,'Only explicitly authored RAG branches');
+assert.equal(byId.get('branch:rag:orientation').embeddedArticleId,'rag-evidence');
+assert.ok(result.hubIntegration.detailedHubs.includes('hub:transformer'));
 let negatives=0;
 const reject = edit => { const p=structuredClone(plan), c=structuredClone(config), d=structuredClone(datasets); edit(p,c,d); assert.throws(()=>buildTopicHubs(base,p,c,publishedArticleIds,d)); negatives++; };
 reject((p,c)=>c.enabledHubs.push('hub:missing'));

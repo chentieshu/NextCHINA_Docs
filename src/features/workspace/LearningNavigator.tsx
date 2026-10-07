@@ -1,14 +1,20 @@
 import React, { useMemo, useState } from 'react';
 import { ArrowRight, ArrowLeftRight, ChevronDown, Search, Route, BookOpen } from 'lucide-react';
+import { graphDisplayLabel } from '../garden/graphContract.js';
 import { edgeLabel } from '../garden/domain';
 import type { KnowledgeIndex, IndexedRelation, RelationRole } from './knowledgeIndex';
 
 const names: Record<RelationRole, string> = { before: '建议先学', related: '延伸阅读', reference: '专题引用', semantic: '知识关系' };
 export function KnowledgeConnection({ relation, index, onSelect }: { relation: IndexedRelation; index: KnowledgeIndex; onSelect: (id: string) => void }) {
   const { edge, role } = relation;
+  const name = (id: string) => { const node = index.byId.get(id); return node ? graphDisplayLabel(node) : id; };
+  const sources = (edge.evidenceRefs ?? []).map(id => index.graph.evidenceSources?.[id]).filter(Boolean);
   return <article className="og-connection atlas-relation" data-relation-id={edge.id} data-role={role}>
-    <div className="og-connection-pair"><button type="button" onClick={() => onSelect(edge.source)}>{index.byId.get(edge.source)?.label ?? edge.source}</button><span className="og-connection-verb">{role === 'related' ? <ArrowLeftRight /> : <ArrowRight />}<span>{role === 'before' ? '先了解 → 再学习' : role === 'reference' ? edgeLabel[edge.type] : role === 'semantic' ? edgeLabel[edge.type] : '延伸阅读'}</span></span><button type="button" onClick={() => onSelect(edge.target)}>{index.byId.get(edge.target)?.label ?? edge.target}</button></div>
-    <p>{edge.reason || '原始数据尚未补充关系说明。'}</p><small>{names[role]} · {edge.assertionStatus === 'editorial' ? '编辑整理' : edge.assertionStatus}</small>
+    <div className="og-connection-pair"><button type="button" onClick={() => onSelect(edge.source)}>{name(edge.source)}</button><span className="og-connection-verb">{role === 'related' ? <ArrowLeftRight /> : <ArrowRight />}<span>{role === 'before' ? '先了解 → 再学习' : role === 'reference' ? edgeLabel[edge.type] : role === 'semantic' ? edgeLabel[edge.type] : '延伸阅读'}</span></span><button type="button" onClick={() => onSelect(edge.target)}>{name(edge.target)}</button></div>
+    <p>{edge.reason || '原始数据尚未补充关系说明。'}</p><small>{names[role]} · {edge.assertionStatus === 'source-checked' ? '已核对来源 · 待独立审核' : '编辑整理 · 未独立审核'}</small>
+    {edge.scope && <p>适用范围：{edge.scope}</p>}
+    {edge.routeId && <small>路径：{index.graph.learningPaths.find(path => path.id === edge.routeId)?.label ?? edge.routeId}</small>}
+    {!!sources.length && <p>{sources.map(source => <a key={source!.id} href={source!.url} target="_blank" rel="noopener noreferrer">{source!.title} ↗ </a>)}</p>}
   </article>;
 }
 export default function LearningNavigator({ index, onSelect }: { index: KnowledgeIndex; onSelect: (id: string) => void }) {

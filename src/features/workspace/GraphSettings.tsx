@@ -13,7 +13,7 @@ export default function GraphSettings({ index, settings, stats, selectedId, onCh
   const change = <K extends keyof NetworkSettings>(key: K, value: NetworkSettings[K]) => onChange({ ...settings, [key]: value });
   const switches: { key: 'structure' | 'relations' | 'prerequisites' | 'references'; label: string; note: string; tone: string }[] = [
     { key: 'structure', label: '目录归属', note: '这个知识点属于哪个领域或专题。', tone: 'structure' },
-    { key: 'relations', label: '概念联系', note: '可以放在一起理解，不代表因果。', tone: 'related' },
+    { key: 'relations', label: '概念联系', note: '包含带方向的知识关系和延伸阅读；适用范围与来源见详情。', tone: 'related' },
     { key: 'prerequisites', label: '建议先学', note: '原数据明确记录的先后建议。', tone: 'before' },
     { key: 'references', label: '专题引用', note: '不同专题复用同一个知识点。', tone: 'reference' }
   ];
@@ -33,7 +33,7 @@ export default function GraphSettings({ index, settings, stats, selectedId, onCh
       {index.groups.map(group => <label className="og-group-filter" key={group.id}><input type="checkbox" checked={!settings.groups || settings.groups.includes(group.id)} onChange={e => { const ids = new Set(settings.groups ?? index.groups.map(g => g.id)); e.target.checked ? ids.add(group.id) : ids.delete(group.id); change('groups', ids.size === index.groups.length ? null : [...ids]); }} /><i aria-hidden="true" data-group={group.id} /><span>{group.label.replace(/^\d+ · /, '')}</span></label>)}
       {selectedId && <p className="og-setting-footnote">选中的节点会保留，避免筛选后丢失位置。</p>}
     </section>
-    <section className="og-setting-section"><h3>连线代表什么</h3>{switches.map(item => <label className="og-setting" key={item.key}><span><i className="og-line-sample" data-role={item.tone} aria-hidden="true" />{item.label}<small>{item.note}</small></span><input type="checkbox" aria-label={`显示${item.label}`} checked={settings[item.key]} onChange={e => change(item.key, e.target.checked)} /></label>)}<p className="og-setting-footnote">目录线只表示归属；学习路线的步骤不会自动变成先修连线。</p></section>
+    <section className="og-setting-section"><h3>连线代表什么</h3>{switches.map(item => <label className="og-setting" key={item.key}><span><i className="og-line-sample" data-role={item.tone} aria-hidden="true" />{item.label}<small>{item.note}</small></span><input type="checkbox" aria-label={`显示${item.label}`} checked={settings[item.key]} onChange={e => change(item.key, e.target.checked)} /></label>)}<p className="og-setting-footnote">目录线只用于导航；路线相邻步骤已编译为教学建议，保留路径上下文，不是严格先修条件。空大纲可搜索定位，不因加入路线而视为完成。</p></section>
     <section className="og-setting-section"><h3>视觉显示</h3>
       <label className="og-setting"><span>按知识分区着色<small>颜色对应上面的分区，不表示知识的重要程度。</small></span><input type="checkbox" aria-label="按知识分区着色" checked={settings.colored} onChange={e => change('colored', e.target.checked)} /></label>
       {([{ key: 'labels', label: '标签密度', min: 0, max: 2, step: .25 }, { key: 'nodeSize', label: '节点大小', min: .7, max: 1.8, step: .1 }, { key: 'lineWidth', label: '连线粗细', min: .5, max: 2, step: .1 }, { key: 'lineOpacity', label: '连线可见度', min: .15, max: .9, step: .05 }] as const).map(item => <label className="og-slider-setting" key={item.key}><span>{item.label}<output>{item.key === 'labels' ? settings.labels === 0 ? '仅当前节点' : `${Math.round(settings.labels * 100)}%` : `${Math.round(settings[item.key] * 100)}%`}</output></span><input type="range" aria-label={item.label} min={item.min} max={item.max} step={item.step} value={settings[item.key]} onChange={e => change(item.key, Number(e.target.value))} /></label>)}

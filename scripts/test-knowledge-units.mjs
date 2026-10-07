@@ -14,6 +14,9 @@ const graph = attachTopicHubs(base, repositoryRoot, publishedArticleIds);
 const byId = new Map(graph.nodes.map(node => [node.id, node]));
 const results = [];
 const negatives = {
+  sampling: 'for z,kwargs in [([], {}), ([1], {"k":0}), ([1], {"p":0}), ([1], {"temperature":0}), ([float("nan")], {})]:\n    try: distribution(z, **kwargs)\n    except ValueError: pass\n    else: raise AssertionError("invalid sampling input accepted")',
+  'transformer-block': 'for x in [[], [1], [float("nan"), 1]]:\n    try: ffn_residual_norm(x)\n    except ValueError: pass\n    else: raise AssertionError("invalid FFN input accepted")',
+  'rag-evidence': 'for q,k in [([], 1), ([1,0], 0), ([1], 1), ([float("nan"),0], 1)]:\n    try: retrieve(q, docs, k, allowed)\n    except ValueError: pass\n    else: raise AssertionError("invalid retrieval input accepted")',
   tokenization: 'for bad in ["", "中文"]:\n    try: encode_toy(bad)\n    except ValueError: pass\n    else: raise AssertionError("invalid text accepted")',
   softmax: 'for values, t in [([], 1), ([float("nan")], 1), ([1], 0), ([1], -1)]:\n    try: softmax(values, t)\n    except ValueError: pass\n    else: raise AssertionError("invalid softmax input accepted")',
   attention: 'for q, k, v in [([], [], []), ([[1, 2]], [[1]], [[1, 2]]), ([[float("nan")]], [[1]], [[1]])]:\n    try: attention(q, k, v)\n    except ValueError: pass\n    else: raise AssertionError("invalid attention input accepted")',

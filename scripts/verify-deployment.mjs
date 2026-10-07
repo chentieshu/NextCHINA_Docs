@@ -48,9 +48,28 @@ try {
       const url = new URL('/', base);
       url.searchParams.set('release', expected);
       if (id) { url.searchParams.set('view', 'article'); url.searchParams.set('article', id); }
-      const response = await page.goto(url.href, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      let actualCommit = null, response;
+      // API and browser may reach different edge variants just after publication.
+      // Retry only release-identity admission, never application assertions.
+      for (let attempt = 0; attempt < 5; attempt++) {
+        url.searchParams.set('release_probe', `${Date.now()}-${attempt}`);
+        response = await page.goto(url.href, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        actualCommit = await page.locator('meta[name="nextchina-commit"]').getAttribute('content', { timeout: 1000 }).catch(() => null);
+        const evidencePath = `${output}/${id ?? 'map'}-${width}-attempt-${attempt + 1}`;
+        const headers = response ? await response.allHeaders() : {};
+        const safeHeaders = Object.fromEntries(['content-type', 'cache-control', 'cf-cache-status', 'cf-ray', 'age', 'etag', 'date'].filter(key => key in headers).map(key => [key, headers[key]]));
+        writeFileSync(`${evidencePath}.json`, JSON.stringify({
+          requestedUrl: url.href, finalUrl: page.url(), status: response?.status(),
+          headers: safeHeaders, title: await page.title(), commit: actualCommit, errors: [...errors]
+        }, null, 2) + '\n');
+        if (response) writeFileSync(`${evidencePath}-response.html`, await response.text());
+        writeFileSync(`${evidencePath}-dom.html`, await page.content());
+        await page.screenshot({ path: `${evidencePath}.png` });
+        if (response?.ok() && actualCommit === expected) break;
+        if (attempt < 4) await setTimeout(3000);
+      }
       assert.ok(response?.ok(), `Browser HTTP failure: ${url.href}`);
-      assert.equal(await page.locator('meta[name="nextchina-commit"]').getAttribute('content'), expected);
+      assert.equal(actualCommit, expected, `Browser release did not converge to ${expected}`);
       if (id) {
         await page.locator(`[data-document="${id}"] .markdown-body`).waitFor({ state: 'visible' });
         assert.ok((await page.locator(`[data-document="${id}"] h1`).innerText()).trim());

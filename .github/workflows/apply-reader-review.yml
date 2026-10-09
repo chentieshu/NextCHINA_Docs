@@ -14,13 +14,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: fix/markdown-static-reader
-      - run: tar -czf /tmp/reader-transport.tar.gz .github/reader-part-*.txt
-      - uses: actions/upload-artifact@v4
-        with:
-          name: reader-transport-diagnostics
-          path: /tmp/reader-transport.tar.gz
-          retention-days: 1
-      - name: Verify and apply the reviewed patch
+      - name: Verify and apply source files only
         run: |
           python3 - <<'PY'
           import base64, gzip, hashlib, io, json, pathlib, subprocess
@@ -31,14 +25,13 @@ jobs:
           for before, after in manifest.get('repairs', []):
               assert data.count(before) == 1
               data = data.replace(before, after)
-          compressed = base64.b64decode(data, validate=True)
-          with gzip.GzipFile(fileobj=io.BytesIO(compressed)) as stream:
+          with gzip.GzipFile(fileobj=io.BytesIO(base64.b64decode(data, validate=True))) as stream:
               patch = stream.read(1000001)
           assert len(patch) == 92381
           assert hashlib.sha256(patch).hexdigest() == manifest['sha256']
-          subprocess.run(['git', 'apply', '--check'], input=patch, check=True)
-          subprocess.run(['git', 'apply'], input=patch, check=True)
-          for name in ['.github/reader-change.json', '.github/workflows/apply-reader-review.yml', '.github/workflows/reader-workbench.yml'] + [f'.github/reader-part-{i}.txt' for i in range(5)]:
+          subprocess.run(['git', 'apply', '--check', '--exclude=.github/workflows/*'], input=patch, check=True)
+          subprocess.run(['git', 'apply', '--exclude=.github/workflows/*'], input=patch, check=True)
+          for name in ['.github/reader-change.json'] + [f'.github/reader-part-{i}.txt' for i in range(5)]:
               (root/name).unlink()
           PY
           git config user.name 'NextCHINA maintenance'

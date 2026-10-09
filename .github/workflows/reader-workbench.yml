@@ -1,0 +1,25 @@
+name: Prepare reader review workbench
+on:
+  push:
+    branches: [fix/markdown-static-reader]
+    paths: [.github/workflows/reader-workbench.yml]
+permissions:
+  contents: read
+jobs:
+  dependencies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm install --no-audit --no-fund --save-exact prismjs@1.30.0
+      - run: tar -czf reader-dependencies.tar.gz node_modules package-lock.json package.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reader-locked-dependencies
+          path: reader-dependencies.tar.gz
+          retention-days: 1

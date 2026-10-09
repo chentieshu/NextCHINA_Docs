@@ -39,6 +39,7 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
       - run: npm run build
       - name: Preserve the exact review build for visual inspection
         uses: actions/upload-artifact@v4
@@ -46,7 +47,6 @@ jobs:
           name: knowledge-map-preview
           path: dist/
           retention-days: 7
-      - run: npx playwright install --with-deps chromium
       - name: Check all Markdown, navigation, graph and responsive interactions
         run: npm run test:browser -- --workers=2
       - name: Check the actual production build
@@ -59,4 +59,5 @@ jobs:
           path: |
             test-results/
             test-results-production/
+            src/generated/markdown-assets.json
           retention-days: 7

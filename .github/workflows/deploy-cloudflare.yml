@@ -28,10 +28,10 @@ jobs:
           cache-dependency-path: package-lock.json
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
-      - name: Validate and build
-        run: npm run build
       - name: Install browser for rendering tests
         run: npx playwright install --with-deps chromium
+      - name: Validate and build
+        run: npm run build
       - name: Verify Markdown, diagrams and garden interactions
         run: npm run test:browser -- --workers=2
       - name: Verify production chunks and layout worker
@@ -54,4 +54,5 @@ jobs:
           path: |
             test-results/
             test-results-production/
+            src/generated/markdown-assets.json
           retention-days: 7

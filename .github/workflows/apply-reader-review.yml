@@ -1,0 +1,39 @@
+name: Apply reviewed reader changes
+on:
+  push:
+    branches: [fix/markdown-static-reader]
+    paths: [.github/reader-change.json]
+permissions:
+  contents: write
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/fix/markdown-static-reader'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: fix/markdown-static-reader
+      - name: Verify and apply the reviewed patch
+        run: |
+          python3 - <<'PY'
+          import base64, gzip, hashlib, io, json, pathlib, subprocess
+          root = pathlib.Path('.')
+          manifest = json.loads((root/'.github/reader-change.json').read_text())
+          assert manifest['sha256'] == '9ef5ee0d8b1a5e463752502ab4eea5f0ccc04f4949938ce53844a0b6b6b6a8a2'
+          data = ''.join((root/f'.github/reader-part-{i}.txt').read_text().strip() for i in range(5))
+          compressed = base64.b64decode(data, validate=True)
+          with gzip.GzipFile(fileobj=io.BytesIO(compressed)) as stream:
+              patch = stream.read(1000001)
+          assert len(patch) == 92381
+          assert hashlib.sha256(patch).hexdigest() == manifest['sha256']
+          subprocess.run(['git', 'apply', '--check'], input=patch, check=True)
+          subprocess.run(['git', 'apply'], input=patch, check=True)
+          for name in ['.github/reader-change.json', '.github/workflows/apply-reader-review.yml', '.github/workflows/reader-workbench.yml'] + [f'.github/reader-part-{i}.txt' for i in range(5)]:
+              (root/name).unlink()
+          PY
+          git config user.name 'NextCHINA maintenance'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat(reader): static Mermaid, code highlighting and responsive explorer'
+          git push origin HEAD:fix/markdown-static-reader

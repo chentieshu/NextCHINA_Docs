@@ -28,10 +28,10 @@ jobs:
           cache-dependency-path: package-lock.json
       - name: Install locked dependencies
         run: npm ci --no-audit --no-fund
-      - name: Validate and build
-        run: npm run build
       - name: Install browser for rendering tests
         run: npx playwright install --with-deps chromium
+      - name: Validate and build
+        run: npm run build
       - name: Verify Markdown, diagrams and garden interactions
         run: npm run test:browser -- --workers=2
       - name: Verify production chunks and layout worker
@@ -46,6 +46,11 @@ jobs:
         env:
           EXPECTED_COMMIT: ${{ github.sha }}
           DEPLOYMENT_URL: https://docs.nextchina.org
+      - name: Verify published reader kit
+        run: node scripts/verify-published-reader.mjs
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+          DEPLOYMENT_URL: https://docs.nextchina.org
       - name: Preserve rendering and live release evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -54,4 +59,5 @@ jobs:
           path: |
             test-results/
             test-results-production/
+            src/generated/markdown-assets.json
           retention-days: 7

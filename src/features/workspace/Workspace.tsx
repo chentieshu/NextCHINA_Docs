@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { BookOpen, Search, Network, PanelLeftClose, PanelLeftOpen, PanelRightOpen, X, Moon, Sun, ArrowLeft, ArrowRight } from 'lucide-react';
+import { BookOpen, Search, Network, PanelLeftClose, PanelLeftOpen, PanelRightOpen, PanelRightClose, X, Moon, Sun, ArrowLeft, ArrowRight } from 'lucide-react';
 import { DOC_CHAPTERS } from '../../data/docs';
 import { ESSAY_CHAPTERS } from '../../data/essays';
 import { useAppRoute, readRoute, routeUrl, type AppRoute } from '../../routing';
@@ -99,15 +99,15 @@ export default function Workspace() {
       <button type="button" aria-label="搜索全部文档" title="全库搜索 · Ctrl / ⌘ K" onClick={searchAll}><Search /></button>
       <button type="button" aria-label="打开全局知识网络" title="首页 · 宏观关系图" aria-pressed={graphView} onClick={() => open({ kind: 'home' })}><Network /></button>
       <button type="button" aria-label="阅读" title="返回阅读；首次打开阅读指南" aria-pressed={!graphView} onClick={() => graphView && open(previousDocument.current)}><BookOpen /></button>
-      {!graphView && <button type="button" aria-label="显示关联资料" title="关联资料" aria-expanded={relatedOpen} onClick={() => { if (!wide) setSidebarOpen(false); setRelatedOpen(value => !value); }}><PanelRightOpen /></button>}
       <div className="ws-ribbon-history"><button type="button" aria-label="后退" title="后退" onClick={() => window.history.back()}><ArrowLeft /></button><button type="button" aria-label="前进" title="前进" onClick={() => window.history.forward()}><ArrowRight /></button></div>
       <div className="ws-ribbon-bottom"><button type="button" aria-label={light ? '切换为暗黑模式' : '切换为明亮模式'} title="切换主题" onClick={toggleTheme}>{light ? <Moon /> : <Sun />}</button></div>
     </nav>
-    {mobileSidebar && <div className="ws-scrim" aria-hidden="true" onClick={() => setSidebarOpen(false)} />}
+    <div className="ws-scrim" data-open={modal} aria-hidden="true" onClick={() => { setSidebarOpen(false); setRelatedOpen(false); }} />
     <aside id="workspace-sidebar" ref={sidebar} className="ws-sidebar" aria-label="文档侧栏" role={mobileSidebar ? 'dialog' : 'complementary'} aria-modal={mobileSidebar || undefined} inert={!sidebarOpen || modalRelated}>
       <Explorer model={model} route={route} onOpen={open} searchMode={searchMode} onSearchMode={setSearchMode} mobile={mobile} onClose={() => setSidebarOpen(false)} />
     </aside>
     <div className="ws-main" inert={modal}>
+      {!graphView && <div className="ws-reader-actions"><button type="button" aria-label="显示关联资料" title={relatedOpen ? '收起关联资料' : '显示关联资料'} aria-expanded={relatedOpen} aria-controls="workspace-related" onClick={() => { if (!wide) setSidebarOpen(false); setRelatedOpen(value => !value); }}>{relatedOpen ? <PanelRightClose /> : <PanelRightOpen />}</button></div>}
       {graphView ? <main className="ws-graph-slot" aria-label="AI 全局知识网络"><LazyBoundary label="全局知识网络" fallbackAction={() => open(previousDocument.current)}><Suspense fallback={<div className="ws-empty" role="status">正在加载宏观关系图，文档目录仍可使用…</div>}><WorkspaceGraph model={model} isLight={light} selectedId={route.nodeId} onOpen={open} /></Suspense></LazyBoundary></main>
         : <main ref={scroll} className="ws-scroll" id="workspace-reader" tabIndex={-1} aria-label="文档阅读区" onScroll={event => { scrollPositions.set(currentKey, event.currentTarget.scrollTop); if (scrollPositions.size > 100) scrollPositions.delete(scrollPositions.keys().next().value!); }} onClick={handleLink}>
           {mapReturn && <button type="button" className="atlas-return" aria-label="返回知识地图" onClick={() => open(mapReturn)}><ArrowLeft />返回知识地图{mapReturn.nodeId && ` · ${byId.get(mapReturn.nodeId)?.label ?? '原节点'}`}</button>}
@@ -115,7 +115,6 @@ export default function Workspace() {
         </main>}
       <footer className="ws-status"><span>{graphView ? 'AI 宏观关系图' : article ? '阅读模式' : '目录'} · {model.documents.size} 篇文档</span><span>{graphView ? '全站共用一张知识网' : '从侧栏选择文档 · 单篇阅读'}</span></footer>
     </div>
-    {modalRelated && <div className="ws-scrim" aria-hidden="true" onClick={() => setRelatedOpen(false)} />}
-    {relatedOpen && !graphView && <aside ref={related} className="ws-related" role={modalRelated ? 'dialog' : 'complementary'} aria-modal={modalRelated || undefined} aria-label="关联资料"><header><strong>关联资料</strong><button type="button" aria-label="关闭关联资料" onClick={() => setRelatedOpen(false)}><X /></button></header><RelatedContent route={route} model={model} onOpen={open} /></aside>}
+    {!graphView && <aside id="workspace-related" ref={related} className="ws-related" data-open={relatedOpen} inert={!relatedOpen} aria-hidden={!relatedOpen} role={modalRelated ? 'dialog' : 'complementary'} aria-modal={modalRelated || undefined} aria-label="关联资料"><header><strong>关联资料</strong><button type="button" aria-label="关闭关联资料" onClick={() => setRelatedOpen(false)}><X /></button></header><RelatedContent route={route} model={model} onOpen={open} /></aside>}
   </div>;
 }

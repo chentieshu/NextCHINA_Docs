@@ -1,9 +1,12 @@
 import React from 'react';
 import { Check, Copy } from 'lucide-react';
+import { highlightCode } from '../utils/codeHighlight.js';
+import { staticCode } from '../lib/markdownAssets';
 
 interface Props { code: string; language?: string; }
 
 export function MarkdownCodeBlock({ code, language = '' }: Props) {
+  const html = React.useMemo(() => staticCode(code, language) ?? highlightCode(code, language), [code, language]);
   const [status, setStatus] = React.useState<'idle' | 'copied' | 'failed'>('idle');
   const [wrap, setWrap] = React.useState(false);
   const timer = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -23,7 +26,7 @@ export function MarkdownCodeBlock({ code, language = '' }: Props) {
   };
 
   return (
-    <div className="md-codeblock" data-wrap={wrap}>
+    <div className="md-codeblock" data-wrap={wrap} data-highlighted={Boolean(html)}>
       <div className="md-codebar">
         <span className="md-code-language">{language || 'text'}</span>
         <div className="md-code-actions">
@@ -34,7 +37,7 @@ export function MarkdownCodeBlock({ code, language = '' }: Props) {
           </button>
         </div>
       </div>
-      <pre tabIndex={0} aria-label={`${language || '纯文本'}代码，可横向滚动`}><code className={language ? `language-${language}` : undefined}>{code}</code></pre>
+      <pre tabIndex={0} aria-label={`${language || '纯文本'}代码，可横向滚动`}><code className={language ? `language-${language}` : undefined} {...(html ? { dangerouslySetInnerHTML: { __html: html } } : { children: code })} /></pre>
     </div>
   );
 }

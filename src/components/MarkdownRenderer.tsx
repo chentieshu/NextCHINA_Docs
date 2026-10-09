@@ -9,11 +9,13 @@ import { MarkdownCodeBlock } from './MarkdownCodeBlock';
 import { MarkdownImage } from './MarkdownImage';
 import { MarkdownTable } from './MarkdownTable';
 import { MermaidDiagram } from './MermaidDiagram';
+import { MarkdownTheme } from '../lib/MarkdownTheme';
 
 interface MarkdownRendererProps { content: string; isLight: boolean; }
 
-export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, isLight }) => (
-  <article className={`markdown-body ${isLight ? 'markdown-light' : 'markdown-dark'}`}>
+// Parsing/math layout depend on content, not sidebars or theme. Context only
+// updates diagram colors; the same document tree survives reader UI changes.
+const MarkdownBody = React.memo(({ content }: { content: string }) => (
     <div className="markdown-prose">
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
@@ -30,7 +32,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, isL
           pre: ({ node, children }) => {
             const block = codeBlock(node);
             if (!block) return <pre className="md-plain-pre" tabIndex={0}>{children}</pre>;
-            if (block.language === 'mermaid') return <MermaidDiagram chart={block.text} isLight={isLight} />;
+            if (block.language === 'mermaid') return <MermaidDiagram chart={block.text} />;
             return <MarkdownCodeBlock code={block.text} language={block.language} />;
           },
           code: ({ node: _node, className, ...props }) => <code {...props} className={className || 'md-inline-code'} />,
@@ -39,5 +41,9 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, isL
         }}
       >{content}</ReactMarkdown>
     </div>
+));
+export const MarkdownRenderer = React.memo(({ content, isLight }: MarkdownRendererProps) => (
+  <article className={`markdown-body ${isLight ? 'markdown-light' : 'markdown-dark'}`}>
+    <MarkdownTheme.Provider value={isLight}><MarkdownBody content={content} /></MarkdownTheme.Provider>
   </article>
-);
+));

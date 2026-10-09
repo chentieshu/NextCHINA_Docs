@@ -15,7 +15,7 @@
   --md-marker: #777987;
   --md-focus: #3974ca;
   --md-radius: 12px;
-  --md-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --md-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
   --md-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   container: markdown / inline-size;
   display: flow-root;
@@ -76,15 +76,17 @@
 .markdown-prose hr { border: 0; border-top: 1px solid var(--md-border); margin: 2em 0; }
 
 /* Native list semantics, including ordered start and mixed task/normal lists. */
-.markdown-body ul, .markdown-body ol { margin: 1em 0; padding-inline-start: 1.65em; }
+.markdown-body ul, .markdown-body ol { margin: 1.1em 0; padding-inline-start: 1.65em; min-width: 0; }
+.markdown-body ol[start] { padding-inline-start: 2.7em; }
 .markdown-body ul { list-style-type: disc; }
 .markdown-body ol { list-style-type: decimal; }
-.markdown-prose li { position: relative; margin: .35em 0; padding-inline-start: .2em; }
+.markdown-prose li { position: relative; margin: .55em 0; padding-inline-start: .35em; min-width: 0; }
 .markdown-prose li::marker { color: var(--md-marker); font-variant-numeric: tabular-nums; }
 .markdown-prose li > p { margin: .55em 0; }
 .markdown-prose li > :first-child { margin-top: 0; }
 .markdown-prose li > :last-child { margin-bottom: 0; }
-.markdown-prose li > :where(ul, ol) { margin: .45em 0; padding-inline-start: 1.35em; }
+.markdown-prose li > :where(ul, ol) { margin: .45em 0; padding-inline-start: 1.3em; }
+.markdown-prose li li { margin-block: .25em; }
 .markdown-prose ul ul { list-style-type: circle; }
 .markdown-prose ul ul ul { list-style-type: square; }
 .markdown-prose li.task-list-item { list-style: none; }
@@ -129,8 +131,8 @@
 }
 .md-table-scroll { width: 100%; max-width: 100%; min-width: 0; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
 .md-table-scroll:focus-visible { outline: 2px solid var(--md-focus); outline-offset: -2px; }
-.md-table-region table { table-layout: auto; border-collapse: separate; border-spacing: 0; width: 100%; font: inherit; line-height: 1.65; font-variant-numeric: tabular-nums; }
-.md-table-region :where(th, td) { padding: .8em 1em; border-bottom: 1px solid var(--md-border); text-align: start; vertical-align: top; overflow-wrap: anywhere; word-break: normal; white-space: normal; }
+.md-table-region table { table-layout: auto; border-collapse: separate; border-spacing: 0; width: 100%; min-width: 100%; display: table; font: inherit; line-height: 1.65; font-variant-numeric: tabular-nums; }
+.md-table-region :where(th, td) { padding: .85em 1em; border-bottom: 1px solid var(--md-border); text-align: start; vertical-align: top; overflow-wrap: anywhere; word-break: normal; white-space: normal; }
 .md-table-region [data-column-kind="text"] { min-width: 6em; }
 .md-table-region:not(.md-table-narrow) [data-column-content="prose"] { min-width: 12em; }
 .md-table-region :where(th, td)[data-column-kind="numeric"],
@@ -138,7 +140,7 @@
 .md-table-region thead th[data-column-kind] { white-space: normal; }
 .md-table-region thead th[data-short-header="true"] { white-space: nowrap; }
 .md-table-region thead th { background: var(--md-head); color: var(--md-heading); font-weight: 650; line-height: 1.5; }
-.md-table-region :where(th, td) + :where(th, td) { border-inline-start: 1px solid var(--md-border); }
+.md-table-region :where(th, td) + :where(th, td) { border-inline-start: 1px solid color-mix(in srgb, var(--md-border) 65%, transparent); }
 .md-table-region :where(th, td)[align="right"] { text-align: right; }
 .md-table-region :where(th, td)[align="center"] { text-align: center; }
 .md-table-region :where(th, td)[align="left"] { text-align: left; }
@@ -154,13 +156,18 @@
 .markdown-body .katex { font-size: 1.04em; overflow-wrap: normal; word-break: normal; }
 .markdown-body .katex-display { display: block; width: 100%; max-width: 100%; margin: 1.4em 0; padding: .75em .25em; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
 .markdown-body .katex-display > .katex { white-space: nowrap; }
-.markdown-prose :not(.katex-display) > .katex { display: inline-block; max-width: 100%; overflow-x: auto; overflow-y: hidden; vertical-align: middle; padding: .15em .02em .3em; }
+/* Inline math participates in text layout. It must never create its own
+   scrollport (classic Windows scrollbars exposed even tiny subpixel overflow). */
+.markdown-prose :not(.katex-display) > .katex { display: inline; max-width: none; overflow: visible; vertical-align: baseline; padding: 0; }
 .md-codeblock pre:focus-visible, .md-mermaid:focus-visible { outline-offset: -2px; }
 .markdown-body .katex-error { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--md-text); }
-.md-diagram { margin: 1.5em 0; }
+.md-diagram { margin: 1.5em 0; margin-inline: 0; }
 .md-diagram > figcaption span { font-weight: 400; }
 .md-mermaid { max-width: 100%; padding: 1rem; overflow-x: auto; overscroll-behavior-x: contain; text-align: center; -webkit-overflow-scrolling: touch; }
-.md-mermaid > svg { display: block; height: auto; margin: 0 auto; border-radius: 0; }
+.md-mermaid > svg { display: block; width: var(--diagram-width); max-width: none; height: auto; margin: 0 auto; border-radius: 0; }
+.md-diagram[data-fit="true"] .md-mermaid > svg { width: 100%; max-width: var(--diagram-natural-width); }
+.md-diagram > figcaption > span { display: inline-flex; align-items: center; gap: .65rem; color: var(--md-heading); font-weight: 600; }
+.md-diagram > figcaption small { font: 400 .6875rem/1.5 var(--md-mono); color: var(--md-muted); }
 .md-diagram-status, .markdown-prose .md-mermaid-error { margin: 0; padding: 1.25rem; font-size: .875em; color: var(--md-muted); }
 .md-diagram-source { border-top: 1px solid var(--md-border); }
 .md-diagram-source summary { padding: .55rem .8rem; font-size: .75rem; color: var(--md-muted); cursor: pointer; }
@@ -190,7 +197,7 @@
 .md-table-region tbody th { font-weight: 550; color: var(--md-heading); }
 .md-table-region tbody tr:last-child :is(th,td) { border-bottom: 0; }
 .md-table-region :is(th,td) .md-inline-code { overflow-wrap: anywhere; white-space: normal; }
-.md-table-region :is(th,td) .katex { max-width: 100%; }
+.md-table-region :is(th,td) .katex { max-width: none; }
 .md-table-region caption { caption-side: top; padding: .8em 1em; text-align: start; color: var(--md-muted); }
 :where(.md-table-scroll,.md-codeblock pre,.md-plain-pre,.md-diagram-source pre,.katex-display,.md-mermaid) { scrollbar-width: thin; scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); }
 
@@ -204,4 +211,24 @@
   .md-table-region, .md-table-region :where(th, td), .md-table-tools { border-color: CanvasText; }
   .md-table-region thead th { background: Canvas; color: CanvasText; }
   .md-table-tools button:disabled { color: GrayText; opacity: 1; }
+}
+
+/* Prism token colors are local to the reader, never to generic .string/.number. */
+.markdown-body { --code-comment:#6a737f; --code-keyword:#8154a6; --code-string:#207753; --code-function:#2167ad; --code-number:#a24e23; --code-operator:#485a70; }
+.markdown-dark { --code-comment:#9aa5b6; --code-keyword:#c7a0ed; --code-string:#98d3ad; --code-function:#8dbdf4; --code-number:#f2b388; --code-operator:#c3ccda; }
+.md-codeblock pre { background: var(--md-soft); }
+.md-codeblock .token.comment, .md-codeblock .token.prolog { color:var(--code-comment); font-style:italic; }
+.md-codeblock .token.keyword, .md-codeblock .token.atrule { color:var(--code-keyword); }
+.md-codeblock .token.string, .md-codeblock .token.char, .md-codeblock .token.attr-value, .md-codeblock .token.inserted { color:var(--code-string); }
+.md-codeblock .token.function, .md-codeblock .token.class-name, .md-codeblock .token.tag { color:var(--code-function); }
+.md-codeblock .token.number, .md-codeblock .token.boolean, .md-codeblock .token.constant, .md-codeblock .token.deleted { color:var(--code-number); }
+.md-codeblock .token.operator, .md-codeblock .token.punctuation { color:var(--code-operator); }
+.md-codeblock .token.property, .md-codeblock .token.attr-name, .md-codeblock .token.builtin { color:var(--code-function); }
+@container markdown (max-width: 440px) {
+  .markdown-prose > ul, .markdown-prose > ol { padding-inline-start: 1.5em; }
+  .markdown-prose > ol[start] { padding-inline-start: 2.7em; }
+  .markdown-prose li { padding-inline-start: .15em; }
+  .markdown-prose li > :where(ul,ol) { padding-inline-start: 1.05em; }
+  .md-diagram > figcaption { padding: .45rem .55rem; gap: .3rem; }
+  .md-diagram > figcaption small { display: none; }
 }

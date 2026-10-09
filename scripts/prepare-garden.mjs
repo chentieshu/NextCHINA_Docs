@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync, readFileSync, readdirSync, unlinkSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync, readdirSync, unlinkSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -18,6 +18,10 @@ const output = { ...graph, groups: blueprint.groups, scopeNote: blueprint.scopeN
   nodes: graph.nodes.map(node => ({ ...node, summary: node.summary ?? questions.get(node.id) ?? null })) };
 const destination = path.join(repositoryRoot, 'src/generated');
 mkdirSync(destination, { recursive: true });
+// A clean install can run type/SSR checks before installing Chromium. Builds
+// replace this placeholder with content-addressed Mermaid/Prism assets.
+const renderAssets = path.join(destination, 'markdown-assets.json');
+if (!existsSync(renderAssets)) writeFileSync(renderAssets, JSON.stringify({ schemaVersion: 1, diagrams: {}, code: {} }) + '\n');
 writeFileSync(path.join(destination, 'garden.json'), JSON.stringify(output) + '\n');
 
 const health = knowledgeHealth(output);

@@ -44,7 +44,7 @@ try {
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     page.setDefaultTimeout(20000);
-    for (const id of [null, 'transformer-block', 'llm-sampling', 'rag-evidence']) {
+    for (const id of [null, 'transformer-block', 'llm-sampling', 'rag-evidence', 'llm-attention-calculation']) {
       const url = new URL('/', base);
       url.searchParams.set('release', expected);
       if (id) { url.searchParams.set('view', 'article'); url.searchParams.set('article', id); }
@@ -74,6 +74,10 @@ try {
         await page.locator(`[data-document="${id}"] .markdown-body`).waitFor({ state: 'visible' });
         assert.ok((await page.locator(`[data-document="${id}"] h1`).innerText()).trim());
         assert.equal(await page.locator('.katex-error').count(), 0, `Math rendering error: ${id}`);
+        assert.equal(await page.locator('.md-diagram:not([data-renderer="static-mermaid"])').count(), 0, 'Published diagrams must be pre-rendered');
+        const inlineScroll = await page.locator('.markdown-prose .katex').evaluateAll(nodes => nodes.filter(node => !node.closest('.katex-display') && getComputedStyle(node).overflowX !== 'visible').length);
+        assert.equal(inlineScroll, 0, 'Inline formulas must not create scrollports');
+        assert.ok(await page.locator('.md-codeblock .token').count() > 0, 'Example code should be highlighted');
       } else {
         await page.waitForFunction(() => document.querySelector('.og-network-host')?.getAttribute('data-layout') === 'ready');
         assert.equal(await page.locator('.kg-node:visible').count(), verifiedHealth.defaultVisibleNodes);

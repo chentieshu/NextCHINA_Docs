@@ -64,8 +64,8 @@ export function Explorer({ model, route, onOpen, searchMode, onSearchMode, onClo
     </div> : <div className="ws-tree-scroll" ref={host}><div role="tree" aria-label="全部文档目录">{visible.map(({ entry, depth, pos, size }, index) => {
       const folder = entry.type === 'folder', isOpen = expanded.has(entry.id), selected = entry.id === current;
       return <div key={entry.id} role="treeitem" aria-level={depth + 1} aria-posinset={pos} aria-setsize={size} aria-selected={selected}
-        aria-expanded={folder ? isOpen : undefined} tabIndex={tabbable === entry.id ? 0 : -1} data-entry-id={entry.id} data-article-id={entry.articleId} data-planned={!(counts.get(entry.id) ?? 0)}
-        className="ws-tree-row" style={{ '--tree-depth': Math.min(depth, 5) } as React.CSSProperties} title={entry.label}
+        aria-expanded={folder ? isOpen : undefined} tabIndex={tabbable === entry.id ? 0 : -1} data-entry-id={entry.id} data-article-id={entry.articleId} data-planned={!(counts.get(entry.id) ?? 0)} data-entry-type={entry.type} data-depth={depth}
+        className="ws-tree-row" style={{ '--tree-depth': depth } as React.CSSProperties} title={entry.label}
         onFocus={() => setFocusId(entry.id)} onClick={() => { if (folder) toggle(entry.id); else open(entry); }}
         onKeyDown={event => {
           const key = event.key; if (!['ArrowDown','ArrowUp','ArrowLeft','ArrowRight','Home','End','Enter',' '].includes(key)) return;
@@ -79,6 +79,7 @@ export function Explorer({ model, route, onOpen, searchMode, onSearchMode, onClo
           if (key === 'Enter') { if (folder) toggle(entry.id); else open(entry); }
           if (key === ' ') { if (folder) toggle(entry.id); else open(entry); }
         }}>
+        <span className="ws-tree-guides" aria-hidden="true">{Array.from({ length: depth }, (_, level) => <i key={level} style={{ '--guide-level': level } as React.CSSProperties} />)}</span>
         <span className="ws-tree-chevron" aria-hidden="true" onClick={event => { if (folder) { event.stopPropagation(); toggle(entry.id); } }}>{folder && <ChevronRight data-open={isOpen} />}</span>
         {folder ? isOpen ? <FolderOpen /> : <Folder /> : <FileText />}
         <span className="ws-tree-label">{entry.label}</span>{folder && <small>{counts.get(entry.id) || '○'}</small>}

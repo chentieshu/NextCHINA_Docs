@@ -59,6 +59,8 @@ for (const width of [320, 768, 1440]) {
       await expect(first.locator('.md-diagram-source pre')).toBeVisible();
       await first.getByRole('button', { name: '收起源码' }).click();
       await expect(first.locator('.md-diagram-source pre')).toBeHidden();
+      await expect(first).toHaveAttribute('data-fit', 'true');
+      await first.getByRole('button', { name: '原始尺寸' }).click();
       await first.getByRole('button', { name: '适应宽度' }).click();
       await expect(first.getByRole('button', { name: '原始尺寸' })).toHaveAttribute('aria-pressed', 'true');
       await page.screenshot({ path: `test-results/diagrams-${width}-${theme}.png`, fullPage: false });

@@ -14,14 +14,14 @@ export async function testMarkdownRendering(articles = []) {
   try {
     const files = ['utils/markdown.ts', 'components/MarkdownRenderer.tsx',
       'components/MarkdownCodeBlock.tsx', 'components/MarkdownTable.tsx', 'components/MermaidDiagram.tsx',
-      'data/docs.ts', 'data/research.ts'];
+      'data/docs.ts', 'data/research.ts', 'utils/prismSetup.js', 'utils/codeHighlight.js', 'utils/renderAssetKey.js', 'lib/diagramTheme.js'];
     // TypeScript 7 is a native compiler: use its supported CLI, not the old JS API.
     const outputRoot = path.join(temp, 'output');
     const config = path.join(temp, 'tsconfig.json');
     writeFileSync(config, JSON.stringify({ compilerOptions: {
       target: 'ES2022', module: 'ESNext', moduleResolution: 'bundler', jsx: 'react-jsx',
       lib: ['ES2022', 'DOM', 'DOM.Iterable'], types: ['vite/client'], skipLibCheck: true,
-      strict: true, noEmit: false, resolveJsonModule: true, rootDir: root, outDir: outputRoot
+      strict: true, allowJs: true, checkJs: false, noEmit: false, resolveJsonModule: true, rootDir: root, outDir: outputRoot
     }, files: files.map(file => path.join(root, 'src', file)) }));
     const executable = path.join(root, 'node_modules', '.bin', process.platform === 'win32' ? 'tsc.cmd' : 'tsc');
     const check = spawnSync(executable, ['-p', config], { cwd: root, encoding: 'utf8' });

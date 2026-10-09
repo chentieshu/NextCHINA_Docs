@@ -5,7 +5,7 @@ import { byId } from '../garden/data';
 import { resourceMeta } from '../garden/hub-data';
 import { documentRoute, folderRoute, outgoingDocuments, type ExplorerModel } from './model';
 import { LazyBoundary } from '../../components/LazyBoundary';
-const MarkdownRenderer = lazy(() => import('../../components/MarkdownRenderer').then(module => ({ default: module.MarkdownRenderer })));
+import { MarkdownRenderer } from '../../components/MarkdownRenderer';
 const ModelReferenceIndex = lazy(() => import('../garden/ModelReferenceIndex'));
 interface Props { route: AppRoute; model: ExplorerModel; isLight: boolean; onOpen: (route: AppRoute) => void; }
 export function currentDocument(route: AppRoute, model: ExplorerModel) {
@@ -22,7 +22,7 @@ export function WorkspaceContent({ route, model, isLight, onOpen }: Props) {
     return <div className="ws-reading-column" data-document={article.id} data-reading-layout={article.readingLayout ?? 'prose'}>
       <header className="ws-document-heading"><p className="ws-eyebrow">{article.categoryName} <span> / </span>{independent ? '独立讲解' : '文档'}</p><h1>{article.title}</h1><p className="ws-subtitle">{article.subtitle}</p><div className="ws-document-meta"><span>{independent ? '撰写' : '页面日期'} {article.date}</span><span>{article.readTime}</span><span>只读知识库</span></div></header>
       {meta && <aside className="ws-evidence" role="note">{independent ? '包含一手来源、教学假设与数值示例。程序验证不等于专家复核，也不代表商业模型实测。' : '保留资料的原始日期与口径；本次界面更新未重新核验名称、分数或价格。'}{article.id === 'terminal-bench' && ' 此页是 Agent 系统任务评测，不是裸模型能力排名。'}</aside>}
-      <LazyBoundary label="文档渲染器" fallbackAction={recovery}><Suspense fallback={<p role="status">正在排版文档…</p>}><MarkdownRenderer content={article.content} isLight={isLight} /></Suspense></LazyBoundary>
+      <LazyBoundary label="文档渲染器" fallbackAction={recovery}><MarkdownRenderer content={article.content} isLight={isLight} /></LazyBoundary>
       {!!meta?.relatedResourceIds?.length && <section className="ws-related-inline"><h2>继续阅读</h2>{meta.relatedResourceIds.map(id => { const doc = model.documents.get(id); return doc ? <button type="button" key={id} data-related-resource={id} onClick={() => onOpen(documentRoute(id, model.occurrence(id)?.nodeId))}><FileText />{doc.title}<ArrowUpRight /></button> : null; })}</section>}
       <footer className="ws-reading-end">正文结束 · 继续从左侧目录选择文档</footer>
     </div>;

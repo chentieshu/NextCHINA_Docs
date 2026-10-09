@@ -46,6 +46,11 @@ jobs:
         env:
           EXPECTED_COMMIT: ${{ github.sha }}
           DEPLOYMENT_URL: https://docs.nextchina.org
+      - name: Verify published reader kit
+        run: node scripts/verify-published-reader.mjs
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+          DEPLOYMENT_URL: https://docs.nextchina.org
       - name: Preserve rendering and live release evidence
         if: always()
         uses: actions/upload-artifact@v4
